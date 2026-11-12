@@ -1,0 +1,33 @@
+{
+  "unevaluatedProperties": false,
+  "properties": {
+    "ruleSentence": {
+      "title": "Rule Sentence",
+      "description": "The saved rule in plain English",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "summary": {
+      "title": "Form Outline",
+      "description": "Updated outline of the form",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "errorMessage": {
+      "title": "Error Message",
+      "description": "Why the rule could not be added, if it could not",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

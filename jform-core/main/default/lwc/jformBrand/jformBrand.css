@@ -1,0 +1,45 @@
+/*
+ * Salesforce colours: the builder's own colours (Home, Setup, Form Workspace and their panels) follow the
+ * Salesforce Lightning Design System (light theme): brand blue #066AFE, #0250D9 for text and links,
+ * #F3F3F3 background, #032D60 dark blue. Salesforce base components (buttons, toggles, checkboxes) are not
+ * restyled, so they keep the org's own theme. Imported by the top-level components; the custom properties
+ * inherit into every child, shadow DOM included. Respondent-facing forms follow each form's theme
+ * instead (c/jformTheme).
+ *
+ * Blue #0250D9 carries text, links, focus and selected states on white (6.7:1). #066AFE is a fill (main
+ * buttons, progress, accent lines) with white text (4.7:1). Ink 17.8:1, muted 6.7:1 on white.
+ * Purple is kept for Agentforce surfaces; warning, error and success keep their meaning.
+ */
+:host {
+    --jform-primary: #0250d9;
+    --jform-primary-hover: #022ac0;
+    --jform-tint: #eef4ff;
+    --jform-tint-border: #aacbff;
+    --jform-ink: #181818;
+    --jform-muted: #5c5c5c;
+    --jform-subtle: #939393;
+    --jform-surface: #ffffff;
+    --jform-canvas: #f3f3f3;
+    --jform-border: #e5e5e5;
+    --jform-border-strong: #c9c9c9;
+    --jform-accent: #066afe;
+    --jform-accent-hover: #0250d9;
+    --jform-on-accent: #ffffff;
+    --jform-highlight: #1b96ff;
+    --jform-night: #032d60;
+    --jform-night-2: #014486;
+    --jform-paper: #f3f3f3;
+    --jform-warning: #b45309;
+    --jform-warning-tint: #fdf3e7;
+    --jform-warning-border: #f3c58f;
+    --jform-warning-ink: #8a4a0b;
+    --jform-error: #ba0517;
+    --jform-error-tint: #fdecec;
+    --jform-error-ink: #8e1b1b;
+    --jform-success: #2e844a;
+    --jform-success-tint: #e6f4ea;
+    --jform-success-ink: #1e6b36;
+    --jform-ai: #7526e3;
+    --jform-ai-tint: #f4f0ff;
+    --jform-ai-border: #ddd6fe;
+}

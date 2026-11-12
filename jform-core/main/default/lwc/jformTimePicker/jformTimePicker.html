@@ -1,0 +1,36 @@
+<template>
+    <template lwc:if={native}>
+        <!-- the platform's own control, dressed like the text box: same frame, icon and placeholder -->
+        <div class="jf-tp jf-tp-native">
+            <div class="jf-tp-control">
+                <input class={nativeClass} type="time" value={value} min={minAttr} max={maxAttr} step={stepAttr} disabled={disabled}
+                    aria-label={ariaLabel} aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedby}
+                    onchange={handleNativeChange} onblur={handleNativeBlur}>
+                <template lwc:if={nativeEmpty}><span class="jf-tp-ph" aria-hidden="true">{placeholderText}</span></template>
+                <span class="jf-tp-btn jf-tp-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                </span>
+            </div>
+        </div>
+    </template>
+    <template lwc:else>
+        <div class={rootClass} onfocusout={handleFocusOut} onkeydown={handleRootKeydown}>
+            <div class="jf-tp-control">
+                <input class="jf-input jf-tp-input" type="text" value={text} placeholder={placeholderText} disabled={disabled}
+                    autocomplete="off" aria-label={ariaLabel} aria-required={ariaRequired} aria-invalid={ariaInvalid}
+                    aria-describedby={ariaDescribedby} role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-controls={listId}
+                    aria-activedescendant={activeId} oninput={handleTyping} onchange={handleTyped} onkeydown={handleInputKeydown}>
+                <button class="jf-tp-btn" type="button" title="Choose a time" aria-label="Choose a time" aria-expanded={open} disabled={disabled} onclick={handleToggle}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                </button>
+            </div>
+            <template lwc:if={open}>
+                <ul class="jf-tp-list" id={listId} role="listbox" aria-label="Times" onmousedown={handleListMousedown}>
+                    <template for:each={slots} for:item="s">
+                        <li key={s.value} id={s.id} class={s.cls} role="option" aria-selected={s.selected} data-value={s.value} onclick={handleSlotClick}>{s.label}</li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+    </template>
+</template>

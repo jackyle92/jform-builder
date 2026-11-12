@@ -1,0 +1,287 @@
+<template>
+    <div class={rootClass} style={rootStyle}>
+        <template lwc:if={showBackdrop}>
+            <div class="jf-backdrop" aria-hidden="true"></div>
+        </template>
+        <template lwc:if={showMesh}>
+            <div class="jf-mesh" style={meshStyle} aria-hidden="true">
+                <span class="jf-blob jf-blob-a"></span>
+                <span class="jf-blob jf-blob-b"></span>
+                <span class="jf-blob jf-blob-c"></span>
+            </div>
+        </template>
+        <template lwc:if={backgroundUrl}>
+            <img class="jf-bg-image" src={backgroundUrl} alt="" aria-hidden="true">
+        </template>
+        <template lwc:if={sideUrl}>
+            <aside class="jf-side" aria-hidden="true">
+                <img class="jf-side-img" src={sideUrl} alt="">
+            </aside>
+        </template>
+
+        <div class="jf-main">
+        <div class={containerClass}>
+
+            <!-- The payment popup back from Stripe: it reports to the form that opened it and closes -->
+            <template lwc:if={payReturn}>
+                <div class="jf-card jf-center jf-pay-return" role="status">
+                    <template lwc:if={payReturn.checking}>
+                        <lightning-spinner alternative-text="Checking your payment" size="small"></lightning-spinner>
+                    </template>
+                    <h1 class="jf-title">{payReturnTitle}</h1>
+                    <template lwc:if={payReturnText}><p>{payReturnText}</p></template>
+                    <template lwc:if={payReturnText}>
+                        <button type="button" class="jf-btn jf-btn-secondary" onclick={handleCloseWindow}>Close this window</button>
+                    </template>
+                </div>
+            </template>
+
+            <template lwc:elseif={loading}>
+                <div class="jf-card jf-center">
+                    <lightning-spinner alternative-text="Loading form" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Before it opens and after it closes (settings.access): a screen in place of the form -->
+            <template lwc:elseif={showAvailability}>
+                <div class="jf-card jf-welcome-screen jf-availability">
+                    <template lwc:if={availabilityImage}><img class="jf-welcome-image" src={availabilityImage} alt=""></template>
+                    <div class="jf-welcome-body">
+                        <template lwc:if={logoUrl}><img class="jf-logo" src={logoUrl} alt=""></template>
+                        <h1 class="jf-title jf-welcome-title" tabindex="-1">{availabilityTitle}</h1>
+                        <template lwc:if={availabilityMessage}>
+                            <lightning-formatted-rich-text value={availabilityMessage} class="jf-welcome-text"></lightning-formatted-rich-text>
+                        </template>
+                        <template lwc:if={availabilityWhen}>
+                            <p class="jf-availability-when">
+                                <svg class="jf-welcome-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                                {availabilityWhen}
+                            </p>
+                        </template>
+                    </div>
+                </div>
+                <template lwc:if={showPoweredBy}>
+                    <footer class="jf-footer"><span>Powered by JForm</span></footer>
+                </template>
+            </template>
+
+            <template lwc:elseif={showEnding}>
+                <div class="jf-card jf-thanks" tabindex="-1">
+                    <lightning-icon icon-name="utility:success" size="large" alternative-text="Submitted" class="jf-thanks-icon"></lightning-icon>
+                    <template lwc:if={endingTitle}><h1 class="jf-title jf-thanks-title">{endingTitle}</h1></template>
+                    <lightning-formatted-rich-text value={thankYouMessage}></lightning-formatted-rich-text>
+                    <template lwc:if={paymentProcessing}><p class="jf-pay-note">{processingText}</p></template>
+                    <template lwc:if={uploadWarning}><div class="jf-alert" role="alert">{uploadWarning}</div></template>
+                    <template lwc:if={hasEndingActions}>
+                        <div class="jf-thanks-actions">
+                            <template for:each={endingButtons} for:item="b">
+                                <a key={b.key} class={b.cls} href={b.url} target={linkTarget} rel="noopener">{b.label}</a>
+                            </template>
+                            <template lwc:if={showSubmitAnother}>
+                                <button type="button" class="jf-btn jf-btn-secondary" onclick={handleSubmitAnother}>Submit another response</button>
+                            </template>
+                        </div>
+                    </template>
+                    <template lwc:if={redirect}>
+                        <template lwc:if={redirect.preview}>
+                            <p class="jf-redirect jf-redirect-preview">{redirect.text}</p>
+                        </template>
+                        <template lwc:else>
+                            <p class="jf-redirect" role="status">{redirect.text}
+                                <a class="jf-redirect-link" href={redirect.url} target={linkTarget} rel="noopener">{redirect.linkLabel}</a>
+                            </p>
+                        </template>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Start screen (settings.welcome mode "screen"): the form's opening, with a Start button -->
+            <template lwc:elseif={showWelcomeScreen}>
+                <div class="jf-card jf-welcome-screen">
+                    <template lwc:if={welcomeImage}><img class="jf-welcome-image" src={welcomeImage} alt=""></template>
+                    <div class="jf-welcome-body">
+                        <template lwc:if={logoUrl}><img class="jf-logo" src={logoUrl} alt=""></template>
+                        <h1 class="jf-title jf-welcome-title" tabindex="-1">{welcomeTitle}</h1>
+                        <template lwc:if={welcomeMessage}>
+                            <lightning-formatted-rich-text value={welcomeMessage} class="jf-welcome-text"></lightning-formatted-rich-text>
+                        </template>
+                        <div class="jf-welcome-start">
+                            <button type="button" class="jf-btn jf-btn-primary jf-btn-start" onclick={handleStart}>{startLabel}
+                                <svg class="jf-btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+                            </button>
+                            <template lwc:if={timeText}>
+                                <span class="jf-welcome-time">
+                                    <svg class="jf-welcome-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                                    {timeText}
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <template lwc:if={showPoweredBy}>
+                    <footer class="jf-footer"><span>Powered by JForm</span></footer>
+                </template>
+            </template>
+
+            <template lwc:elseif={showForm}>
+                <template lwc:if={showPageHeader}>
+                    <template lwc:if={bannerUrl}><img class="jf-cover" src={bannerUrl} alt=""></template>
+                    <template lwc:if={showHeaderBox}>
+                        <header class="jf-header">
+                            <template lwc:if={logoUrl}><img class="jf-logo" src={logoUrl} alt=""></template>
+                            <template lwc:if={showFormTitle}>
+                                <h1 class="jf-title">{title}</h1>
+                                <template lwc:if={description}><p class="jf-description">{description}</p></template>
+                            </template>
+                        </header>
+                    </template>
+                    <!-- after a start screen the title is not shown again, but screen readers still hear which form this is -->
+                    <template lwc:if={hideFormTitle}><h1 class="jf-assistive">{title}</h1></template>
+                </template>
+
+                <template lwc:if={showProgressAbove}>
+                    <c-jform-progress class="jf-progress" step={currentPageNumber} steps={totalPages} label={currentPageLabel}
+                        percent={progressPercent} segments={progressSegments}></c-jform-progress>
+                </template>
+
+                <template lwc:if={showHiddenPageNotice}>
+                    <div class="jf-preview-hidden" role="status">Preview only: a rule hides this page from respondents with the answers so far.</div>
+                </template>
+                <form class="jf-card" onsubmit={handleSubmit} novalidate>
+                    <template lwc:if={showCardHeader}>
+                        <template lwc:if={bannerUrl}><img class="jf-cover jf-cover-card" src={bannerUrl} alt=""></template>
+                        <template lwc:if={showHeaderBox}>
+                            <header class="jf-header jf-header-card">
+                                <template lwc:if={logoUrl}><img class="jf-logo" src={logoUrl} alt=""></template>
+                                <template lwc:if={showFormTitle}>
+                                    <h1 class="jf-title">{title}</h1>
+                                    <template lwc:if={description}><p class="jf-description">{description}</p></template>
+                                </template>
+                            </header>
+                        </template>
+                        <template lwc:if={hideFormTitle}><h1 class="jf-assistive">{title}</h1></template>
+                    </template>
+                    <template lwc:if={showProgressInCard}>
+                        <c-jform-progress class="jf-progress" step={currentPageNumber} steps={totalPages} label={currentPageLabel}
+                            percent={progressPercent} segments={progressSegments}></c-jform-progress>
+                    </template>
+
+                    <template lwc:if={showWelcome}>
+                        <lightning-formatted-rich-text value={welcomeMessage} class="jf-welcome"></lightning-formatted-rich-text>
+                    </template>
+
+                    <template for:each={pages} for:item="page">
+                        <section key={page.key} class="jf-page">
+                            <template lwc:if={page.showHeader}>
+                                <h2 class="jf-page-title" tabindex="-1">{page.label}</h2>
+                                <template lwc:if={page.description}><p class="jf-page-description">{page.description}</p></template>
+                            </template>
+                            <div class="jf-grid">
+                                <template for:each={page.fields} for:item="item">
+                                    <div key={item.key} class={item.cls}>
+                                        <c-jform-field field={item.field} value={item.value} other-value={item.otherValue} required={item.required}
+                                            payment={item.payment} address-lists={addressLists} disabled={formLocked} mode="fill" onchange={handleFieldChange}
+                                            onapplycode={handleApplyCode} onremovecode={handleRemoveCode}></c-jform-field>
+                                    </div>
+                                </template>
+                            </div>
+                        </section>
+                    </template>
+
+                    <!-- Honeypot: invisible to people, filled by bots -->
+                    <div class="jf-hp" aria-hidden="true">
+                        <label for="jf-extra-field">Leave this field empty</label>
+                        <input id="jf-extra-field" name="jf_extra_field" type="text" tabindex="-1" autocomplete="off" value={honeypot} oninput={handleHoneypot}>
+                    </div>
+
+                    <template lwc:if={errorMessage}>
+                        <div class="jf-alert" role="alert">{errorMessage}</div>
+                    </template>
+                    <template lwc:if={payNotice}>
+                        <div class="jf-alert" role="alert">{payNotice}</div>
+                    </template>
+                    <template lwc:if={paymentUnavailable}>
+                        <div class="jf-alert jf-alert-info" role="status">{paymentUnavailable}</div>
+                    </template>
+                    <template lwc:if={previewNotice}>
+                        <div class="jf-alert jf-alert-info" role="status">{previewNoticeText}</div>
+                    </template>
+
+                    <!-- While the respondent pays: where to pay, and a way back -->
+                    <template lwc:if={payPanel}>
+                        <div class="jf-pay-panel" role="status" aria-live="polite">
+                            <template lwc:if={payPanel.confirming}>
+                                <p class="jf-pay-title">Checking your payment…</p>
+                            </template>
+                            <template lwc:elseif={payPanel.leaving}>
+                                <p class="jf-pay-title">{payPanel.leavingTitle}</p>
+                                <div class="jf-pay-actions">
+                                    <a class="jf-btn jf-btn-primary" href={payPanel.url} target="_top" rel="noopener">Open payment page</a>
+                                </div>
+                            </template>
+                            <template lwc:elseif={payPanel.blocked}>
+                                <p class="jf-pay-title">{payPanel.blockedTitle}</p>
+                                <p class="jf-pay-text">{payPanel.blockedText}</p>
+                                <div class="jf-pay-actions">
+                                    <button type="button" class="jf-btn jf-btn-primary" onclick={handleReopenPayment}>Open payment page</button>
+                                    <button type="button" class="jf-btn jf-btn-secondary" onclick={handleCancelPayment}>Cancel payment</button>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <p class="jf-pay-title">{payPanel.waitingTitle}</p>
+                                <p class="jf-pay-text">{payPanel.waitingText}</p>
+                                <div class="jf-pay-actions">
+                                    <template lwc:if={payPanel.popup}>
+                                        <button type="button" class="jf-btn jf-btn-primary" onclick={handleReopenPayment}>Reopen payment window</button>
+                                    </template>
+                                    <template lwc:elseif={payPanel.url}>
+                                        <!-- Stripe's page, back here through its cancel link, where the cancel could not be taken -->
+                                        <a class="jf-btn jf-btn-primary" href={payPanel.url} target="_top" rel="noopener">Open payment page</a>
+                                    </template>
+                                    <button type="button" class="jf-btn jf-btn-secondary" onclick={handleCancelPayment}>Cancel payment</button>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <div class={actionsClass}>
+                        <template lwc:if={showBack}>
+                            <button type="button" class="jf-btn jf-btn-secondary" onclick={handleBack}>
+                                <svg class="jf-btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+                                {backLabel}
+                            </button>
+                        </template>
+                        <div class="jf-spacer"></div>
+                        <template lwc:if={showNext}>
+                            <button type="button" class="jf-btn jf-btn-primary" onclick={handleNext}>
+                                {nextLabel}
+                                <svg class="jf-btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+                            </button>
+                        </template>
+                        <template lwc:if={showSubmit}>
+                            <button type="submit" class="jf-btn jf-btn-primary" disabled={submitDisabled}>{submitLabel}</button>
+                        </template>
+                    </div>
+                </form>
+
+                <footer class="jf-footer">
+                    <template lwc:if={showRecaptchaNotice}>
+                        <span class="jf-recaptcha-notice">This site is protected by reCAPTCHA and the Google
+                            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and
+                            <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a> apply.</span>
+                    </template>
+                    <template lwc:if={showPoweredBy}><span>Powered by JForm</span></template>
+                    <template lwc:if={versionLabel}><span>{versionLabel}</span></template>
+                </footer>
+            </template>
+
+            <template lwc:elseif={loadError}>
+                <div class="jf-card jf-center">
+                    <lightning-icon icon-name="utility:info" size="medium" alternative-text="Unavailable"></lightning-icon>
+                    <p class="jf-unavailable">{loadError}</p>
+                </div>
+            </template>
+        </div>
+        </div>
+    </div>
+</template>

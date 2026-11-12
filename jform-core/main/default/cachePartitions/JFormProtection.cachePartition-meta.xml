@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PlatformCachePartition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Counts wrong promotion codes per form and per timing token, so codes cannot be guessed by trying many. Without capacity nothing is counted and no limit applies.</description>
+    <isDefaultPartition>false</isDefaultPartition>
+    <masterLabel>JFormProtection</masterLabel>
+    <platformCachePartitionTypes>
+        <allocatedCapacity>0</allocatedCapacity>
+        <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>
+        <cacheType>Session</cacheType>
+    </platformCachePartitionTypes>
+    <platformCachePartitionTypes>
+        <allocatedCapacity>0</allocatedCapacity>
+        <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>
+        <cacheType>Organization</cacheType>
+    </platformCachePartitionTypes>
+</PlatformCachePartition>

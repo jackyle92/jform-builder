@@ -1,0 +1,78 @@
+<template>
+    <template lwc:if={native}>
+        <!-- the platform's own control, dressed like the text box: same frame, icon and placeholder -->
+        <div class="jf-dp jf-dp-native">
+            <div class="jf-dp-control">
+                <input class={nativeClass} type="date" value={value} min={minAttr} max={maxAttr} disabled={disabled}
+                    aria-label={ariaLabel} aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedby}
+                    onchange={handleNativeChange} onblur={handleNativeBlur}>
+                <template lwc:if={nativeEmpty}><span class="jf-dp-ph" aria-hidden="true">{placeholderText}</span></template>
+                <span class="jf-dp-btn jf-dp-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                </span>
+            </div>
+        </div>
+    </template>
+    <template lwc:else>
+        <div class={rootClass} onfocusout={handleFocusOut} onkeydown={handleRootKeydown}>
+            <div class="jf-dp-control">
+                <input class="jf-input jf-dp-input" type="text" value={text} placeholder={placeholderText} disabled={disabled}
+                    autocomplete="off" inputmode="numeric" aria-label={ariaLabel} aria-required={ariaRequired} aria-invalid={ariaInvalid}
+                    aria-describedby={ariaDescribedby} aria-haspopup="dialog" aria-expanded={open}
+                    oninput={handleTyping} onchange={handleTyped} onkeydown={handleInputKeydown}>
+                <button class="jf-dp-btn" type="button" title="Choose a date" aria-label="Choose a date" aria-expanded={open} disabled={disabled} onclick={handleToggle}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                </button>
+            </div>
+            <template lwc:if={open}>
+                <div class="jf-dp-pop" role="dialog" aria-modal="false" aria-label="Calendar">
+                    <div class="jf-dp-head">
+                        <button class="jf-dp-nav" type="button" aria-label="Previous month" onclick={handlePrevMonth}>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+                        </button>
+                        <div class="jf-dp-title">
+                            <select class="jf-dp-select" aria-label="Month" value={viewMonth} onchange={handleMonthSelect}>
+                                <template for:each={months} for:item="m">
+                                    <option key={m.value} value={m.value} selected={m.selected}>{m.label}</option>
+                                </template>
+                            </select>
+                            <select class="jf-dp-select jf-dp-year" aria-label="Year" value={viewYear} onchange={handleYearSelect}>
+                                <template for:each={years} for:item="y">
+                                    <option key={y.value} value={y.value} selected={y.selected}>{y.label}</option>
+                                </template>
+                            </select>
+                        </div>
+                        <button class="jf-dp-nav" type="button" aria-label="Next month" onclick={handleNextMonth}>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+                        </button>
+                    </div>
+                    <table class="jf-dp-grid" role="grid" aria-label={gridLabel}>
+                        <thead>
+                            <tr>
+                                <template for:each={weekdays} for:item="w">
+                                    <th key={w.day} scope="col" abbr={w.long}><span aria-hidden="true">{w.short}</span><span class="jf-sr">{w.long}</span></th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={rows} for:item="row">
+                                <tr key={row.key}>
+                                    <template for:each={row.cells} for:item="c">
+                                        <td key={c.iso} role="gridcell" aria-selected={c.selected}>
+                                            <button class={c.cls} type="button" data-iso={c.iso} tabindex={c.tabindex} disabled={c.disabled}
+                                                aria-label={c.label} aria-current={c.current} onclick={handleDayClick} onkeydown={handleDayKeydown}>{c.day}</button>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div class="jf-dp-foot">
+                        <button class="jf-dp-link" type="button" onclick={handleClear}>Clear</button>
+                        <button class="jf-dp-link" type="button" disabled={todayDisabled} onclick={handleToday}>Today</button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+</template>

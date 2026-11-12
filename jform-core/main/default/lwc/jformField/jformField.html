@@ -1,0 +1,413 @@
+<template>
+    <!-- Layout blocks: no label, no answer -->
+    <template lwc:if={isRichText}>
+        <lightning-formatted-rich-text value={richtextHtml} class="jf-richtext"></lightning-formatted-rich-text>
+    </template>
+
+    <template lwc:elseif={isHeading}>
+        <div class="jf-heading-block">
+            <h2 class="jf-heading">{label}</h2>
+            <template lwc:if={helpText}><p class="jf-subheading">{helpText}</p></template>
+        </div>
+    </template>
+
+    <template lwc:elseif={isDivider}>
+        <hr class="jf-divider">
+    </template>
+
+    <template lwc:elseif={isImage}>
+        <figure class={imageClass}>
+            <template lwc:if={imageUrl}>
+                <img class="jf-image-img" src={imageUrl} alt={imageAlt}>
+            </template>
+            <template lwc:elseif={isEdit}>
+                <div class="jf-image-empty">Add an image in the field settings</div>
+            </template>
+            <template lwc:if={helpText}><figcaption class="jf-image-caption">{helpText}</figcaption></template>
+        </figure>
+    </template>
+
+    <template lwc:elseif={isEvent}>
+        <div class="jf-event" role="group" aria-label={label}>
+            <template lwc:if={eventInfo.hasDate}>
+                <div class="jf-event-badge" aria-hidden="true">
+                    <span class="jf-event-month">{eventInfo.month}</span>
+                    <span class="jf-event-day">{eventInfo.day}</span>
+                </div>
+            </template>
+            <div class="jf-event-body">
+                <h3 class="jf-event-title">{label}</h3>
+                <template lwc:if={eventInfo.when}><p class="jf-event-line">{eventInfo.when}</p></template>
+                <template lwc:if={eventInfo.location}><p class="jf-event-line jf-event-where">{eventInfo.location}</p></template>
+                <template lwc:if={eventInfo.description}><p class="jf-event-desc">{eventInfo.description}</p></template>
+                <template lwc:if={eventInfo.showCalendar}>
+                    <div class="jf-event-links">
+                        <button type="button" class="jf-event-link" onclick={handleAddToCalendar}>Add to calendar</button>
+                        <a class="jf-event-link" href={eventInfo.googleUrl} target="_blank" rel="noopener noreferrer">Google Calendar</a>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <template lwc:elseif={isHidden}>
+        <template lwc:if={showHiddenChip}>
+            <div class="jf-hidden-chip">
+                <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path><path d="M9.9 5.1A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a17 17 0 0 1-2.7 3.6"></path><path d="M6.6 6.6C3.6 8.7 2 12 2 12s3 7 10 7a9.7 9.7 0 0 0 4.4-1"></path></svg>
+                <span>Hidden field: {label}</span>
+            </div>
+        </template>
+    </template>
+
+    <!-- Payment: the lines and the total; "pay what you want" takes the amount here -->
+    <template lwc:elseif={isPayment}>
+        <div class="jf-payment" role="group" aria-labelledby={labelId}>
+            <div class="jf-payment-head">
+                <span id={labelId} class="jf-label jf-payment-label">{label}</span>
+                <!-- the builder canvas: which gateway takes the payment, and in which mode -->
+                <template lwc:if={paymentView.rules}>
+                    <span class="jf-payment-gateway">
+                        <c-jform-gateway-logo gateway={paymentView.gateway} size="small"></c-jform-gateway-logo>
+                        <span class="jf-payment-mode">{paymentView.modeLabel}</span>
+                    </span>
+                </template>
+            </div>
+            <template lwc:if={paymentView.test}>
+                <div class="jf-payment-test">
+                    <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path></svg>
+                    <span>{paymentView.testText}</span>
+                </div>
+            </template>
+            <template lwc:if={paymentView.custom}>
+                <div class="jf-payment-amount">
+                    <span class="jf-payment-currency" aria-hidden="true">{paymentView.currency}</span>
+                    <input id={controlId} class="jf-input" type="text" inputmode="decimal" autocomplete="off" value={stringValue}
+                        placeholder={placeholder} disabled={isDisabled} aria-labelledby={labelId} aria-required="true"
+                        aria-invalid={ariaInvalid} aria-describedby={descId} oninput={handleInput} onblur={handleBlur}>
+                </div>
+            </template>
+            <template lwc:if={hasPaymentLines}>
+                <ul class="jf-payment-lines">
+                    <template for:each={paymentView.lines} for:item="line">
+                        <li key={line.key} class={line.cls}>
+                            <span class="jf-payment-name">{line.name}<template lwc:if={line.detail}><span class="jf-payment-detail">{line.detail}</span></template></span>
+                            <span class="jf-payment-price">{line.amountText}</span>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+            <!-- promotion codes defined in JForm: the box and Apply, or the applied code; the server checks the code -->
+            <template lwc:if={paymentView.showCodeBox}>
+                <template lwc:if={paymentView.codeApplied}>
+                    <div class="jf-payment-code jf-payment-code-applied">
+                        <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>
+                        <span class="jf-payment-code-text">Code <strong>{paymentView.codeApplied}</strong> applied</span>
+                        <button type="button" class="jf-payment-code-link" onclick={handleRemoveCode} disabled={codeDisabled}>Remove</button>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <div class="jf-payment-code">
+                        <input id={codeId} class="jf-input jf-payment-code-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                            placeholder="Promotion code" aria-label="Promotion code" value={codeInput} disabled={codeDisabled}
+                            aria-invalid={codeInvalid} aria-describedby={codeErrorId} oninput={handleCodeInput} onkeydown={handleCodeKey}>
+                        <button type="button" class="jf-payment-code-btn" onclick={handleApplyCode} disabled={applyDisabled}>{applyLabel}</button>
+                    </div>
+                    <template lwc:if={paymentView.codeError}>
+                        <div id={codeErrorId} class="jf-error" role="alert">
+                            <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                            <span>{paymentView.codeError}</span>
+                        </div>
+                    </template>
+                </template>
+            </template>
+            <template lwc:if={paymentView.totalText}>
+                <div class="jf-payment-total" aria-live="polite"><span>Total</span><strong>{paymentView.totalText}</strong></div>
+            </template>
+            <template lwc:if={paymentView.gatewayCodesText}>
+                <p class="jf-help jf-payment-codes-note">{paymentView.gatewayCodesText}</p>
+            </template>
+            <!-- respondents: who takes the payment -->
+            <template lwc:if={showCheckoutLine}>
+                <p class="jf-payment-by">
+                    <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+                    <span>Secure checkout by</span>
+                    <c-jform-gateway-logo gateway={paymentView.gateway} size="small" monochrome></c-jform-gateway-logo>
+                </p>
+            </template>
+            <div id={descId} class="jf-desc">
+                <template lwc:if={paymentView.minimumText}><div class="jf-help">{paymentView.minimumText}</div></template>
+                <template lwc:if={paymentView.note}><div class="jf-help">{paymentView.note}</div></template>
+                <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                <template lwc:if={hasError}>
+                    <div class="jf-error" role="alert">
+                        <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                        <span>{error}</span>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <template lwc:elseif={isUnsupported}>
+        <div class="jf-unsupported">Field type "{type}" is not supported yet.</div>
+    </template>
+
+    <!-- Consent: a single checkbox whose text is the label, across the field's full width even with labels on the left -->
+    <template lwc:elseif={isConsent}>
+        <div class={wrapperClass}>
+            <div class="jf-body">
+                <label class={consentClass}>
+                    <input type="checkbox" class="jf-check" checked={booleanValue} disabled={isDisabled}
+                        aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        onchange={handleConsent} onblur={handleBlur}>
+                    <span class="jf-consent-text">{label}<template lwc:if={isRequired}><span class="jf-req" aria-hidden="true"> *</span></template></span>
+                </label>
+                <div id={descId} class="jf-desc">
+                    <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                    <template lwc:if={hasError}>
+                        <div class="jf-error" role="alert">
+                            <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                            <span>{error}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Table: rows of questions on a shared scale; always full width with the label above -->
+    <template lwc:elseif={isTable}>
+        <div class={wrapperClass}>
+            <span id={labelId} class="jf-label">{label}<template lwc:if={isRequired}><span class="jf-req" aria-hidden="true"> *</span></template></span>
+            <div class="jf-body">
+                <c-jform-choice-table rows={tableRows} columns={options} value={value} multiple={tableMultiple} disabled={isDisabled}
+                    missing-rows={missingRows} aria-label={label} aria-describedby={descId}
+                    onchange={handleTable} onblur={handleBlur}></c-jform-choice-table>
+                <div id={descId} class="jf-desc">
+                    <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                    <template lwc:if={hasError}>
+                        <div class="jf-error" role="alert">
+                            <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                            <span>{error}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Name: first and last name in a fieldset named by the label; each part has its own label and error -->
+    <template lwc:elseif={isName}>
+        <fieldset class={nameWrapperClass}>
+            <legend class="jf-label jf-legend">{label}<template lwc:if={isRequired}><span class="jf-req" aria-hidden="true"> *</span></template></legend>
+            <div class="jf-body">
+                <div class={namePartsClass} onfocusout={handlePartsBlur}>
+                    <template for:each={nameView} for:item="part">
+                        <div key={part.key} class={part.cls}>
+                            <label class="jf-sublabel" for={part.id}>{part.label}</label>
+                            <input id={part.id} class="jf-input" type="text" data-part={part.key} value={part.value} placeholder={part.placeholder}
+                                autocomplete={part.autocomplete} disabled={isDisabled} aria-required={part.ariaRequired} aria-invalid={part.invalid}
+                                aria-describedby={part.describedBy} oninput={handleNamePart}>
+                            <template lwc:if={part.error}>
+                                <div id={part.errorId} class="jf-error" role="alert">
+                                    <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                                    <span>{part.error}</span>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+                <div id={descId} class="jf-desc">
+                    <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                </div>
+            </div>
+        </fieldset>
+    </template>
+
+    <!-- Address: country, street, city, state and postal code in a fieldset named by the label; each part has its own label and error -->
+    <template lwc:elseif={isAddress}>
+        <fieldset class={nameWrapperClass}>
+            <legend class="jf-label jf-legend">{label}<template lwc:if={isRequired}><span class="jf-req" aria-hidden="true"> *</span></template></legend>
+            <div class="jf-body">
+                <div class="jf-parts jf-address-parts" onfocusout={handlePartsBlur}>
+                    <template for:each={addressView} for:item="part">
+                        <div key={part.key} class={part.cls}>
+                            <label class="jf-sublabel" for={part.id}>{part.label}</label>
+                            <template lwc:if={part.isList}>
+                                <div class="jf-select-wrap">
+                                    <select id={part.id} class="jf-input jf-select" data-part={part.key} autocomplete={part.autocomplete} disabled={isDisabled}
+                                        aria-required={part.ariaRequired} aria-invalid={part.invalid} aria-describedby={part.describedBy} onchange={handleAddressPart}>
+                                        <option value="" selected={part.noneSelected}>{part.listPlaceholder}</option>
+                                        <template for:each={part.options} for:item="opt">
+                                            <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
+                                        </template>
+                                    </select>
+                                    <svg class="jf-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                                </div>
+                            </template>
+                            <template lwc:elseif={part.isStreet}>
+                                <textarea id={part.id} class="jf-input jf-address-street" rows="3" data-part={part.key} value={part.value} placeholder={part.placeholder}
+                                    autocomplete={part.autocomplete} disabled={isDisabled} aria-required={part.ariaRequired} aria-invalid={part.invalid}
+                                    aria-describedby={part.describedBy} oninput={handleAddressPart}></textarea>
+                            </template>
+                            <template lwc:else>
+                                <input id={part.id} class="jf-input" type="text" data-part={part.key} value={part.value} placeholder={part.placeholder}
+                                    autocomplete={part.autocomplete} disabled={isDisabled} aria-required={part.ariaRequired} aria-invalid={part.invalid}
+                                    aria-describedby={part.describedBy} oninput={handleAddressPart}>
+                            </template>
+                            <template lwc:if={part.error}>
+                                <div id={part.errorId} class="jf-error" role="alert">
+                                    <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                                    <span>{part.error}</span>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+                <div id={descId} class="jf-desc">
+                    <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                </div>
+            </div>
+        </fieldset>
+    </template>
+
+    <!-- Groups: choices, yes/no, NPS, rating -->
+    <template lwc:elseif={isGroup}>
+        <div class={wrapperClass}>
+            <span id={labelId} class="jf-label">{label}<template lwc:if={isRequired}><span class="jf-req" aria-hidden="true"> *</span></template></span>
+            <div class="jf-body">
+                <div role={groupRole} aria-labelledby={labelId} aria-describedby={descId} aria-required={ariaRequired} aria-invalid={ariaInvalid}>
+
+                    <template lwc:if={isChoiceList}>
+                        <div class="jf-choices" style={choicesStyle} onpointerdown={handlePointerPick} onkeydown={handleKeyPick}>
+                            <template for:each={choiceOptions} for:item="opt">
+                                <label key={opt.key} class={opt.cls}>
+                                    <input type={choiceInputType} class="jf-check" name={groupName} value={opt.value} checked={opt.checked}
+                                        disabled={opt.disabled} onchange={handleChoice} onblur={handleBlur}>
+                                    <span class="jf-choice-text">{opt.label}</span>
+                                </label>
+                            </template>
+                        </div>
+                        <template lwc:if={choiceLimitText}><div class="jf-help jf-choice-limit">{choiceLimitText}</div></template>
+                        <template lwc:if={showOther}>
+                            <input class="jf-input jf-other-input" type="text" value={otherText} placeholder={otherPlaceholder} maxlength={otherMaxLength}
+                                aria-label={otherAriaLabel} aria-invalid={otherInvalid} disabled={isDisabled} oninput={handleOtherInput} onblur={handleBlur}>
+                        </template>
+                    </template>
+
+                    <template lwc:elseif={isYesNo}>
+                        <div class="jf-seg">
+                            <template for:each={yesNoOptions} for:item="opt">
+                                <button key={opt.value} type="button" role="radio" class={opt.cls} data-value={opt.value}
+                                    aria-checked={opt.checked} disabled={isDisabled} onclick={handleScale} onblur={handleBlur}>{opt.label}</button>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template lwc:elseif={isNps}>
+                        <div class="jf-scale">
+                            <template for:each={npsOptions} for:item="opt">
+                                <button key={opt.value} type="button" role="radio" class={opt.cls} data-value={opt.value}
+                                    aria-checked={opt.checked} disabled={isDisabled} onclick={handleScale}>{opt.label}</button>
+                            </template>
+                        </div>
+                        <div class="jf-scale-ends" aria-hidden="true"><span>Not likely</span><span>Very likely</span></div>
+                    </template>
+
+                    <template lwc:elseif={isRating}>
+                        <div class="jf-stars">
+                            <template for:each={ratingOptions} for:item="opt">
+                                <button key={opt.value} type="button" role="radio" class={opt.cls} data-value={opt.value}
+                                    aria-checked={opt.checked} aria-label={opt.label} disabled={isDisabled} onclick={handleScale}>
+                                    <svg class="jf-star-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"></path></svg>
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+                <div id={descId} class="jf-desc">
+                    <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                    <template lwc:if={hasError}>
+                        <div class="jf-error" role="alert">
+                            <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                            <span>{error}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Labelled controls: text-like inputs, long text, dropdown, file -->
+    <template lwc:elseif={isLabelled}>
+        <div class={wrapperClass}>
+            <label class="jf-label" for={controlId} onclick={handleLabelClick}>{label}<template lwc:if={isRequired}><span class="jf-req" aria-hidden="true"> *</span></template></label>
+            <div class="jf-body">
+                <template lwc:if={isDatePicker}>
+                    <c-jform-date-picker value={stringValue} config={field.config} placeholder={placeholder} disabled={isDisabled}
+                        aria-label={label} aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        onchange={handlePickerChange} onblur={handleBlur}></c-jform-date-picker>
+                </template>
+                <template lwc:elseif={isTimePicker}>
+                    <c-jform-time-picker value={stringValue} config={field.config} placeholder={placeholder} disabled={isDisabled}
+                        aria-label={label} aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        onchange={handlePickerChange} onblur={handleBlur}></c-jform-time-picker>
+                </template>
+                <template lwc:elseif={isPhonePicker}>
+                    <c-jform-phone-input value={stringValue} config={field.config} placeholder={placeholder} disabled={isDisabled}
+                        detect={detectCountry} inert={isEdit} aria-label={label} aria-required={ariaRequired} aria-invalid={ariaInvalid}
+                        aria-describedby={descId} onchange={handlePickerChange} onblur={handleBlur}></c-jform-phone-input>
+                </template>
+                <template lwc:elseif={isTextInput}>
+                    <input id={controlId} class="jf-input" type={inputType} value={stringValue} placeholder={placeholder}
+                        autocomplete={autocomplete} inputmode={inputMode} disabled={isDisabled}
+                        aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        oninput={handleInput} onblur={handleBlur}>
+                </template>
+                <template lwc:elseif={isComment}>
+                    <textarea id={controlId} class="jf-input jf-textarea" placeholder={placeholder} disabled={isDisabled}
+                        aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        oninput={handleInput} onblur={handleBlur} value={stringValue}></textarea>
+                </template>
+                <template lwc:elseif={isSelect}>
+                    <div class="jf-select-wrap">
+                        <select id={controlId} class="jf-input jf-select" disabled={isDisabled}
+                            aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                            onchange={handleSelect} onblur={handleBlur} onpointerdown={handlePointerPick} onkeydown={handleKeyPick}>
+                            <option value="">{selectPlaceholder}</option>
+                            <template for:each={selectOptions} for:item="opt">
+                                <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
+                            </template>
+                        </select>
+                        <svg class="jf-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                    </div>
+                    <template lwc:if={showOther}>
+                        <input class="jf-input jf-other-input" type="text" value={otherText} placeholder={otherPlaceholder} maxlength={otherMaxLength}
+                            aria-label={otherAriaLabel} aria-invalid={otherInvalid} disabled={isDisabled} oninput={handleOtherInput} onblur={handleBlur}>
+                    </template>
+                </template>
+                <template lwc:elseif={isFile}>
+                    <input id={controlId} class="jf-file" type="file" multiple={fileMultiple} accept={fileAccept} disabled={isDisabled}
+                        aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        onchange={handleFile}>
+                    <template lwc:if={fileNames}><div class="jf-help">Selected: {fileNames}</div></template>
+                </template>
+                <template lwc:elseif={isSignature}>
+                    <c-jform-signature-pad value={value} config={field.config} disabled={isDisabled} aria-label={label}
+                        aria-required={ariaRequired} aria-invalid={ariaInvalid} aria-describedby={descId}
+                        onchange={handleSignature} onblur={handleBlur}></c-jform-signature-pad>
+                </template>
+                <div id={descId} class="jf-desc">
+                    <template lwc:if={fileRules}><div class="jf-help jf-file-rules">{fileRules}</div></template>
+                    <template lwc:if={helpText}><div class="jf-help">{helpText}</div></template>
+                    <template lwc:if={hasError}>
+                        <div class="jf-error" role="alert">
+                            <svg class="jf-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5"></path><path d="M12 16h.01"></path></svg>
+                            <span>{error}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

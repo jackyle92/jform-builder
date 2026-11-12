@@ -1,0 +1,35 @@
+{
+  "required": [],
+  "unevaluatedProperties": false,
+  "properties": {
+    "searchText": {
+      "title": "Search Text",
+      "description": "Words to look for, for example summer or clinic. Leave empty to list recent forms.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "modifiedWithinDays": {
+      "title": "Modified Within Days",
+      "description": "Only forms changed in the last N days. Leave empty for any time.",
+      "lightning:type": "lightning__integerType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "status": {
+      "title": "Status",
+      "description": "Draft, Active, Inactive or Archived. Leave empty for all.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "maxResults": {
+      "title": "Max Results",
+      "description": "Maximum number of forms to return. Defaults to 10.",
+      "lightning:type": "lightning__integerType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

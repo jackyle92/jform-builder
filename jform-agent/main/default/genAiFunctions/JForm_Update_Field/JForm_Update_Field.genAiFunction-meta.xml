@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Change one existing field of a form and save the draft: its label, help text, placeholder, whether it is required, its choices (add, remove or replace), its position, or remove it.</description>
+    <invocationTarget>JFormUpdateFieldAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+    <masterLabel>Update Field</masterLabel>
+</GenAiFunction>

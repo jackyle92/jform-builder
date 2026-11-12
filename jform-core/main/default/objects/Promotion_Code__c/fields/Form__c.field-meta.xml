@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Form__c</fullName>
+    <description>The form the code belongs to. Codes go with the form when it is deleted and are not copied when it is cloned.</description>
+    <label>Form</label>
+    <referenceTo>Form__c</referenceTo>
+    <relationshipLabel>Promotion Codes</relationshipLabel>
+    <relationshipName>Promotion_Codes</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -1,0 +1,53 @@
+<template>
+    <!-- Narrow: each row is a group with the row as its legend and the options stacked -->
+    <template lwc:if={narrow}>
+        <div class="jf-tbl-stack" role="group" aria-label={ariaLabel} aria-describedby={ariaDescribedby}>
+            <template for:each={viewRows} for:item="row">
+                <fieldset key={row.key} class={row.groupCls}>
+                    <legend class="jf-tbl-legend">{row.label}</legend>
+                    <div class="jf-tbl-options">
+                        <template for:each={row.cells} for:item="cell">
+                            <label key={cell.key} class={cell.choiceCls}>
+                                <input type={inputType} class="jf-check" name={row.name} value={cell.value} checked={cell.checked}
+                                    disabled={disabled} data-row={row.key} onchange={handleChange} onblur={handleBlur}>
+                                <span class="jf-choice-text">{cell.label}</span>
+                            </label>
+                        </template>
+                    </div>
+                </fieldset>
+            </template>
+        </div>
+    </template>
+
+    <!-- Wide: a table with a header per column and per row -->
+    <template lwc:else>
+        <div class="jf-tbl-scroll">
+            <table class="jf-tbl" aria-label={ariaLabel} aria-describedby={ariaDescribedby}>
+                <thead>
+                    <tr>
+                        <td class="jf-tbl-corner"></td>
+                        <template for:each={viewColumns} for:item="col">
+                            <th key={col.key} scope="col" class="jf-tbl-col">{col.label}</th>
+                        </template>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={viewRows} for:item="row">
+                        <tr key={row.key} class={row.rowCls}>
+                            <th scope="row" class="jf-tbl-row">{row.label}</th>
+                            <template for:each={row.cells} for:item="cell">
+                                <td key={cell.key} class="jf-tbl-cell">
+                                    <label class="jf-tbl-hit">
+                                        <input type={inputType} class="jf-check" name={row.name} value={cell.value} checked={cell.checked}
+                                            disabled={disabled} data-row={row.key} onchange={handleChange} onblur={handleBlur}>
+                                        <span class="jf-sr">{cell.srLabel}</span>
+                                    </label>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,23 @@
+{
+  "required": [
+    "formId"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "formId": {
+      "title": "Form Id",
+      "description": "Id of the form to publish",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "releaseNote": {
+      "title": "Release Note",
+      "description": "Optional note describing what changed in this version",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

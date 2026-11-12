@@ -1,0 +1,42 @@
+{
+  "unevaluatedProperties": false,
+  "properties": {
+    "formsSummary": {
+      "title": "Forms Summary",
+      "description": "Numbered list of matching forms with Id, status, field count and last modified date",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "formCount": {
+      "title": "Form Count",
+      "description": "Number of forms returned",
+      "lightning:type": "lightning__integerType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "mostRecentFormId": {
+      "title": "Most Recent Form Id",
+      "description": "Id of the most recently modified matching form",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "errorMessage": {
+      "title": "Error Message",
+      "description": "Why the search failed, if it did",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

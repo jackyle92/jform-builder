@@ -1,0 +1,175 @@
+.pp {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+.pp-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2rem 1rem;
+    color: var(--jform-muted, #5c5c5c);
+    text-align: center;
+    font-size: 0.8125rem;
+}
+.pp-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.pp-icon {
+    flex: none;
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+.pp-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+.pp-key {
+    margin-left: auto;
+    font-size: 0.6875rem;
+    color: var(--jform-ink, #181818);
+    background: var(--jform-canvas, #f3f3f3);
+    border-radius: 999px;
+    padding: 0.125rem 0.5rem;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.pp-group {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--jform-muted, #5c5c5c);
+    margin-top: 0.75rem;
+}
+.pp-muted {
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+    margin: 0;
+}
+.pp-rule {
+    font-size: 0.8125rem;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid var(--jform-primary, #0250d9);
+    background: var(--jform-tint, #eef4ff);
+    border-radius: 0 6px 6px 0;
+    color: var(--jform-primary-hover, #022ac0);
+}
+.pp-option {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto auto;
+    gap: 0.25rem;
+    align-items: center;
+}
+.pp-table-row {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+}
+.pp-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+}
+.pp-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+/* one Name part's settings: a light rule above, its name as a small heading */
+.pp-name-part {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.pp-subgroup {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+code {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.75rem;
+}
+
+/* Width: segmented control, the selected option a white pill (same as the Design tab) */
+.pr-width {
+    margin-top: 0.75rem;
+}
+.pr-seg {
+    display: flex;
+    padding: 3px;
+    border-radius: 8px;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+}
+.pr-seg-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 2rem;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--jform-ink, #181818);
+    cursor: pointer;
+}
+.pr-seg-on {
+    background: #fff;
+    color: var(--jform-primary, #0250d9);
+    box-shadow: 0 1px 3px rgba(15, 42, 51, 0.18);
+}
+.pr-seg-btn:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 1px;
+}
+
+.pp-image-preview {
+    display: block;
+    width: 100%;
+    max-width: none;
+    max-height: 9rem;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--jform-border, #e5e5e5);
+}
+.pp-error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--jform-error, #ba0517);
+}
+
+.pp-warn {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: var(--jform-error-ink, #8e1b1b);
+}
+
+/* a thank-you button: label, link and its remove control */
+.pp-screen-button {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 0.625rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 6px;
+}
+.pp-grow {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.pp-row-end {
+    flex-wrap: nowrap;
+    align-items: flex-end;
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <isExposed>false</isExposed>
+    <description>JForm welcome and thank-you screens: reading settings.welcome and settings.ending, link checks, time estimate</description>
+</LightningComponentBundle>

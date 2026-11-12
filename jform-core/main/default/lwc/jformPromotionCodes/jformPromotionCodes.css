@@ -1,0 +1,111 @@
+/* under the Promotion codes row, aligned with the row's text and as wide as the panel allows */
+.pc {
+    margin: 0 1.5rem 1rem;
+}
+.pc-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+.pc-count {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.pc-loading {
+    position: relative;
+    min-height: 3rem;
+}
+.pc-empty {
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.8125rem;
+    padding: 0.5rem 0;
+}
+/* a panel narrower than the table scrolls the table sideways instead of spilling out of the card */
+.pc-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 6px;
+}
+.pc-table {
+    font-size: 0.8125rem;
+}
+/* a line under the headings and between codes; the outer edge is the box above */
+.pc-table thead th {
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.pc-table tbody tr + tr td {
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.pc-table th,
+.pc-table td {
+    padding-left: 0.375rem;
+    padding-right: 0.375rem;
+}
+.pc-table th:first-child,
+.pc-table td:first-child {
+    padding-left: 0.75rem;
+}
+.pc-table th:last-child,
+.pc-table td:last-child {
+    padding-right: 0.5rem;
+}
+.pc-valid {
+    min-width: 7.5rem;
+}
+.pc-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+}
+/* up to two lines, the rest on hover */
+.pc-note {
+    min-width: 7rem;
+    max-width: 12rem;
+}
+.pc-note-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.pc-actions {
+    text-align: right;
+}
+.pc-confirm {
+    display: inline-block;
+    margin-right: 0.25rem;
+}
+.pc-paused td {
+    color: var(--jform-muted, #5c5c5c);
+}
+.pc-state {
+    display: inline-block;
+    padding: 0.05rem 0.45rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    background: #f3f3f3;
+}
+.pc-state-active {
+    background: #e6f5ea;
+    color: #1b5e20;
+}
+.pc-state-scheduled {
+    background: #eef3fb;
+    color: #1b3a73;
+}
+.pc-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.pc-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+.pc-error {
+    color: #ba0517;
+    font-size: 0.8125rem;
+}

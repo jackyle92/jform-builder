@@ -1,0 +1,45 @@
+<template>
+    <div class={rootClass} onfocusout={handleFocusOut} onpointerdown={handleRootPointerDown}>
+        <div class={controlClass}>
+            <button class="jf-ph-country" type="button" disabled={disabled} aria-label={countryButtonLabel}
+                aria-haspopup="listbox" aria-expanded={expanded} onclick={handleToggle} onkeydown={handleButtonKeydown}>
+                <template lwc:if={isOther}>
+                    <svg class="jf-ph-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg>
+                </template>
+                <template lwc:else>
+                    <span class="jf-ph-flag" style={flagStyle} aria-hidden="true"></span>
+                </template>
+                <span class="jf-ph-dial" aria-hidden="true">{dialText}</span>
+                <svg class="jf-ph-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <input class="jf-ph-input" type="tel" inputmode="tel" autocomplete="tel" value={text} placeholder={placeholderText}
+                disabled={disabled} aria-label={ariaLabel} aria-required={ariaRequired} aria-invalid={ariaInvalid}
+                aria-describedby={ariaDescribedby} oninput={handleInput} onblur={handleNumberBlur}>
+        </div>
+        <template lwc:if={open}>
+            <div class="jf-ph-pop" onmousedown={handlePopMouseDown}>
+                <input class="jf-ph-search" type="text" role="combobox" autocomplete="off" placeholder="Search"
+                    aria-label="Search countries" aria-autocomplete="list" aria-expanded="true" aria-controls={listId}
+                    aria-activedescendant={activeId} value={query} oninput={handleSearch} onkeydown={handleSearchKeydown}>
+                <ul id={listId} class="jf-ph-list" role="listbox" aria-label="Countries">
+                    <template lwc:if={noMatches}>
+                        <li class="jf-ph-empty" role="presentation">No listed country matches. Choose Other country and type the full number.</li>
+                    </template>
+                    <template for:each={rows} for:item="r">
+                        <li key={r.iso} id={r.id} class={r.cls} role="option" aria-selected={r.selected} data-iso={r.iso}
+                            data-index={r.index} onclick={handleOptionClick}>
+                            <template lwc:if={r.isOther}>
+                                <svg class="jf-ph-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg>
+                            </template>
+                            <template lwc:else>
+                                <span class="jf-ph-flag" style={r.flagStyle} aria-hidden="true"></span>
+                            </template>
+                            <span class="jf-ph-name">{r.name}</span>
+                            <span class="jf-ph-code">{r.dialText}</span>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </template>
+    </div>
+</template>

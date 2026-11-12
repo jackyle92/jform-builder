@@ -1,0 +1,42 @@
+{
+  "unevaluatedProperties": false,
+  "properties": {
+    "formId": {
+      "title": "Form Id",
+      "description": "Id of the new draft form",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "builderUrl": {
+      "title": "Builder Link",
+      "description": "Link that opens the new form in the JForm workspace",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "summary": {
+      "title": "Form Outline",
+      "description": "Outline of the new form",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "errorMessage": {
+      "title": "Error Message",
+      "description": "Why the form could not be created, if it could not",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

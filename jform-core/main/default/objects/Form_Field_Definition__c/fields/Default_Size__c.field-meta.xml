@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Default_Size__c</fullName>
+    <defaultValue>(&quot;item-component slds-col slds-var-p-bottom_x-large  slds-size_1-of-1&quot;)</defaultValue>
+    <externalId>false</externalId>
+    <label>Default Size</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

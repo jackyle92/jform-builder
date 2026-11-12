@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Minimum_Charge__c</fullName>
+    <description>The least a checkout can charge, in the main unit (0.50 for USD, 50 for JPY). A promotion code never takes a total below it, except to zero. Stripe's minimum for the currency (docs.stripe.com/currencies), or about 0.50 USD where Stripe's is worth far less or Stripe lists none.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>The least a checkout in this currency can charge, in the main unit. Set by JForm.</inlineHelpText>
+    <label>Minimum Charge</label>
+    <precision>16</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

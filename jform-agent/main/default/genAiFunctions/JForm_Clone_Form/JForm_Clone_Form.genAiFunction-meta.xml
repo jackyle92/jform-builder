@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Create a new draft form that copies every page, field, choice, rule and the theme of an existing form.</description>
+    <invocationTarget>JFormCloneFormAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <masterLabel>Clone Form</masterLabel>
+    <progressIndicatorMessage>Copying the form...</progressIndicatorMessage>
+</GenAiFunction>

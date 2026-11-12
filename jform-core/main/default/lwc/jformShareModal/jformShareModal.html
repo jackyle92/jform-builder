@@ -1,0 +1,110 @@
+<template>
+    <section role="dialog" aria-modal="true" aria-label="Share form" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container sh-container">
+            <header class="slds-modal__header sh-header">
+                <button type="button" class="jf-modal-close" title="Close" aria-label="Close" onclick={handleClose}><lightning-icon icon-name="utility:close" size="x-small" alternative-text=""></lightning-icon></button>
+                <h2 class="slds-modal__title">Share {title}</h2>
+                <div class="sh-status">
+                    <span class={statusClass}>{statusText}</span>
+                    <template lwc:if={isLive}></template>
+                    <template lwc:else>
+                        <lightning-button variant="brand" label="Publish now" onclick={handlePublish}></lightning-button>
+                    </template>
+                </div>
+            </header>
+
+            <div class="slds-modal__content sh-content">
+                <nav class="sh-tabs" role="tablist">
+                    <template for:each={tabs} for:item="t">
+                        <button key={t.id} type="button" role="tab" class={t.cls} aria-selected={t.selected} data-tab={t.id} onclick={handleTab}>{t.label}</button>
+                    </template>
+                </nav>
+
+                <template lwc:if={isLink}>
+                    <template lwc:if={publicUrl}>
+                        <label class="sh-label" for="sh-url">Public link</label>
+                        <div class="sh-row">
+                            <input id="sh-url" class="sh-input" type="text" readonly value={publicUrl} onclick={handleSelectAll}>
+                            <lightning-button label={copiedText} icon-name="utility:copy" data-copy="link" onclick={handleCopy}></lightning-button>
+                            <a href={publicUrl} target="_blank" rel="noopener" class="slds-button slds-button_neutral">Open</a>
+                        </div>
+                        <p class="sh-muted">The key in this link never changes, so it keeps working after you publish new versions. The page must contain the JForm Renderer component; see the Site page tab.</p>
+                    </template>
+                    <template lwc:elseif={isLive}>
+                        <div class="sh-notice">No Experience Cloud site with a domain was found. Create a site, add a page with the JForm Renderer component, then pick it on the Site page tab.</div>
+                    </template>
+                    <template lwc:else>
+                        <div class="sh-notice">Publish the form to get its public link.</div>
+                    </template>
+                    <template lwc:if={previewUrl}>
+                        <label class="sh-label" for="sh-preview">Internal preview (Salesforce login required)</label>
+                        <div class="sh-row">
+                            <input id="sh-preview" class="sh-input" type="text" readonly value={previewUrl} onclick={handleSelectAll}>
+                            <lightning-button label="Copy" icon-name="utility:copy" data-copy="preview" onclick={handleCopy}></lightning-button>
+                        </div>
+                    </template>
+                </template>
+
+                <template lwc:if={isEmbed}>
+                    <template lwc:if={embedSnippet}>
+                        <label class="sh-label" for="sh-embed">Paste this where the form should appear</label>
+                        <textarea id="sh-embed" class="sh-code" readonly rows="6" onclick={handleSelectAll}>{embedSnippet}</textarea>
+                        <div class="sh-row">
+                            <lightning-button label={copiedText} icon-name="utility:copy" data-copy="embed" onclick={handleCopy}></lightning-button>
+                        </div>
+                        <p class="sh-muted">The iframe loads the form without the site header, and the small script keeps the frame as tall as the form. Works on any website or CMS that allows iframes.</p>
+                    </template>
+                    <template lwc:else>
+                        <div class="sh-notice">Publish the form and choose a site to get an embed snippet.</div>
+                    </template>
+                </template>
+
+                <template lwc:if={isQr}>
+                    <template lwc:if={qrDataUrl}>
+                        <div class="sh-qr">
+                            <img src={qrDataUrl} alt="QR code linking to the public form" class="sh-qr-img">
+                            <div class="sh-qr-actions">
+                                <p class="sh-muted">Print it on posters, flyers or event banners. It encodes the public link above.</p>
+                                <div class="sh-row">
+                                    <lightning-button label="Download PNG" icon-name="utility:download" onclick={handleDownloadPng}></lightning-button>
+                                    <lightning-button label="Download SVG" icon-name="utility:download" onclick={handleDownloadSvg}></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <template lwc:elseif={publicUrl}>
+                        <div class="sh-notice">Generating the QR code…</div>
+                    </template>
+                    <template lwc:else>
+                        <div class="sh-notice">Publish the form and choose a site to get a QR code.</div>
+                    </template>
+                </template>
+
+                <template lwc:if={isSite}>
+                    <template lwc:if={noSites}>
+                        <div class="sh-notice">No active site with a domain was found in this org. Create an Experience Cloud site (Setup, Digital Experiences), then return here.</div>
+                    </template>
+                    <template lwc:else>
+                        <lightning-combobox label="Experience Cloud site" value={selectedSiteId} options={siteOptions} onchange={handleSite}></lightning-combobox>
+                        <lightning-input label="Page path on the site" value={pagePath} placeholder="/form" onchange={handlePath}
+                            field-level-help="The page in Experience Builder that holds the JForm Renderer component. Enhanced LWR sites use /form; Aura sites use /s/form."></lightning-input>
+                    </template>
+                    <div class="sh-steps">
+                        <div class="sh-steps-title">Add the page once per site</div>
+                        <ol>
+                            <li>In Experience Builder, create a standard page named <strong>form</strong> (URL <code>/form</code>).</li>
+                            <li>Drop the <strong>JForm Renderer</strong> component on it and leave its Form key blank; it reads <code>?key=</code> from the URL.</li>
+                            <li>Assign the <strong>JForm Guest</strong> permission set to the site's guest user and publish the site.</li>
+                        </ol>
+                        <p class="sh-muted">Every published form then works on that one page.</p>
+                    </div>
+                </template>
+            </div>
+
+            <footer class="slds-modal__footer">
+                <lightning-button label="Done" variant="brand" onclick={handleClose}></lightning-button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

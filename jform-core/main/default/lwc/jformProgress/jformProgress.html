@@ -1,0 +1,20 @@
+<template>
+    <div class="jf-progress">
+        <div class="jf-progress-text" aria-live="polite">
+            <span><strong>Step {step} of {steps}</strong> · {label}</span>
+            <span>{percent}%</span>
+        </div>
+        <template lwc:if={segmented}>
+            <div class="jf-progress-segments" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={percent} aria-label="Form progress">
+                <template for:each={segments} for:item="seg">
+                    <span key={seg.key} class="jf-progress-seg"><span class="jf-progress-seg-fill" style={seg.style}></span></span>
+                </template>
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="jf-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={percent} aria-label="Form progress">
+                <div class="jf-progress-fill" style={barStyle}></div>
+            </div>
+        </template>
+    </div>
+</template>

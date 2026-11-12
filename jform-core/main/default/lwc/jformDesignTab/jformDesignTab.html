@@ -1,0 +1,466 @@
+<template>
+    <div class={rootClass}>
+        <!-- Live preview -->
+        <div class="ds-left">
+            <div class="ds-toolbar">
+                <span class="ds-toolbar-label">Live preview</span>
+                <div class="ds-seg ds-seg-inline" role="group" aria-label="Preview device">
+                    <template for:each={devices} for:item="d">
+                        <button key={d.value} type="button" class={d.cls} aria-pressed={d.pressed} data-value={d.value} onclick={handleDevice}>{d.label}</button>
+                    </template>
+                </div>
+            </div>
+            <!-- its own row, so a long page name never pushes the device buttons around -->
+            <c-jform-preview-pages class="ds-preview-pages" pages={previewPages} current={previewCurrent} multi-page={previewMultiPage} welcome={previewWelcome}
+                not-open={previewNotOpen} closed={previewClosed}
+                check-required={previewCheckRequired} onpagechange={handlePreviewPage} oncheckchange={handlePreviewCheck}></c-jform-preview-pages>
+            <div class="ds-stage">
+                <div class={previewClass}>
+                    <c-jform-renderer class="ds-renderer" definition={previewDefinition} preview-mode preview-skip-checks={previewSkipChecks}
+                        onpreviewstate={handlePreviewState}></c-jform-renderer>
+                </div>
+            </div>
+        </div>
+
+        <div class={resizerClass} role="separator" aria-orientation="vertical" aria-label="Resize the design panel" tabindex="0"
+            onpointerdown={handlePanelDrag} ondblclick={handlePanelReset} onkeydown={handlePanelKey}>
+            <button type="button" class="ds-resizer-toggle" title={toggleTitle} onclick={handlePanelToggle} onpointerdown={stopDrag}>
+                <lightning-icon icon-name={toggleIcon} size="xx-small" alternative-text={toggleTitle}></lightning-icon>
+            </button>
+        </div>
+        <!-- Design panel -->
+        <template lwc:if={panelOpen}>
+        <aside class="ds-panel" aria-label="Design settings" style={panelStyle}>
+            <div class="ds-top">
+                <div class="ds-head">
+                    <template lwc:if={isHome}>
+                        <h2 class="ds-title">Design</h2>
+                    </template>
+                    <template lwc:else>
+                        <button type="button" class="ds-back" onclick={handleBack} title="All design settings">
+                            <lightning-icon icon-name="utility:chevronleft" size="x-small" alternative-text="Back to all design settings"></lightning-icon>
+                        </button>
+                        <h2 class="ds-title ds-title-section" tabindex="-1">{sectionLabel}</h2>
+                    </template>
+                    <button type="button" class="ds-link ds-reset-all" onclick={handleReset}>Reset to default</button>
+                </div>
+            </div>
+            <!-- Home: themes and the list of categories; each category opens on its own, basics first and the rest under More options -->
+            <div class="ds-body">
+            <template lwc:if={isHome}>
+                <section class="ds-sec">
+                    <h3 class="ds-sec-title">Theme</h3>
+                    <div class="ds-presets">
+                        <template for:each={presets} for:item="p">
+                            <button key={p.id} type="button" class={p.cls} aria-pressed={p.pressed} data-id={p.id} onclick={handlePreset}>
+                                <span class="ds-thumb" style={p.thumbStyle}>
+                                    <span class="ds-thumb-card" style={p.cardStyle}>
+                                        <span class="ds-bar ds-bar-a" style={p.barAStyle}></span>
+                                        <span class="ds-bar ds-bar-b" style={p.barBStyle}></span>
+                                    </span>
+                                </span>
+                                <span class="ds-preset-label">{p.label}</span>
+                            </button>
+                        </template>
+                    </div>
+                    <p class="ds-muted">A theme sets colors, fonts, fields and buttons together. Your logo, images and layout stay; Drift also turns on segmented progress.</p>
+                </section>
+                <section class="ds-sec">
+                    <h3 class="ds-sec-title">Customize</h3>
+                    <ul class="ds-nav">
+                        <template for:each={sections} for:item="sc">
+                            <li key={sc.id}>
+                                <button type="button" class="ds-nav-row" data-id={sc.id} onclick={handleSection}>
+                                    <span class="ds-nav-icon"><lightning-icon icon-name={sc.icon} size="x-small" alternative-text=""></lightning-icon></span>
+                                    <span class="ds-nav-text">
+                                        <span class="ds-nav-label">{sc.label}</span>
+                                        <span class="ds-nav-sum">{sc.summary}</span>
+                                    </span>
+                                    <lightning-icon class="ds-nav-chevron" icon-name="utility:chevronright" size="xx-small" alternative-text=""></lightning-icon>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </section>
+            </template>
+            <template lwc:if={isColors}>
+                <section class="ds-sec">
+                    <h3 class="ds-sec-title">Color scheme</h3>
+                    <div class="ds-schemes" role="group" aria-label="Color scheme">
+                        <template for:each={schemes} for:item="sc">
+                            <button key={sc.id} type="button" class={sc.cls} style={sc.style} aria-pressed={sc.pressed} aria-label={sc.label} title={sc.label} data-id={sc.id} onclick={handleScheme}>
+                                <span class="ds-scheme-card" style={sc.cardStyle}>Aa</span>
+                                <span class="ds-scheme-bar" style={sc.barStyle}></span>
+                            </button>
+                        </template>
+                    </div>
+                    <p class="ds-muted">A scheme changes the colors only. Fonts, fields and layout stay as they are.</p>
+                </section>
+                <section class="ds-sec">
+                    <h3 class="ds-sec-title">Your colors</h3>
+                    <div class="ds-color-grid">
+                        <template for:each={colors} for:item="c">
+                            <div key={c.prop} class="ds-color-cell">
+                                <span class="ds-row-label">{c.label}</span>
+                                <div class="ds-color-input">
+                                    <input type="text" class="ds-hex" value={c.hex} maxlength="7" spellcheck="false" data-prop={c.prop} aria-label={c.label} onchange={handleHex}>
+                                    <span class="ds-swatch-wrap">
+                                        <input type="color" class="ds-swatch" value={c.value} data-prop={c.prop} aria-label={c.pickerLabel} onchange={handleColor}>
+                                    </span>
+                                </div>
+                                <span class="ds-color-hint">{c.hint}<template lwc:if={c.canReset}> · <button type="button" class="ds-link ds-reset" data-prop={c.prop} onclick={handleResetColor} title="Use the text color">Auto</button></template></span>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="ds-checks">
+                        <template for:each={contrastChecks} for:item="ck">
+                            <span key={ck.name} class={ck.cls}>{ck.name} {ck.ratio} · {ck.verdict}</span>
+                        </template>
+                    </div>
+                    <p class="ds-muted">Hover, focus, input and selected-choice colors are derived from these. Dark forms switch inputs and errors to dark-friendly shades automatically.</p>
+                </section>
+            </template>
+            <template lwc:if={isBackground}>
+                <section class="ds-sec">
+                    <div class="ds-row">
+                        <span class="ds-row-label">Page background</span>
+                        <div class="ds-seg" role="group" aria-label="Page background">
+                            <template for:each={seg.backgroundStyle} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="ds-muted">Mesh fills the page with soft spots of the button color that drift as the form is answered. A page image takes its place.</p>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Form card</span>
+                        <div class="ds-seg" role="group" aria-label="Form card">
+                            <template for:each={seg.surfaceStyle} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="ds-muted">Glass lets the page background show through the form, blurred. It shows only over a mesh or a page image.</p>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Form shadow</span>
+                        <div class="ds-seg" role="group" aria-label="Form shadow">
+                            <template for:each={shadowSizes} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-id={o.id} onclick={handleShadowSize}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <button type="button" class="ds-more" aria-expanded={moreExpanded} onclick={handleMore}>
+                        <lightning-icon icon-name={moreIcon} size="xx-small" alternative-text=""></lightning-icon>
+                        <span>{moreLabel}</span>
+                    </button>
+                    <template lwc:if={moreOpen}>
+                        <div class="ds-more-body">
+                        <template for:each={shadowSliders} for:item="sl">
+                            <label key={sl.prop} class="ds-range-row">
+                                <span class="ds-row-label">{sl.label}</span>
+                                <input type="range" class="ds-range" min="0" max={sl.max} step="1" value={sl.value} data-prop={sl.prop} oninput={handleShadowInput} onchange={handleShadowChange}>
+                                <span class="ds-range-value">{sl.display}</span>
+                            </label>
+                        </template>
+                        <div class="ds-row">
+                            <span class="ds-row-label">Shadow color</span>
+                            <div class="ds-color-input">
+                                <input type="text" class="ds-hex" value={shadowColor.hex} maxlength="7" spellcheck="false" data-prop="shadowColor" aria-label="Shadow color" onchange={handleHex}>
+                                <span class="ds-swatch-wrap">
+                                    <input type="color" class="ds-swatch" value={shadowColor.value} data-prop="shadowColor" aria-label="Shadow color picker" onchange={handleColor}>
+                                </span>
+                            </div>
+                        </div>
+                        <p class="ds-muted">Distance is how far the shadow falls below the form. Strength 0% turns the shadow off.<template lwc:if={shadowColor.custom}> · <button type="button" class="ds-link ds-reset" data-prop="shadowColor" onclick={handleResetColor}>Use black</button></template></p>
+                        </div>
+                    </template>
+                </section>
+                <section class="ds-sec">
+                    <template for:each={pageImageRows} for:item="row">
+                        <div key={row.prop} class="ds-image">
+                            <span class="ds-row-label">{row.label}</span>
+                            <div class="ds-image-row">
+                                <input type="url" class="ds-text" value={row.url} placeholder={row.placeholder} aria-label={row.label} data-prop={row.prop} onchange={handleText}>
+                                <template lwc:if={row.url}><button type="button" class="ds-link" data-prop={row.prop} onclick={handleClearImage}>Clear</button></template>
+                            </div>
+                            <template lwc:if={formId}>
+                                <lightning-file-upload class="ds-upload" label={row.uploadLabel} name={row.prop} data-prop={row.prop} record-id={formId} accept={imageTypes} disabled={row.busy} onuploadfinished={handleUploaded}></lightning-file-upload>
+                            </template>
+                            <template lwc:if={row.busy}><p class="ds-muted">Creating the public link…</p></template>
+                            <template lwc:if={row.error}><p class="ds-warn">{row.errorText}</p></template>
+                            <template lwc:if={row.url}>
+                                <img class="ds-thumb-img" src={row.url} alt="" data-prop={row.prop} onload={handleImageLoad} onerror={handleImageError}>
+                                <template lwc:if={row.hasSeg}>
+                                    <div class="ds-row ds-row-tight">
+                                        <span class="ds-row-label">{row.segLabel}</span>
+                                        <div class="ds-seg" role="group" aria-label={row.segLabel}>
+                                            <template for:each={row.seg} for:item="o">
+                                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                            <p class="ds-muted">{row.hint}</p>
+                        </div>
+                    </template>
+                </section>
+            </template>
+            <template lwc:if={isFonts}>
+                <section class="ds-sec">
+                    <div class="ds-two">
+                        <label class="ds-field">
+                            <span class="ds-row-label">Headings</span>
+                            <select class="ds-select" data-prop="headingFont" onchange={handleFont}>
+                                <template for:each={headingFonts} for:item="f">
+                                    <option key={f.value} value={f.value} selected={f.selected}>{f.label}</option>
+                                </template>
+                            </select>
+                        </label>
+                        <label class="ds-field">
+                            <span class="ds-row-label">Body</span>
+                            <select class="ds-select" data-prop="bodyFont" onchange={handleFont}>
+                                <template for:each={bodyFonts} for:item="f">
+                                    <option key={f.value} value={f.value} selected={f.selected}>{f.label}</option>
+                                </template>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Text size</span>
+                        <div class="ds-seg" role="group" aria-label="Text size">
+                            <template for:each={seg.textSize} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="ds-muted">Fonts beyond the built-in stacks need the font host added to the site's trusted URLs.</p>
+                </section>
+            </template>
+            <template lwc:if={isFields}>
+                <section class="ds-sec">
+                    <div class="ds-row">
+                        <span class="ds-row-label">Field style</span>
+                        <div class="ds-seg" role="group" aria-label="Field style">
+                            <template for:each={seg.fieldStyle} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Choices</span>
+                        <div class="ds-seg" role="group" aria-label="Choices">
+                            <template for:each={seg.choiceStyle} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Corners</span>
+                        <div class="ds-seg" role="group" aria-label="Corners">
+                            <template for:each={seg.radius} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <button type="button" class="ds-more" aria-expanded={moreExpanded} onclick={handleMore}>
+                        <lightning-icon icon-name={moreIcon} size="xx-small" alternative-text=""></lightning-icon>
+                        <span>{moreLabel}</span>
+                    </button>
+                    <template lwc:if={moreOpen}>
+                        <div class="ds-more-body">
+                        <div class="ds-row">
+                            <span class="ds-row-label">Label position</span>
+                            <div class="ds-seg" role="group" aria-label="Label position">
+                                <template for:each={seg.labelPosition} for:item="o">
+                                    <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <template lwc:if={isLeftLabels}>
+                            <div class="ds-row">
+                                <span class="ds-row-label">Label column width</span>
+                                <div class="ds-seg" role="group" aria-label="Label column width">
+                                    <template for:each={seg.labelWidth} for:item="o">
+                                        <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                    </template>
+                                </div>
+                            </div>
+                            <p class="ds-muted">On screens narrower than 600px, labels move back above their fields.</p>
+                        </template>
+                        <div class="ds-row">
+                            <span class="ds-row-label">Spotlight</span>
+                            <div class="ds-seg" role="group" aria-label="Spotlight">
+                                <template for:each={seg.focusStyle} for:item="o">
+                                    <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <p class="ds-muted">Spotlight puts the question being answered on a tinted panel.</p>
+                        </div>
+                    </template>
+                </section>
+            </template>
+            <template lwc:if={isButtons}>
+                <section class="ds-sec">
+                    <div class="ds-row">
+                        <span class="ds-row-label">Button style</span>
+                        <div class="ds-seg" role="group" aria-label="Button style">
+                            <template for:each={seg.buttonStyle} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Button shape</span>
+                        <div class="ds-seg" role="group" aria-label="Button shape">
+                            <template for:each={seg.buttonShape} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <button type="button" class="ds-more" aria-expanded={moreExpanded} onclick={handleMore}>
+                        <lightning-icon icon-name={moreIcon} size="xx-small" alternative-text=""></lightning-icon>
+                        <span>{moreLabel}</span>
+                    </button>
+                    <template lwc:if={moreOpen}>
+                        <div class="ds-more-body">
+                        <div class="ds-row">
+                            <span class="ds-row-label">Button size</span>
+                            <div class="ds-seg" role="group" aria-label="Button size">
+                                <template for:each={seg.buttonSize} for:item="o">
+                                    <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="ds-row">
+                            <span class="ds-row-label">Button alignment</span>
+                            <div class="ds-seg" role="group" aria-label="Button alignment">
+                                <template for:each={seg.buttonAlign} for:item="o">
+                                    <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <p class="ds-hint">On phones the main button always fills the width.</p>
+                        </div>
+                    </template>
+                </section>
+            </template>
+            <template lwc:if={isHeader}>
+                <section class="ds-sec">
+                    <div class="ds-image">
+                        <span class="ds-row-label">Logo</span>
+                        <div class="ds-image-row">
+                            <input type="url" class="ds-text" value={logo.url} placeholder="https://…/logo.png" aria-label="Logo URL" data-prop="logoUrl" onchange={handleText}>
+                            <template lwc:if={logo.url}><button type="button" class="ds-link" data-prop="logoUrl" onclick={handleClearImage}>Clear</button></template>
+                        </div>
+                        <template lwc:if={formId}>
+                            <lightning-file-upload class="ds-upload" label="Upload a logo" name="logoUrl" data-prop="logoUrl" record-id={formId} accept={imageTypes} disabled={logo.busy} onuploadfinished={handleUploaded}></lightning-file-upload>
+                        </template>
+                        <template lwc:if={logo.busy}><p class="ds-muted">Creating the public link…</p></template>
+                        <template lwc:if={logo.error}><p class="ds-warn">{logo.errorText}</p></template>
+                        <template lwc:if={logo.url}>
+                            <img class="ds-thumb-logo" src={logo.url} alt="" data-prop="logoUrl" onload={handleImageLoad} onerror={handleImageError}>
+                            <div class="ds-row ds-row-tight">
+                                <span class="ds-row-label">Logo size</span>
+                                <div class="ds-seg" role="group" aria-label="Logo size">
+                                    <template for:each={seg.logoSize} for:item="o">
+                                        <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        <p class="ds-muted">The logo sits above the title and follows its alignment.</p>
+                    </div>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Title alignment</span>
+                        <div class="ds-seg" role="group" aria-label="Title alignment">
+                            <template for:each={seg.titleAlign} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <button type="button" class="ds-more" aria-expanded={moreExpanded} onclick={handleMore}>
+                        <lightning-icon icon-name={moreIcon} size="xx-small" alternative-text=""></lightning-icon>
+                        <span>{moreLabel}</span>
+                    </button>
+                    <template lwc:if={moreOpen}>
+                        <div class="ds-more-body">
+                        <div class="ds-row">
+                            <span class="ds-row-label">Title placement</span>
+                            <div class="ds-seg" role="group" aria-label="Title placement">
+                                <template for:each={seg.titlePlacement} for:item="o">
+                                    <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <template for:each={layoutImageRows} for:item="row">
+                            <div key={row.prop} class="ds-image">
+                                <span class="ds-row-label">{row.label}</span>
+                                <div class="ds-image-row">
+                                    <input type="url" class="ds-text" value={row.url} placeholder={row.placeholder} aria-label={row.label} data-prop={row.prop} onchange={handleText}>
+                                    <template lwc:if={row.url}><button type="button" class="ds-link" data-prop={row.prop} onclick={handleClearImage}>Clear</button></template>
+                                </div>
+                                <template lwc:if={formId}>
+                                    <lightning-file-upload class="ds-upload" label={row.uploadLabel} name={row.prop} data-prop={row.prop} record-id={formId} accept={imageTypes} disabled={row.busy} onuploadfinished={handleUploaded}></lightning-file-upload>
+                                </template>
+                                <template lwc:if={row.busy}><p class="ds-muted">Creating the public link…</p></template>
+                                <template lwc:if={row.error}><p class="ds-warn">{row.errorText}</p></template>
+                                <template lwc:if={row.url}>
+                                    <img class="ds-thumb-img" src={row.url} alt="" data-prop={row.prop} onload={handleImageLoad} onerror={handleImageError}>
+                                    <template lwc:if={row.hasSeg}>
+                                        <div class="ds-row ds-row-tight">
+                                            <span class="ds-row-label">{row.segLabel}</span>
+                                            <div class="ds-seg" role="group" aria-label={row.segLabel}>
+                                                <template for:each={row.seg} for:item="o">
+                                                    <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                                <p class="ds-muted">{row.hint}</p>
+                            </div>
+                        </template>
+                        <p class="ds-muted">Upload stores the image in Salesforce Files with a public link, which works in the builder and on the public site. A pasted link must come from a domain Salesforce trusts; your website or CDN needs an admin to add its domain under Setup, CSP Trusted Sites, for Lightning and Experience sites. Embedded forms show the card only, so these images appear on the public page and in previews.</p>
+                        </div>
+                    </template>
+                </section>
+            </template>
+            <template lwc:if={isLayout}>
+                <section class="ds-sec">
+                    <div class="ds-row">
+                        <span class="ds-row-label">Form width</span>
+                        <div class="ds-seg" role="group" aria-label="Form width">
+                            <template for:each={seg.width} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="ds-row">
+                        <span class="ds-row-label">Progress</span>
+                        <div class="ds-seg" role="group" aria-label="Progress">
+                            <template for:each={seg.progressStyle} for:item="o">
+                                <button key={o.key} type="button" class={o.cls} aria-pressed={o.pressed} data-prop={o.prop} data-value={o.value} onclick={handleSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="ds-muted">Progress shows on forms with more than one page; segments fill as each page is answered.</p>
+                    <button type="button" class="ds-more" aria-expanded={moreExpanded} onclick={handleMore}>
+                        <lightning-icon icon-name={moreIcon} size="xx-small" alternative-text=""></lightning-icon>
+                        <span>{moreLabel}</span>
+                    </button>
+                    <template lwc:if={moreOpen}>
+                        <div class="ds-more-body">
+                        <label class="ds-toggle">
+                            <input type="checkbox" checked={theme.poweredBy} data-prop="poweredBy" onchange={handleToggle}>
+                            <span>Show "Powered by JForm" under the form</span>
+                        </label>
+                        </div>
+                    </template>
+                </section>
+            </template>
+            </div>
+        </aside>
+        </template>
+    </div>
+</template>

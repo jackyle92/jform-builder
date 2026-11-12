@@ -1,0 +1,505 @@
+.cv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 1rem 3rem;
+    min-height: 100%;
+}
+.cv-page {
+    width: 100%;
+    max-width: 760px;
+    background: #fff;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.15s;
+}
+.cv-page-selected {
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: 0 0 0 2px rgba(11, 122, 110, 0.2);
+}
+/* the page under a drag gets a blue edge; the placeholder inside shows the exact spot */
+.cv-dragover {
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: 0 0 0 1px var(--jform-primary, #0250d9);
+}
+.cv-page-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 1.25rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+    cursor: pointer;
+}
+.cv-grip {
+    --slds-c-icon-color-foreground-default: var(--jform-subtle, #939393);
+}
+.cv-page-number {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--jform-muted, #5c5c5c);
+    white-space: nowrap;
+}
+.cv-page-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0.25rem 0.375rem;
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    background: transparent;
+}
+.cv-page-title:hover,
+.cv-page-title:focus {
+    border-color: var(--jform-border-strong, #c9c9c9);
+    background: #fff;
+    outline: none;
+}
+.cv-page-meta {
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+    white-space: nowrap;
+}
+.cv-page-tools {
+    display: flex;
+    gap: 0.125rem;
+}
+.cv-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+    padding: 1rem 1.25rem 0.25rem;
+}
+.cv-cell {
+    position: relative;
+    grid-column: 1 / -1;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0.625rem 0.75rem;
+    cursor: pointer;
+}
+.cv-cell:hover {
+    border-color: var(--jform-border-strong, #c9c9c9);
+    background: var(--jform-canvas, #f3f3f3);
+}
+.cv-selected,
+.cv-selected:hover {
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: 0 0 0 2px rgba(11, 122, 110, 0.2);
+    background: #fff;
+}
+.cv-span-3 { grid-column: span 3; }
+.cv-span-6 { grid-column: span 6; }
+.cv-span-9 { grid-column: span 9; }
+.cv-span-12 { grid-column: 1 / -1; }
+/* tall fields, as on the form (c/jformRenderer) */
+.cv-rows-2 { grid-row: span 2; }
+.cv-rows-3 { grid-row: span 3; }
+.cv-rows-4 { grid-row: span 4; }
+.cv-tall {
+    display: flex;
+    flex-direction: column;
+}
+.cv-tall > c-jform-field {
+    flex: 1 1 auto;
+}
+.cv-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+}
+.cv-toolbar {
+    position: absolute;
+    top: -0.9rem;
+    right: 0.5rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.125rem 0.25rem 0.125rem 0.5rem;
+    background: #fff;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+.cv-type {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--jform-primary, #0250d9);
+    margin-right: 0.375rem;
+    white-space: nowrap;
+}
+.cv-empty {
+    margin: 0.25rem 1.25rem 0;
+    padding: 1.25rem;
+    border: 1px dashed var(--jform-border-strong, #c9c9c9);
+    border-radius: 6px;
+    text-align: center;
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.8125rem;
+}
+.cv-insert,
+.cv-add-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--jform-primary, #0250d9);
+    cursor: pointer;
+}
+.cv-insert {
+    width: calc(100% - 2.5rem);
+    margin: 0.5rem 1.25rem 0.875rem;
+    height: 2.25rem;
+    border: 1px dashed var(--jform-subtle, #939393);
+    border-radius: 6px;
+    background: transparent;
+}
+.cv-insert:hover,
+.cv-add-page:hover {
+    border-color: var(--jform-primary, #0250d9);
+    background: var(--jform-tint, #eef4ff);
+}
+/* "Add field here" menu: the field types grouped as in the palette, styled like the Automate tab's "Add a step" */
+.cv-menu {
+    margin: 0.5rem 1.25rem 0.875rem;
+    padding: 0.375rem;
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-primary, #0250d9);
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(15, 15, 15, 0.12);
+}
+.cv-menu-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.125rem 0.25rem 0.25rem 0.5rem;
+}
+.cv-menu-head lightning-button-icon {
+    --slds-s-button-color: var(--jform-muted, #5c5c5c);
+    --slds-s-button-color-hover: var(--jform-ink, #181818);
+}
+.cv-menu-title,
+.cv-menu-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.cv-menu-search {
+    display: block;
+    padding: 0 0.5rem 0.375rem;
+}
+.cv-menu-list {
+    max-height: 22rem;
+    overflow-y: auto;
+}
+.cv-menu-group + .cv-menu-group {
+    margin-top: 0.25rem;
+}
+.cv-menu-heading {
+    padding: 0.5rem 0.5rem 0.25rem;
+    font-size: 0.6875rem;
+}
+.cv-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+.cv-menu-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.5rem;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+.cv-menu-option:hover {
+    background: var(--jform-tint, #eef4ff);
+}
+.cv-menu-option:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: -2px;
+}
+.cv-menu-icon {
+    flex: none;
+    margin-top: 0.0625rem;
+}
+.cv-menu-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.cv-menu-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--jform-ink, #181818);
+}
+.cv-menu-help {
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: var(--jform-muted, #5c5c5c);
+}
+.cv-menu-empty {
+    margin: 0;
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.cv-add-page {
+    height: 2.5rem;
+    padding: 0 1.125rem;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 6px;
+    background: #fff;
+}
+
+/* Page and field tools: 32px targets (WCAG 2.2 asks for at least 24px) */
+.cv-tool {
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: var(--jform-muted, #5c5c5c);
+}
+.cv-tool:hover:not([disabled]) {
+    background: var(--jform-canvas, #f3f3f3);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.cv-tool:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 1px;
+}
+.cv-tool[disabled] {
+    cursor: default;
+    opacity: 0.35;
+}
+/* Delete is red, so it stands apart from the tools that keep the field; on hover it becomes a solid red button */
+.cv-tool-delete {
+    --slds-c-icon-color-foreground-default: var(--jform-error, #ba0517);
+}
+.cv-tool-delete:hover:not([disabled]) {
+    background: var(--jform-error, #ba0517);
+    --slds-c-icon-color-foreground-default: #ffffff;
+}
+.cv-tool-delete:focus-visible {
+    outline-color: var(--jform-error, #ba0517);
+}
+
+/* ------------------------------------------------------------ drop placeholder: where a dragged field will land */
+.cv-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.75rem;
+    border: 2px dashed var(--jform-primary, #0250d9);
+    border-radius: 10px;
+    background: var(--jform-tint, #eef4ff);
+    box-shadow: 0 6px 18px rgba(15, 15, 15, 0.08);
+    color: var(--jform-primary, #0250d9);
+    pointer-events: none;
+    transform-origin: center top;
+    animation: cv-ph-in 0.16s ease-out, cv-ph-pulse 1.4s ease-in-out 0.16s infinite;
+}
+.cv-ph-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+.cv-ph-icon {
+    flex: none;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+@keyframes cv-ph-in {
+    from {
+        opacity: 0;
+        transform: scaleY(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes cv-ph-pulse {
+    0%,
+    100% {
+        border-color: var(--jform-primary, #0250d9);
+        box-shadow: 0 6px 18px rgba(15, 15, 15, 0.08);
+    }
+    50% {
+        border-color: var(--jform-accent, #066afe);
+        box-shadow: 0 6px 22px rgba(6, 106, 254, 0.25);
+    }
+}
+/* the field being moved stays in place, faded, until the drop */
+.cv-dragging {
+    opacity: 0.35;
+}
+@media (prefers-reduced-motion: reduce) {
+    .cv-placeholder {
+        animation: none;
+    }
+}
+
+/* Welcome and Thank you cards: before the first page and after the last; selecting one shows its settings */
+.cv-screen {
+    cursor: pointer;
+}
+.cv-screen:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.cv-screen:hover:not(.cv-page-selected) {
+    border-color: var(--jform-border-strong, #c9c9c9);
+}
+.cv-screen-header {
+    border-bottom: 0;
+    padding-bottom: 0.25rem;
+}
+.cv-screen-icon {
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.cv-screen-mode {
+    margin-left: auto;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    background: var(--jform-canvas, #f3f3f3);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--jform-muted, #5c5c5c);
+}
+.cv-screen-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.5rem 1.25rem 1.25rem;
+}
+.cv-screen-off .cv-screen-body {
+    padding: 0.25rem 1.25rem 0.75rem;
+}
+/* The cards show the screens as respondents see them (c-jform-renderer's start and thank-you screens, a
+   little smaller); clicks pass through to the card so links in the message never open from the canvas. */
+.cv-screen-preview {
+    pointer-events: none;
+}
+.cv-screen-center {
+    align-items: center;
+    text-align: center;
+}
+.cv-screen-image {
+    display: block;
+    width: 100%;
+    height: 8rem;
+    margin-top: 0.5rem;
+    object-fit: cover;
+}
+.cv-screen-logo {
+    display: block;
+    max-height: 2.5rem;
+    max-width: min(12rem, 100%);
+    object-fit: contain;
+}
+.cv-screen-title {
+    margin: 0;
+    font-family: var(--cv-screen-font, inherit);
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--jform-ink, #181818);
+}
+.cv-screen-rich {
+    display: block;
+    align-self: stretch;
+    color: var(--jform-ink, #181818);
+}
+.cv-screen-muted {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.cv-screen-start,
+.cv-screen-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-top: 0.25rem;
+}
+.cv-screen-center .cv-screen-start,
+.cv-screen-center .cv-screen-buttons {
+    justify-content: center;
+}
+.cv-screen-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 2.5rem;
+    padding: 0 1.25rem;
+    border: 1px solid var(--cv-screen-btn-border, transparent);
+    border-radius: var(--cv-screen-radius, 6px);
+    background: var(--cv-screen-btn-bg, var(--jform-primary, #0250d9));
+    color: var(--cv-screen-btn-text, #fff);
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+.cv-screen-button-plain {
+    background: #fff;
+    border-color: var(--jform-border-strong, #c9c9c9);
+    color: var(--jform-ink, #181818);
+}
+.cv-screen-arrow,
+.cv-screen-clock {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.cv-screen-arrow {
+    stroke-width: 2.5;
+}
+.cv-screen-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.cv-screen-check {
+    --slds-c-icon-color-foreground-default: var(--cv-screen-check, var(--jform-primary, #0250d9));
+}
+.cv-screen-note {
+    margin: 0.25rem 0 0;
+    padding: 0.375rem 0.75rem;
+    border: 1px dashed var(--jform-border-strong, #c9c9c9);
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}

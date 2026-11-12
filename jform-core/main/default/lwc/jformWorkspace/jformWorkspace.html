@@ -1,0 +1,279 @@
+<template>
+    <div class={rootClass} style={rootStyle} onkeydown={handleKeydown}>
+
+        <template lwc:if={showLoader}>
+            <div class="ws-loading" role="status">
+                <div class="ws-loader" aria-hidden="true">
+                    <svg class="ws-loader-ring" viewBox="0 0 100 100">
+                        <circle class="ws-loader-track" cx="50" cy="50" r="46"></circle>
+                        <circle class="ws-loader-arc" cx="50" cy="50" r="46"></circle>
+                    </svg>
+                    <img class="ws-loader-avatar" src={loaderImage} alt="">
+                </div>
+                <p class="ws-loader-text">{loaderText}</p>
+            </div>
+        </template>
+
+        <!-- A form that could not be opened -->
+        <template lwc:if={showLoadError}>
+            <div class="ws-load-error">
+                <div class="ws-alert">{loadError}</div>
+                <lightning-button label="Go to forms" onclick={handleGoToForms}></lightning-button>
+            </div>
+        </template>
+
+        <template lwc:if={hasForm}>
+            <!-- Header -->
+            <header class="ws-header">
+                <button type="button" class="ws-back" onclick={handleBack}>
+                    <lightning-icon icon-name="utility:chevronleft" size="x-small" alternative-text=""></lightning-icon>
+                    Forms
+                </button>
+                <input class="ws-name" type="text" value={definition.name} title={definition.name} aria-label="Form name" onchange={handleName}>
+                <span class={statusChipClass}>{statusChipText}</span>
+                <span class={saveClass}>{saveText}</span>
+                <div class="ws-header-actions">
+                    <template lwc:if={isCompact}>
+                        <!-- narrow windows: the less frequent actions go into one menu so the row does not wrap -->
+                        <lightning-button-menu icon-name="utility:threedots" alternative-text="More actions" title="More actions" menu-alignment="right" onselect={handleHeaderMenu} class="ws-more">
+                            <lightning-menu-item value="undo" label="Undo" prefix-icon-name="utility:undo" disabled={canUndo}></lightning-menu-item>
+                            <lightning-menu-item value="redo" label="Redo" prefix-icon-name="utility:redo" disabled={canRedo}></lightning-menu-item>
+                            <lightning-menu-item value="fullscreen" label={fullscreenLabel} prefix-icon-name={fullscreenIcon}></lightning-menu-item>
+                            <template lwc:if={isLive}>
+                                <lightning-menu-divider></lightning-menu-divider>
+                                <lightning-menu-item value="unpublish" label="Unpublish"></lightning-menu-item>
+                            </template>
+                        </lightning-button-menu>
+                    </template>
+                    <template lwc:else>
+                        <lightning-button-icon icon-name="utility:undo" alternative-text="Undo" title="Undo (Ctrl+Z)" disabled={canUndo} onclick={handleUndo}></lightning-button-icon>
+                        <lightning-button-icon icon-name="utility:redo" alternative-text="Redo" title="Redo (Ctrl+Shift+Z)" disabled={canRedo} onclick={handleRedo}></lightning-button-icon>
+                        <lightning-button-icon icon-name={fullscreenIcon} alternative-text={fullscreenLabel} title={fullscreenLabel} onclick={handleToggleFullscreen}></lightning-button-icon>
+                    </template>
+                    <lightning-button label="Share" icon-name="utility:share" onclick={handleOpenShare}></lightning-button>
+                    <template lwc:if={isLive}>
+                        <template lwc:if={showUnpublishButton}>
+                            <lightning-button label="Unpublish" onclick={handleUnpublish}></lightning-button>
+                        </template>
+                        <lightning-button variant="brand" label="Publish changes" title={publishTitle} onclick={handleOpenPublish} disabled={publishDisabled}></lightning-button>
+                    </template>
+                    <template lwc:else>
+                        <lightning-button variant="brand" label="Publish" title={publishTitle} onclick={handleOpenPublish} disabled={publishDisabled}></lightning-button>
+                    </template>
+                </div>
+            </header>
+            <template lwc:if={externalChange}>
+                <div class="ws-conflict" role="alert">
+                    <lightning-icon icon-name="utility:refresh" size="x-small" alternative-text=""></lightning-icon>
+                    <span class="ws-conflict-text">{externalChangeText} <strong>Reload</strong> to see their version and drop your edits, or <strong>Keep mine</strong> to save yours over it.</span>
+                    <lightning-button label="Reload" onclick={handleReloadExternal}></lightning-button>
+                    <lightning-button label="Keep mine" variant="brand" onclick={handleKeepMine}></lightning-button>
+                </div>
+            </template>
+
+            <!-- Tabs -->
+            <nav class="ws-tabs" role="tablist">
+                <template for:each={tabs} for:item="t">
+                    <button key={t.id} type="button" role="tab" class={t.cls} aria-selected={t.selected} data-tab={t.id} onclick={handleTab}>
+                        {t.label}
+                        <template lwc:if={t.badge}><span class="ws-badge">{t.badge}</span></template>
+                    </button>
+                </template>
+            </nav>
+
+            <!-- Body -->
+            <div class="ws-body">
+                <template lwc:if={isBuild}>
+                    <aside class={paletteClass} style={paletteStyle}><c-jform-palette compact={isCompact} oninsert={handlePaletteInsert}></c-jform-palette></aside>
+                    <div class={paletteResizerClass} role="separator" aria-orientation="vertical" aria-label="Resize the field palette" tabindex="0"
+                        data-panel="palette" onpointerdown={handlePanelDrag} ondblclick={handlePanelReset} onkeydown={handlePanelKey}>
+                        <button type="button" class="ws-resizer-toggle" title={paletteToggleTitle} data-panel="palette" onclick={handlePanelToggle} onpointerdown={stopDrag}>
+                            <lightning-icon icon-name={paletteToggleIcon} size="xx-small" alternative-text={paletteToggleTitle}></lightning-icon>
+                        </button>
+                    </div>
+                    <main class="ws-canvas">
+                        <c-jform-canvas definition={definition} address-lists={addressLists} selection={selection}
+                            onselect={handleSelect} oninsert={handleInsert} onmovefield={handleMoveField} onmovefieldto={handleMoveFieldTo}
+                            onduplicatefield={handleDuplicateField} ondeletefield={handleDeleteField}
+                            onaddpage={handleAddPage} ondeletepage={handleDeletePage} onmovepage={handleMovePage} onpagechange={handlePageChange}></c-jform-canvas>
+                    </main>
+                    <div class={propsResizerClass} role="separator" aria-orientation="vertical" aria-label="Resize the properties panel" tabindex="0"
+                        data-panel="props" onpointerdown={handlePanelDrag} ondblclick={handlePanelReset} onkeydown={handlePanelKey}>
+                        <button type="button" class="ws-resizer-toggle" title={propsToggleTitle} data-panel="props" onclick={handlePanelToggle} onpointerdown={stopDrag}>
+                            <lightning-icon icon-name={propsToggleIcon} size="xx-small" alternative-text={propsToggleTitle}></lightning-icon>
+                        </button>
+                    </div>
+                    <template lwc:if={propsRendered}>
+                        <aside class={propsClass} style={propsStyle} aria-label="Properties">
+                            <template lwc:if={isCompact}>
+                                <div class="ws-drawer-bar">
+                                    <span class="ws-drawer-title">Properties</span>
+                                    <button type="button" class="jf-modal-close ws-drawer-close" title="Close properties (Esc)" aria-label="Close properties" onclick={handleCloseDrawer}>
+                                        <lightning-icon icon-name="utility:close" size="x-small" alternative-text=""></lightning-icon>
+                                    </button>
+                                </div>
+                            </template>
+                            <c-jform-properties definition={definition} address-lists={addressLists} selection={selection} target-objects={targetObjects}
+                                onfieldchange={handleFieldChange} onpagechange={handlePageChange} onformchange={handleFormChange} ongotologic={handleGoToLogic} onmappingchange={handleMappingChange} onlabelcommit={handleLabelCommit} ongotab={handleGoTab}></c-jform-properties>
+                        </aside>
+                    </template>
+                </template>
+                <template lwc:if={isLogic}>
+                    <main class="ws-full"><c-jform-logic-tab definition={definition} address-lists={addressLists} focus={logicFocus} onrulechange={handleRuleChange} ongotab={handleGoTab}></c-jform-logic-tab></main>
+                </template>
+                <template lwc:if={isAutomate}>
+                    <main class="ws-full"><c-jform-automate-tab definition={definition} target-objects={targetObjects} onformchange={handleFormChange}></c-jform-automate-tab></main>
+                </template>
+                <template lwc:if={isDesign}>
+                    <main class="ws-full ws-full-flush"><c-jform-design-tab definition={definition} address-lists={addressLists} contained={isContained} onthemechange={handleThemeChange}></c-jform-design-tab></main>
+                </template>
+                <template lwc:if={isSettings}>
+                    <main class="ws-full"><c-jform-settings-tab definition={definition} target-objects={targetObjects} section={settingsSection} onformchange={handleFormChange} ongotab={handleGoTab}></c-jform-settings-tab></main>
+                </template>
+                <template lwc:if={isResponses}>
+                    <main class="ws-full"><c-jform-responses-tab form-id={formId} form-name={definition.name}></c-jform-responses-tab></main>
+                </template>
+            </div>
+        </template>
+
+        <!-- Share modal -->
+        <template lwc:if={showShare}>
+            <c-jform-share-modal definition={definition} sites={sites} onclose={handleCloseShare} onchannelchange={handleChannelChange} onpublish={handleShareThenPublish}></c-jform-share-modal>
+        </template>
+
+        <!-- Publish modal -->
+        <template lwc:if={showPublish}>
+            <section role="dialog" aria-modal="true" aria-label="Publish form" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button type="button" class="jf-modal-close" title="Close" aria-label="Close" onclick={handleClosePublish}><lightning-icon icon-name="utility:close" size="x-small" alternative-text=""></lightning-icon></button>
+                        <h2 class="slds-modal__title">Publish {definition.name}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium ws-publish">
+                        <template lwc:if={publishResult}>
+                            <div class="ws-publish-ok">
+                                <lightning-icon icon-name="utility:success" size="small" alternative-text=""></lightning-icon>
+                                <div>
+                                    <strong>Version {publishResult.versionNumber} is live.</strong>
+                                    <p>Public key <code>{publishResult.publicKey}</code>. Respondents see this version until you publish again.</p>
+                                </div>
+                            </div>
+                            <template lwc:if={hasPublicUrl}>
+                                <lightning-input label="Public link" value={publicUrl} readonly></lightning-input>
+                                <div class="ws-row">
+                                    <lightning-button label="Copy link" icon-name="utility:copy" data-link="public" onclick={handleCopyLink}></lightning-button>
+                                    <a href={publicUrl} target="_blank" rel="noopener" class="slds-button slds-button_neutral">Open</a>
+                                </div>
+                                <p class="ws-muted">Send this link to respondents. <strong>Share</strong> has the embed snippet and a QR code.</p>
+                            </template>
+                            <template lwc:else>
+                                <div class="ws-info" role="status">No Experience Cloud site is ready, so the form has no public link yet. <button type="button" class="ws-link" onclick={handleOpenSetup}>Open Setup</button> to create one.</div>
+                            </template>
+                            <details class="ws-preview-link">
+                                <summary>Internal preview (Salesforce login required)</summary>
+                                <lightning-input label="Preview link" variant="label-hidden" value={previewUrl} readonly></lightning-input>
+                                <div class="ws-row">
+                                    <lightning-button label="Copy preview link" icon-name="utility:copy" data-link="preview" onclick={handleCopyLink}></lightning-button>
+                                    <a href={previewUrl} target="_blank" rel="noopener" class="slds-button slds-button_neutral">Open preview</a>
+                                </div>
+                            </details>
+                        </template>
+                        <template lwc:else>
+                            <p>Publishing saves the draft, snapshots it as a new version and makes it the one respondents see. The public key never changes, so existing links keep working.</p>
+                            <template lwc:if={publishPayments}>
+                                <p class={publishPayments.cls} role="note">{publishPayments.text}</p>
+                            </template>
+                            <lightning-input label="Release note (optional)" value={publishNote} placeholder="What changed in this version" onchange={handlePublishNote}></lightning-input>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <template lwc:if={publishResult}>
+                            <lightning-button label="Share" icon-name="utility:share" onclick={handlePublishedShare}></lightning-button>
+                            <lightning-button variant="brand" label="Done" onclick={handleClosePublish} class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-button label="Cancel" onclick={handleClosePublish}></lightning-button>
+                            <lightning-button variant="brand" label="Publish" onclick={handlePublish} disabled={publishing} class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- New form modal -->
+        <template lwc:if={showNewForm}>
+            <section role="dialog" aria-modal="true" aria-label="New form" class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button type="button" class="jf-modal-close" title="Close" aria-label="Close" onclick={handleCloseNewForm}><lightning-icon icon-name="utility:close" size="x-small" alternative-text=""></lightning-icon></button>
+                        <h2 class="slds-modal__title">New form</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium ws-publish">
+                        <template lwc:if={describeAvailable}>
+                            <div class="ws-seg" role="tablist" aria-label="How to start">
+                                <button type="button" role="tab" class={blankModeClass} aria-selected={isBlankMode} data-mode="blank" onclick={handleNewFormMode}>Blank</button>
+                                <button type="button" role="tab" class={describeModeClass} aria-selected={isDescribeMode} data-mode="describe" onclick={handleNewFormMode}>Describe it</button>
+                            </div>
+                        </template>
+                        <lightning-input label="Name" value={newFormName} required onchange={handleNewFormName}></lightning-input>
+                        <c-jform-object-picker label="Target object (optional)" value={newFormObject} options={objectOptions} placeholder="Search objects, for example Lead" allow-none onchange={handleNewFormObject}></c-jform-object-picker>
+                        <p class="ws-muted">Responses create records in this object. Its required fields are added to the form for you.</p>
+                        <template lwc:if={isDescribeMode}>
+                            <lightning-textarea label="Describe the form" value={newFormDescription} placeholder={describePlaceholder} max-length="2000"
+                                disabled={describing} onchange={handleNewFormDescription}></lightning-textarea>
+                            <template lwc:if={describing}>
+                                <div class="ws-describe-wait" role="status">
+                                    <lightning-spinner size="small" alternative-text="Drafting" variant="brand"></lightning-spinner>
+                                    <span>Drafting pages and fields…</span>
+                                </div>
+                            </template>
+                            <template lwc:if={describeError}>
+                                <div class="ws-alert" role="alert">{describeError}</div>
+                            </template>
+                            <template lwc:if={draft}>
+                                <div class="ws-draft" aria-live="polite">
+                                    <p class="ws-draft-summary">{draftSummary}</p>
+                                    <template for:each={draftPages} for:item="page">
+                                        <div key={page.key} class="ws-draft-page">
+                                            <h3 class="ws-draft-title">{page.name}<template lwc:if={page.rule}> <span class="ws-muted">({page.rule})</span></template></h3>
+                                            <ul class="ws-draft-fields">
+                                                <template for:each={page.fields} for:item="f">
+                                                    <li key={f.key}>
+                                                        <span class="ws-draft-label">{f.label}</span>
+                                                        <span class="ws-draft-meta">{f.meta}</span>
+                                                        <template lwc:if={f.rule}><span class="ws-draft-rule">{f.rule}</span></template>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                    <p class="ws-muted">You can change everything in the workspace after it is created.</p>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <p class="ws-muted">Pages and fields are suggested from your words; you review them before anything is created.</p>
+                            </template>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={handleCloseNewForm}></lightning-button>
+                        <template lwc:if={isDescribeMode}>
+                            <template lwc:if={draft}>
+                                <lightning-button label="Try again" onclick={handleDescribe} disabled={describeDisabled} class="slds-m-left_x-small"></lightning-button>
+                                <lightning-button variant="brand" label="Create form" onclick={handleCreateDescribed} disabled={createDescribedDisabled} class="slds-m-left_x-small"></lightning-button>
+                            </template>
+                            <template lwc:else>
+                                <lightning-button variant="brand" label="Generate" onclick={handleDescribe} disabled={describeDisabled} class="slds-m-left_x-small"></lightning-button>
+                            </template>
+                        </template>
+                        <template lwc:else>
+                            <lightning-button variant="brand" label="Create" onclick={handleCreateForm} disabled={newFormDisabled} class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

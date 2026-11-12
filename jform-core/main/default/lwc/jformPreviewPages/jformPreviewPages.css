@@ -1,0 +1,115 @@
+/* pager, then the page name filling the space, then the switch on the right: the name never moves the others */
+.pp {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    min-height: 2rem;
+}
+.pp-pager {
+    flex: none;
+}
+/* previous, a numbered button per page (or a dropdown for long forms), next */
+.pp-pager {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.pp-step,
+.pp-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.pp-step {
+    border: 0;
+    background: transparent;
+    --slds-c-icon-color-foreground-default: var(--jform-ink, #181818);
+}
+.pp-step:hover:not(:disabled) {
+    background: var(--jform-canvas, #f3f3f3);
+}
+.pp-step:disabled {
+    cursor: default;
+    opacity: 0.35;
+}
+.pp-pill {
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    background: #fff;
+    color: var(--jform-ink, #181818);
+}
+.pp-pill:hover {
+    border-color: var(--jform-primary, #0250d9);
+}
+.pp-pill-on,
+.pp-pill-on:hover {
+    border-color: var(--jform-primary, #0250d9);
+    background: var(--jform-primary, #0250d9);
+    color: #fff;
+}
+/* a page a rule hides: still reachable, drawn with a dashed edge */
+.pp-pill-hidden {
+    border-style: dashed;
+    color: var(--jform-muted, #5c5c5c);
+}
+.pp-pill-on.pp-pill-hidden {
+    color: #fff;
+}
+/* the welcome and thank-you stops (and "Form" for a one-page form) carry a word instead of a number */
+.pp-pill-screen {
+    padding: 0 0.75rem;
+}
+.pp-step:focus-visible,
+.pp-pill:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.pp-select {
+    min-width: 12rem;
+    max-width: 22rem;
+    height: 2rem;
+}
+.pp-current {
+    flex: 1 1 8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+.pp-name {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--jform-ink, #181818);
+}
+.pp-position {
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+    white-space: nowrap;
+}
+.pp-hidden-tag {
+    flex: none;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    background: var(--jform-warning-tint, #fdf3e7);
+    color: var(--jform-warning-ink, #8a4a0b);
+    font-size: 0.6875rem;
+    font-weight: 700;
+}
+.pp-check {
+    flex: none;
+    margin-left: auto;
+    --slds-c-checkbox-toggle-color-background-checked: var(--jform-primary, #0250d9);
+}

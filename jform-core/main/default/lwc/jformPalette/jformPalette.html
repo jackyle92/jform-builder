@@ -1,0 +1,96 @@
+<template>
+    <div class="pal">
+        <lightning-input type="search" label="Search field types" variant="label-hidden" placeholder="Search field types" onchange={handleSearch}></lightning-input>
+        <template lwc:if={noMatches}>
+            <p class="pal-empty">No field type matches that. Try the kind of answer you want, like date or photo.</p>
+        </template>
+        <template for:each={groups} for:item="g">
+            <div key={g.group} class="pal-group">
+                <div class="pal-heading">{g.group}</div>
+                <div class={gridClass}>
+                    <template for:each={g.items} for:item="item">
+                        <div key={item.type} class={item.cls} role="button" tabindex="0" draggable="true" data-type={item.type} aria-expanded={item.expanded}
+                            onclick={handleClick} onkeydown={handleKey} ondragstart={handleDragStart}
+                            onmouseenter={handleItemEnter} onmouseleave={handleItemLeave} onfocus={handleItemFocus} onblur={handleItemBlur}>
+                            <img class="pal-icon" src={item.iconUrl} alt="" width="24" height="24">
+                            <span class="pal-label">{item.label}</span>
+                            <span class="pal-sr">: {item.desc}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+        <p class="pal-hint">Point at or click a field type to see what it does. Drag it onto a page, or use Add in its card to place it after the selected field.</p>
+
+        <!-- Preview card: what the field under the pointer (or keyboard focus) is, how respondents see it, and when to use it -->
+        <template lwc:if={card}>
+            <section class="pal-card" aria-label={card.regionLabel} data-type={card.type}
+                onmouseenter={handleCardEnter} onmouseleave={handleCardLeave} onfocusin={handleCardFocus} onfocusout={handleCardBlur} onkeydown={handleCardKey}>
+                <div class="pal-card-head">
+                    <img class="pal-card-icon" src={card.iconUrl} alt="" width="32" height="32">
+                    <div class="pal-card-titles">
+                        <div class="pal-card-titleline">
+                            <h3 class="pal-card-title">{card.label}</h3>
+                            <span class="pal-card-group">{card.group}</span>
+                        </div>
+                        <p class="pal-card-desc">{card.desc}</p>
+                    </div>
+                </div>
+                <div class="pal-card-section">
+                    <div class="pal-card-label">How people see it</div>
+                    <div class="pal-card-sample">
+                        <template lwc:if={card.field}>
+                            <c-jform-field field={card.field} value={card.value} address-lists={card.addressLists} mode="edit"></c-jform-field>
+                        </template>
+                        <template lwc:elseif={card.picture}>
+                            <div class="pal-pic" role="img" aria-label={card.picture.ariaLabel}>
+                                <div class="pal-pic-label">{card.picture.label}</div>
+                                <table class="pal-pic-table">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <template for:each={card.picture.columns} for:item="c">
+                                                <th key={c.key} class="pal-pic-col">{c.label}</th>
+                                            </template>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={card.picture.rows} for:item="r">
+                                            <tr key={r.key}>
+                                                <th class="pal-pic-row">{r.label}</th>
+                                                <template for:each={r.cells} for:item="cell">
+                                                    <td key={cell.key}><span class={cell.cls}></span></td>
+                                                </template>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <p class="pal-card-note">{card.note}</p>
+                        </template>
+                    </div>
+                </div>
+                <div class="pal-card-section">
+                    <div class="pal-card-label">Use it when</div>
+                    <p class="pal-card-when">{card.when}</p>
+                    <template lwc:if={card.hasCompare}>
+                        <div class="pal-card-compare">
+                            <span class="pal-card-compare-label">Compare with</span>
+                            <template for:each={card.compare} for:item="c">
+                                <button key={c.type} type="button" class="pal-chip" data-type={c.type} onclick={handleCompare}>
+                                    <img src={c.iconUrl} alt="" width="16" height="16">{c.label}
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+                <div class="pal-card-foot">
+                    <button type="button" class="pal-add" onclick={handleCardAdd}>{card.addLabel}</button>
+                    <span class="pal-card-drag">or drag the tile onto a page</span>
+                </div>
+            </section>
+        </template>
+    </div>
+</template>

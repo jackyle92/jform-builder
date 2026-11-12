@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Create a new draft form, blank or with pages and fields described as JSON.</description>
+    <invocationTarget>JFormCreateFormAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <masterLabel>Create Form</masterLabel>
+    <progressIndicatorMessage>Creating the form...</progressIndicatorMessage>
+</GenAiFunction>

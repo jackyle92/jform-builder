@@ -1,0 +1,306 @@
+:host {
+    display: block;
+    position: relative;
+}
+.jf-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0.5rem var(--jf-input-padx, 0.75rem);
+    font: inherit;
+    font-size: 1em;
+    line-height: 1.4;
+    color: var(--jf-text, #181818);
+    background: var(--jf-input-bg, #ffffff);
+    border-style: solid;
+    border-color: var(--jf-input-border, #c9c9c9);
+    border-width: var(--jf-input-border-width, 1px);
+    border-radius: var(--jf-input-radius, 6px);
+    color-scheme: var(--jf-color-scheme, light);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.jf-dp-input {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 2.75rem;
+}
+.jf-input::placeholder {
+    color: var(--jf-placeholder, #939393);
+    opacity: 1;
+}
+.jf-input:hover:not(:disabled):not(:focus) {
+    border-color: var(--jf-input-border-hover, #8c8c8c);
+}
+.jf-input:focus {
+    outline: none;
+    border-color: var(--jf-primary, #337418);
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+:host([aria-invalid="true"]) .jf-input,
+.jf-input[aria-invalid="true"] {
+    border-color: var(--jf-error, #ba0517);
+}
+.jf-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.jf-dp {
+    position: relative;
+}
+.jf-dp-control {
+    position: relative;
+}
+.jf-dp-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.375rem;
+    transform: translateY(-50%);
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--jf-radius-sm, 4px);
+    background: transparent;
+    color: var(--jf-muted, #5c5c5c);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.jf-dp-btn:hover:not(:disabled),
+.jf-dp-open .jf-dp-btn {
+    color: var(--jf-primary, #337418);
+    background: var(--jf-primary-tint, rgba(1, 118, 211, 0.08));
+}
+.jf-dp-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-dp-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.jf-dp-btn svg,
+.jf-dp-nav svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.jf-dp-pop {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 0.375rem);
+    left: 0;
+    min-width: 18.5rem;
+    padding: 0.75rem;
+    background: var(--jf-surface, #ffffff);
+    color: var(--jf-text, #181818);
+    border: 1px solid var(--jf-border, #e0e0e0);
+    border-radius: var(--jf-radius, 10px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+.jf-dp-head {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+.jf-dp-title {
+    flex: 1;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+}
+.jf-dp-select {
+    font: inherit;
+    font-weight: 600;
+    color: inherit;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--jf-radius-sm, 4px);
+    padding: 0.25rem 0.375rem;
+    cursor: pointer;
+    color-scheme: var(--jf-color-scheme, light);
+}
+.jf-dp-select:hover {
+    border-color: var(--jf-border, #e0e0e0);
+}
+.jf-dp-select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-dp-nav {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--jf-muted, #5c5c5c);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.jf-dp-nav:hover {
+    background: var(--jf-primary-tint, rgba(1, 118, 211, 0.08));
+    color: var(--jf-primary, #337418);
+}
+.jf-dp-nav:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-dp-grid {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+.jf-dp-grid th {
+    padding: 0.25rem 0;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jf-muted, #5c5c5c);
+    text-align: center;
+}
+.jf-dp-grid td {
+    padding: 0.125rem;
+    text-align: center;
+}
+.jf-dp-day {
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+.jf-dp-day:hover:not(:disabled) {
+    background: var(--jf-primary-tint, rgba(1, 118, 211, 0.08));
+}
+.jf-dp-day:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-dp-out {
+    color: var(--jf-muted, #5c5c5c);
+    opacity: 0.6;
+}
+.jf-dp-today {
+    border-color: var(--jf-primary, #337418);
+}
+.jf-dp-selected,
+.jf-dp-selected:hover:not(:disabled) {
+    background: var(--jf-primary, #337418);
+    color: var(--jf-on-primary, #ffffff);
+    font-weight: 600;
+}
+.jf-dp-day:disabled {
+    color: var(--jf-muted, #5c5c5c);
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+.jf-dp-foot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--jf-border, #e0e0e0);
+}
+.jf-dp-link {
+    border: 0;
+    background: transparent;
+    color: var(--jf-primary, #337418);
+    font: inherit;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--jf-radius-sm, 4px);
+    cursor: pointer;
+}
+.jf-dp-link:hover:not(:disabled) {
+    background: var(--jf-primary-tint, rgba(1, 118, 211, 0.08));
+}
+.jf-dp-link:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.jf-dp-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+@media (max-width: 480px) {
+    .jf-dp-pop {
+        left: 0;
+        right: 0;
+        min-width: 0;
+    }
+}
+
+/* ---- the platform control on touch devices: WebKit gives it an intrinsic width, centred text and no placeholder */
+.jf-native {
+    -webkit-appearance: none;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    padding-right: 2.75rem;
+    text-align: left;
+    background-image: none;
+}
+.jf-native::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+}
+.jf-native::-webkit-datetime-edit {
+    padding: 0;
+}
+.jf-native::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.jf-native::-webkit-inner-spin-button,
+.jf-native::-webkit-clear-button {
+    display: none;
+}
+.jf-dp-ph {
+    position: absolute;
+    top: 50%;
+    left: var(--jf-input-padx, 0.75rem);
+    transform: translateY(-50%);
+    color: var(--jf-placeholder, #939393);
+    pointer-events: none;
+}
+.jf-dp-icon {
+    pointer-events: none;
+}
+/* Chromium draws "dd/mm/yyyy" in an empty control; iOS draws nothing. One placeholder for both. */
+.jf-native-empty:not(:focus)::-webkit-datetime-edit {
+    color: transparent;
+}
+.jf-native:focus ~ .jf-dp-ph {
+    display: none;
+}

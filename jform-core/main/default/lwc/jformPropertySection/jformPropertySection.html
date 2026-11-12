@@ -1,0 +1,12 @@
+<template>
+    <div class="pp-sec">
+        <button type="button" class="pp-sec-head" aria-expanded={expanded} onclick={handleClick}>
+            <lightning-icon class="pp-sec-chevron" icon-name={chevron} size="xx-small" alternative-text=""></lightning-icon>
+            <span class="pp-group">{label}</span>
+            <template lwc:if={showSummary}><span class="pp-sec-sum">{summary}</span></template>
+        </button>
+        <div class="pp-sec-body" hidden={closed}>
+            <slot></slot>
+        </div>
+    </div>
+</template>

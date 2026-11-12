@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Org-level keys for JForm spam protection: reCAPTCHA v3 site key and secret, the signing key for timing tokens, the minimum reCAPTCHA score. Set on the JForm Setup tab (JFormSetupController); values are never committed or returned to the browser.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>JForm Protection</label>
+    <visibility>Protected</visibility>
+</CustomObject>

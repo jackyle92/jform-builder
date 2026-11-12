@@ -1,0 +1,60 @@
+{
+  "unevaluatedProperties": false,
+  "properties": {
+    "versionNumber": {
+      "title": "Version Number",
+      "description": "The version that is now live",
+      "lightning:type": "lightning__integerType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "publicUrl": {
+      "title": "Public Link",
+      "description": "Public link respondents use. Empty when no Experience Cloud site is live.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "previewUrl": {
+      "title": "Preview Link",
+      "description": "Internal preview link that needs a Salesforce login",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "embedSnippet": {
+      "title": "Embed Snippet",
+      "description": "HTML iframe snippet that embeds the form on any website",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "publicKey": {
+      "title": "Public Key",
+      "description": "Stable key in the public link",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": false,
+      "copilotAction:useHydratedPrompt": false
+    },
+    "errorMessage": {
+      "title": "Error Message",
+      "description": "Why the form could not be published, if it could not",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isDisplayable": false,
+      "copilotAction:isUsedByPlanner": true,
+      "copilotAction:useHydratedPrompt": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

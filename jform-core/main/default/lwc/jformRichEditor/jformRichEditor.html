@@ -1,0 +1,15 @@
+<template>
+    <div class="re">
+        <template lwc:if={isHtml}>
+            <label class="re-label" for="html">{label}</label>
+            <textarea id="html" class="re-html" rows="12" spellcheck="false" aria-describedby="html-hint" oninput={handleHtmlInput} onblur={handleBlur}></textarea>
+            <p id="html-hint" class="re-hint">Paragraphs, headings, lists, links, images, tables and inline styles are kept. Scripts and iframes are removed when the form is shown, and a few styles such as text-indent are dropped when it is saved. Use &amp;nbsp; for spaces that must stay. Switching back to the visual editor simplifies HTML it does not understand.</p>
+        </template>
+        <template lwc:else>
+            <lightning-input-rich-text label={label} label-visible value={editorValue} onchange={handleChange} onblur={handleBlur}></lightning-input-rich-text>
+        </template>
+        <div class="re-tools">
+            <button type="button" class="re-toggle" onclick={handleToggle}>{toggleLabel}</button>
+        </div>
+    </div>
+</template>

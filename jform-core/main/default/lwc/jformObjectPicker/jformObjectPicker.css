@@ -1,0 +1,66 @@
+.op-control {
+    position: relative;
+}
+.op-input {
+    padding-right: 2rem;
+}
+.op-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 0;
+    padding: 0.25rem;
+    cursor: pointer;
+    line-height: 0;
+}
+.op-list {
+    position: absolute;
+    z-index: 9100;
+    left: 0;
+    right: 0;
+    top: calc(100% + 2px);
+    max-height: 18rem;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+}
+.op-group {
+    padding: 0.375rem 0.75rem 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.op-option {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+}
+.op-option:hover,
+.op-active {
+    background: var(--jform-canvas, #f3f3f3);
+}
+.op-selected .op-label {
+    font-weight: 700;
+}
+.op-api {
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+.op-empty,
+.op-more {
+    padding: 0.4rem 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.8125rem;
+}

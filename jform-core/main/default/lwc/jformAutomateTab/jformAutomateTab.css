@@ -1,0 +1,623 @@
+:host {
+    display: block;
+}
+/* the canvas on the left, the step editor on the right; stacks on narrow screens */
+.at {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 440px);
+    gap: 1.25rem;
+    padding: 1.25rem;
+    align-items: start;
+    color: var(--jform-ink, #181818);
+}
+
+/* ------------------------------------------------------------ canvas */
+.at-canvas {
+    min-width: 0;
+    min-height: 32rem;
+    padding: 1.25rem 1.5rem 2rem;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 12px;
+    background-color: var(--jform-canvas, #f3f3f3);
+    background-image: radial-gradient(var(--jform-border-strong, #c9c9c9) 1px, transparent 1px);
+    background-size: 18px 18px;
+}
+.at-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.at-head-tools {
+    display: flex;
+    gap: 0.5rem;
+}
+.at-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+.at-sub {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-h3 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+.at-muted {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+
+/* preset gallery */
+.at-gallery {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.at-gallery-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+.at-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 0.5rem;
+}
+.at-preset {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 8px;
+    background: var(--jform-surface, #ffffff);
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+.at-preset:hover {
+    border-color: var(--jform-primary, #0250d9);
+    background: var(--jform-tint, #eef4ff);
+}
+.at-preset:focus-visible,
+.at-plus:focus-visible,
+.at-gate:focus-visible,
+.at-insert-option:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.at-preset-icon {
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.at-preset-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+.at-preset-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+.at-preset-desc {
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-confirm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    background: var(--jform-warning-tint, #fdf3e7);
+    border: 1px solid var(--jform-warning-border, #f3c58f);
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.at-confirm-tools {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* the flow: start, links with "add here" and condition gates, steps, end */
+.at-flow {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.at-flow-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.at-node,
+.at-card {
+    box-sizing: border-box;
+    width: min(100%, 30rem);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 10px;
+    background: var(--jform-surface, #ffffff);
+}
+.at-node-edge {
+    border-style: dashed;
+    grid-template-columns: auto minmax(0, 1fr);
+}
+.at-card {
+    cursor: pointer;
+}
+.at-card:hover {
+    border-color: var(--jform-primary, #0250d9);
+}
+.at-card:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.at-card-on,
+.at-card-on:hover {
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: 0 0 0 1px var(--jform-primary, #0250d9), 0 4px 14px rgba(15, 15, 15, 0.08);
+}
+.at-card-issue {
+    box-shadow: inset 3px 0 0 var(--jform-warning, #b45309);
+}
+.at-card-on.at-card-issue {
+    box-shadow: inset 3px 0 0 var(--jform-warning, #b45309), 0 0 0 1px var(--jform-primary, #0250d9), 0 4px 14px rgba(15, 15, 15, 0.08);
+}
+.at-node-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.at-node-icon-start {
+    background: var(--jform-night, #032d60);
+    --slds-c-icon-color-foreground-default: var(--jform-accent, #066afe);
+}
+.at-node-icon-end {
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    --slds-c-icon-color-foreground-default: var(--jform-ink, #181818);
+}
+.at-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+.at-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+.at-n {
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.25rem;
+    box-sizing: border-box;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 0.6875rem;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+}
+.at-card-on .at-n {
+    background: var(--jform-primary, #0250d9);
+    border-color: var(--jform-primary, #0250d9);
+    color: #fff;
+}
+.at-card-label {
+    font-size: 0.8125rem;
+}
+.at-summary {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-issue {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.125rem;
+    font-size: 0.75rem;
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.at-pill {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+}
+.at-pill-primary {
+    background: var(--jform-tint, #eef4ff);
+    border: 1px solid var(--jform-tint-border, #aacbff);
+    color: var(--jform-primary, #0250d9);
+}
+.at-tools {
+    display: flex;
+    gap: 0;
+    opacity: 0.55;
+}
+/* small tool icons stay quiet grey; the blue is kept for things you act on */
+.at-tools lightning-button-icon,
+.at-editor lightning-button-icon,
+.at-insert-head lightning-button-icon {
+    --slds-s-button-color: var(--jform-muted, #5c5c5c);
+    --slds-s-button-color-hover: var(--jform-ink, #181818);
+}
+.at-card:hover .at-tools,
+.at-card:focus-within .at-tools,
+.at-card-on .at-tools {
+    opacity: 1;
+}
+
+.at-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.at-line {
+    width: 2px;
+    height: 0.75rem;
+    background: var(--jform-border-strong, #c9c9c9);
+}
+.at-plus {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    background: var(--jform-surface, #ffffff);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: var(--jform-muted, #5c5c5c);
+}
+.at-plus:hover {
+    border-color: var(--jform-primary, #0250d9);
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.at-gate {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    max-width: min(100%, 28rem);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 0.75rem;
+    text-align: left;
+    cursor: pointer;
+    background: var(--jform-warning-tint, #fdf3e7);
+    border: 1px solid var(--jform-warning-border, #f3c58f);
+    color: var(--jform-warning-ink, #8a4a0b);
+    --slds-c-icon-color-foreground-default: var(--jform-warning-ink, #8a4a0b);
+}
+.at-insert {
+    width: min(100%, 20rem);
+    box-sizing: border-box;
+    padding: 0.375rem;
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-primary, #0250d9);
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(15, 15, 15, 0.12);
+}
+.at-insert-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.125rem 0.25rem 0.25rem 0.5rem;
+}
+.at-insert-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-insert-option {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.5rem;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.at-insert-option:hover {
+    background: var(--jform-tint, #eef4ff);
+}
+.at-insert-text {
+    display: flex;
+    flex-direction: column;
+}
+.at-insert-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+.at-insert-help {
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+
+/* ------------------------------------------------------------ editor */
+.at-editor {
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 12px;
+    position: sticky;
+    top: 0.5rem;
+    min-width: 0;
+}
+.at-ed-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.at-ed-kicker {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-ed-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.at-ed-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.at-ed-head + .at-ed-section {
+    border-top: 0;
+}
+.at-ed-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+.at-h4 {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+.at-two {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.625rem;
+}
+.at-box-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.at-match {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: center;
+}
+.at-eq {
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-map {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 0.875rem minmax(0, 1.2fr) 1.5rem;
+    gap: 0.375rem;
+    align-items: center;
+}
+.at-map-head {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-arrow {
+    color: var(--jform-subtle, #939393);
+    text-align: center;
+}
+.at-fixed {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem;
+    align-items: center;
+    min-width: 0;
+}
+.at-cond {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) 1.5rem;
+    gap: 0.375rem;
+    align-items: center;
+}
+.at-when {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-when lightning-combobox {
+    width: 5rem;
+}
+.at-warn {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.at-guide {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.at-guide-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+.at-guide-list li {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+}
+.at-guide-list lightning-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+
+@media (max-width: 1000px) {
+    .at {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .at-editor {
+        position: static;
+    }
+}
+@media (max-width: 600px) {
+    .at-canvas {
+        padding: 1rem;
+    }
+    .at-map,
+    .at-cond,
+    .at-match,
+    .at-two {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .at-map-head,
+    .at-arrow {
+        display: none;
+    }
+}
+
+/* ------------------------------------------------------------ flow steps */
+.at-insert-head lightning-button-icon:first-child + .at-insert-title {
+    flex: 1;
+    padding-left: 0.25rem;
+}
+.at-insert-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.25rem 0.5rem 0.5rem;
+}
+.at-insert-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+.at-insert-option:disabled:hover {
+    background: none;
+}
+.at-flow-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.at-link-out {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--jform-primary, #0250d9);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.at-var {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.at-var-name {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.8125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.at-var-type {
+    font-size: 0.6875rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.at-outputs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+.at-output {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 6px;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+}

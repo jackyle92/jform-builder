@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Key_Signature__c</fullName>
+    <description>Second part of the license key: the publisher's ECDSA P-256 / SHA-256 signature of the payload, base64url.</description>
+    <externalId>false</externalId>
+    <label>Key Signature</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

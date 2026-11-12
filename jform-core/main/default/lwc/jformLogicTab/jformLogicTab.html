@@ -1,0 +1,217 @@
+<template>
+    <div class="lg">
+        <section class="lg-main" aria-label="Rules">
+            <header class="lg-head">
+                <div>
+                    <h2 class="lg-title">Logic</h2>
+                    <p class="lg-sub">Show, hide or require questions and pages based on the answers given.</p>
+                </div>
+                <div class="lg-head-tools">
+                    <template lwc:if={hasRules}>
+                        <lightning-input class="lg-search" type="search" label="Search rules" variant="label-hidden" placeholder="Search rules" value={query} onchange={handleSearch}></lightning-input>
+                    </template>
+                    <template lwc:if={hasAnswerFields}>
+                        <lightning-button variant="brand" label="New rule" icon-name="utility:add" data-action="new" onclick={handleNew}></lightning-button>
+                    </template>
+                </div>
+            </header>
+
+            <template lwc:if={hasRules}>
+                <div class="lg-summary">
+                    <span>{summaryText}</span>
+                    <template lwc:if={problemText}>
+                        <span class="lg-summary-issue"><lightning-icon icon-name="utility:warning" size="xx-small" variant="warning"></lightning-icon>{problemText}</span>
+                    </template>
+                </div>
+                <template for:each={groups} for:item="g">
+                    <div key={g.key} class="lg-group">
+                        <h3 class="lg-group-title">{g.title}<span class="lg-group-sub">{g.subtitle}</span></h3>
+                        <template for:each={g.rules} for:item="r">
+                            <div key={r.id} class={r.cls} role="button" tabindex="0" aria-pressed={r.pressed} data-kind={r.kind} data-key={r.key} onclick={handleSelectRule} onkeydown={handleCardKey}>
+                                <span class={r.actionCls}><lightning-icon icon-name={r.actionIcon} size="x-small"></lightning-icon></span>
+                                <span class="lg-body">
+                                    <span class="slds-assistive-text">{r.sentence}</span>
+                                    <span class="lg-line" aria-hidden="true">
+                                        <template for:each={r.tokens} for:item="t">
+                                            <span key={t.key} class={t.cls}>{t.text}</span>
+                                        </template>
+                                    </span>
+                                    <span class="lg-line lg-then" aria-hidden="true">
+                                        <span class="lg-arrow" aria-hidden="true">→</span>
+                                        <span class="lg-verb">{r.actionWord}</span>
+                                        <span class="lg-chip lg-chip-target">
+                                            <template lwc:if={r.targetIsPage}><lightning-icon icon-name="utility:page" size="xx-small"></lightning-icon></template>
+                                            {r.target}
+                                        </span>
+                                    </span>
+                                    <template lwc:if={r.problem}>
+                                        <span class="lg-issue"><lightning-icon icon-name="utility:warning" size="xx-small" variant="warning"></lightning-icon>{r.problem}</span>
+                                    </template>
+                                </span>
+                                <span class="lg-tools">
+                                    <lightning-button-icon icon-name="utility:copy" variant="bare" size="small" alternative-text="Copy to another question" data-kind={r.kind} data-key={r.key} onclick={handleCopyRule}></lightning-button-icon>
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" size="small" alternative-text="Delete rule" data-kind={r.kind} data-key={r.key} onclick={handleDeleteRule}></lightning-button-icon>
+                                </span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template lwc:if={noMatches}>
+                    <p class="lg-muted lg-nomatch">No rule mentions "{query}".</p>
+                </template>
+            </template>
+
+            <template lwc:else>
+                <div class="lg-empty">
+                    <template lwc:if={hasAnswerFields}>
+                        <h3 class="lg-h3">Make the form react to answers</h3>
+                        <p class="lg-muted">Rules keep a form short: each respondent only sees what applies to them. Start from one of these, or create your own.</p>
+                        <div class="lg-recipes">
+                            <template for:each={recipes} for:item="rc">
+                                <button key={rc.id} type="button" class="lg-recipe" data-id={rc.id} onclick={handleRecipe}>
+                                    <span class="lg-recipe-icon"><lightning-icon icon-name={rc.icon} size="x-small"></lightning-icon></span>
+                                    <span class="lg-recipe-title">{rc.title}</span>
+                                    <span class="lg-recipe-text">{rc.text}</span>
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <h3 class="lg-h3">Add questions first</h3>
+                        <p class="lg-muted">Rules depend on answers. Add some questions on the Build tab, then come back here.</p>
+                        <lightning-button label="Go to the Build tab" data-action="build" onclick={handleGoToBuild}></lightning-button>
+                    </template>
+                </div>
+            </template>
+        </section>
+
+        <aside class="lg-side" aria-label="Rule editor">
+            <template lwc:if={isEditing}>
+                <div class="lg-editor">
+                    <div class="lg-ed-head">
+                        <h3 class="lg-ed-title">{editorKicker}</h3>
+                        <lightning-button-icon icon-name="utility:close" variant="bare" alternative-text="Close the rule editor" onclick={handleCancel}></lightning-button-icon>
+                    </div>
+                    <template lwc:if={hasPending}>
+                        <div class="lg-confirm" role="alert">
+                            <span>This rule has changes you have not saved.</span>
+                            <span class="lg-confirm-tools">
+                                <lightning-button label="Keep editing" data-action="keep" onclick={handleKeepEditing}></lightning-button>
+                                <lightning-button variant="destructive-text" label="Discard" data-action="discard" onclick={handleDiscardAndOpen}></lightning-button>
+                            </span>
+                        </div>
+                    </template>
+
+                    <div class="lg-ed-section">
+                        <div class="lg-step"><span class="lg-step-n">1</span><h4 class="lg-h4">When</h4></div>
+                        <template lwc:if={showMatch}>
+                            <lightning-radio-group class="lg-match" type="button" label="Conditions to meet" variant="label-hidden" options={matchOptions} value={draft.match} onchange={handleMatch}></lightning-radio-group>
+                        </template>
+                        <template for:each={conditionRows} for:item="c">
+                            <div key={c.index} class="lg-cond-wrap">
+                                <template lwc:if={c.joinWord}><span class="lg-join-pill">{c.joinWord}</span></template>
+                                <div class={c.cls}>
+                                    <div class="lg-cond-top">
+                                        <c-jform-value-picker label="Question" variant="label-hidden" placeholder="Choose a question" value={c.field} options={questionOptions} data-index={c.index} onchange={handleQuestion}></c-jform-value-picker>
+                                        <template lwc:if={c.canRemove}>
+                                            <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Remove condition" data-index={c.index} onclick={handleRemoveCondition}></lightning-button-icon>
+                                        </template>
+                                    </div>
+                                    <div class="lg-cond-bottom">
+                                        <lightning-combobox label="Comparison" variant="label-hidden" value={c.operator} options={c.operatorOptions} data-index={c.index} onchange={handleOperator}></lightning-combobox>
+                                        <template lwc:if={c.hasOptions}>
+                                            <lightning-combobox label="Answer" variant="label-hidden" placeholder="Choose an answer" value={c.value} options={c.options} data-index={c.index} onchange={handleValue}></lightning-combobox>
+                                        </template>
+                                        <template lwc:if={c.typed}>
+                                            <lightning-input type={c.inputType} label="Answer" variant="label-hidden" placeholder="Answer" value={c.value} data-index={c.index} onchange={handleValue}></lightning-input>
+                                        </template>
+                                    </div>
+                                    <template lwc:if={c.error}><p class="lg-error">{c.error}</p></template>
+                                </div>
+                            </div>
+                        </template>
+                        <lightning-button variant="base" label="Add condition" icon-name="utility:add" data-action="add-condition" onclick={handleAddCondition}></lightning-button>
+                    </div>
+
+                    <div class="lg-ed-section">
+                        <div class="lg-step"><span class="lg-step-n">2</span><h4 class="lg-h4">Then</h4></div>
+                        <lightning-radio-group class="lg-actions" type="button" label="Action" variant="label-hidden" options={actionOptions} value={draft.action} onchange={handleAction}></lightning-radio-group>
+                        <c-jform-value-picker label="Question or page" variant="label-hidden" placeholder="Choose a question or page" value={targetValue} options={targetOptions} data-role="target" onchange={handleTarget}></c-jform-value-picker>
+                        <template lwc:if={targetError}><p class="lg-error">{targetError}</p></template>
+                        <p class="lg-muted">{actionHelp}</p>
+                    </div>
+
+                    <div class="lg-ed-section">
+                        <p class="lg-preview">{previewText}</p>
+                        <template lwc:if={hasDraftNotes}>
+                            <ul class="lg-notes">
+                                <template for:each={draftNotes} for:item="n">
+                                    <li key={n.key}><lightning-icon icon-name="utility:warning" size="xx-small" variant="warning"></lightning-icon><span>{n.text}</span></li>
+                                </template>
+                            </ul>
+                        </template>
+                    </div>
+
+                    <div class="lg-ed-foot">
+                        <template lwc:if={canDelete}>
+                            <lightning-button variant="destructive-text" label="Delete rule" data-action="delete" onclick={handleDeleteDraft}></lightning-button>
+                        </template>
+                        <span class="lg-foot-right">
+                            <lightning-button label="Cancel" data-action="cancel" onclick={handleCancel}></lightning-button>
+                            <lightning-button variant="brand" label="Save rule" data-action="save" onclick={handleSave}></lightning-button>
+                        </span>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:else>
+                <template lwc:if={hasRules}>
+                    <div class="lg-panel lg-trial">
+                        <h3 class="lg-h3">Try your rules</h3>
+                        <p class="lg-muted">Pick answers to see what a respondent would get. Nothing is saved.</p>
+                        <template lwc:if={hasTrialInputs}>
+                            <div class="lg-trial-inputs">
+                                <template for:each={trialInputs} for:item="i">
+                                    <div key={i.key} class="lg-trial-input">
+                                        <template lwc:if={i.isSingle}>
+                                            <lightning-combobox label={i.label} options={i.options} value={i.value} data-key={i.key} data-kind="single" onchange={handleTrial}></lightning-combobox>
+                                        </template>
+                                        <template lwc:if={i.isMulti}>
+                                            <lightning-checkbox-group label={i.label} options={i.multiOptions} value={i.value} data-key={i.key} data-kind="multi" onchange={handleTrial}></lightning-checkbox-group>
+                                        </template>
+                                        <template lwc:if={i.isBoolean}>
+                                            <lightning-input type="checkbox" label={i.label} checked={i.checked} data-key={i.key} data-kind="boolean" onchange={handleTrial}></lightning-input>
+                                        </template>
+                                        <template lwc:if={i.isTyped}>
+                                            <lightning-input type={i.inputType} label={i.label} value={i.value} data-key={i.key} data-kind="text" onchange={handleTrial}></lightning-input>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <h4 class="lg-h4">Result</h4>
+                        <ul class="lg-results">
+                            <template for:each={trialResults} for:item="res">
+                                <li key={res.id} class="lg-result"><span class="lg-result-label">{res.label}</span><span class={res.cls}>{res.state}</span></li>
+                            </template>
+                        </ul>
+                        <template lwc:if={hasTrialAnswers}>
+                            <lightning-button variant="base" label="Clear answers" icon-name="utility:undo" data-action="clear-trial" onclick={handleTrialReset}></lightning-button>
+                        </template>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <div class="lg-panel">
+                        <h3 class="lg-h3">How rules work</h3>
+                        <ul class="lg-guide">
+                            <li><lightning-icon icon-name="utility:preview" size="xx-small"></lightning-icon><span>A rule watches one or more answers, then shows, hides or requires a question or a whole page.</span></li>
+                            <li><lightning-icon icon-name="utility:filter" size="xx-small"></lightning-icon><span>Combine conditions: all of them must match, or any one of them.</span></li>
+                            <li><lightning-icon icon-name="utility:lock" size="xx-small"></lightning-icon><span>Rules run as respondents answer and again on submit, so a hidden question is never saved and a required one is never skipped.</span></li>
+                            <li><lightning-icon icon-name="utility:copy" size="xx-small"></lightning-icon><span>Rules point at questions by their key, so they keep working when you rename questions or copy the form.</span></li>
+                        </ul>
+                    </div>
+                </template>
+            </template>
+        </aside>
+    </div>
+</template>

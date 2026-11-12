@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- jform-agent-script: deploy after the JForm_Assistant agent has been published (the permission set references it):
+     sf project deploy start -o <org> -x manifest/jform-agent-access.xml -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>JForm_Assistant_Access</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>66.0</version>
+</Package>

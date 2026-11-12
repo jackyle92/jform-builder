@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Checkout_Reference__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>The gateway&apos;s ID for the checkout (Stripe checkout session cs_...). Webhooks and status checks find the payment by it.</description>
+    <externalId>true</externalId>
+    <label>Checkout Reference</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

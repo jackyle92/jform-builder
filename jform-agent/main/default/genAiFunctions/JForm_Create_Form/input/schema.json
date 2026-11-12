@@ -1,0 +1,37 @@
+{
+  "required": [
+    "formName"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "formName": {
+      "title": "Form Name",
+      "description": "Name of the new form",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "description": {
+      "title": "Description",
+      "description": "Optional short description shown under the form title",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "targetObjectApiName": {
+      "title": "Target Object",
+      "description": "Optional Salesforce object submissions create, for example Lead, Contact or Case. Adds a record step with the form's fields matched by name",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "definitionJson": {
+      "title": "Definition JSON",
+      "description": "Optional JSON list of fields for one page, or of pages each with a name and fields; when the plan has sections, send one page per section. Each field has label, type, required, options for choice types, and optionally helpText, placeholder and defaultValue (a hidden field saves its defaultValue with every response). Types: text, name (first and last name in one field, each saved and mapped on its own; use it for each person's full name, such as a participant, guardian or contact, even when the request calls it a text field), address (country, street, city, state and postal code in one field, each saved on its own and mapped to an address such as a contact's Mailing Address; type billing address or shipping address for those, and use it instead of separate street, city and postcode fields), email, phone (gets the country code picker, as in the builder), number, long text, dropdown, single choice, checkboxes, date, time, file upload, signature, rating, nps, yes/no, consent (one checkbox whose label is what the person agrees to, such as I agree to the waiver above; it holds no other text, so put terms, waiver or release wording in a rich text field with the wording in richtext right before it), heading, rich text, divider, hidden, table, payment. A table asks several questions on one scale: rows are the questions as plain strings and options the scale, for example {\"label\":\"How satisfied were you with\",\"type\":\"table\",\"rows\":[\"Service\",\"Price\"],\"options\":[\"Poor\",\"Fair\",\"Good\"]}; add multiple true for several answers per row. A payment field is the price and a Pay button that opens Stripe checkout, where people pay by card, Apple Pay or Google Pay; a form has one, and it is never required. Give it amount for a fixed price, {\"label\":\"Payment\",\"type\":\"payment\",\"amount\":50}, or price it by the choices picked in a choice field so the total works itself out, {\"label\":\"Payment\",\"type\":\"payment\",\"pricing\":\"choice\",\"source\":\"Sessions\",\"prices\":{\"Morning\":50,\"Full day\":90}}, with the choice field's label as source. Promotion codes go in the payment field's own code box (Settings \u203a Payments), never in a text field. JForm has no calculated fields; never add a number or text field for a fee, a code or payment details.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

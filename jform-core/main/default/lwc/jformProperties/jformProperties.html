@@ -1,0 +1,563 @@
+<template>
+    <div class="pp">
+        <template lwc:if={nothingSelected}>
+            <div class="pp-empty">
+                <lightning-icon icon-name="utility:touch_action" size="small" alternative-text=""></lightning-icon>
+                <p>Select a field or a page to edit its properties.</p>
+            </div>
+        </template>
+
+        <template lwc:if={hasPage}>
+            <div class="pp-head">
+                <lightning-icon icon-name="utility:page" size="small" alternative-text=""></lightning-icon>
+                <span class="pp-title">Page</span>
+                <span class="pp-key">key: {page.key}</span>
+            </div>
+            <lightning-input label="Title" value={page.label} data-prop="label" onchange={handlePageText}></lightning-input>
+            <lightning-textarea label="Description (shown under the title)" value={page.description} data-prop="description" onchange={handlePageText}></lightning-textarea>
+            <div class="pp-group">Logic</div>
+            <template lwc:if={ruleSentence}><p class="pp-rule">{ruleSentence}</p></template>
+            <template lwc:else><p class="pp-muted">No rule on this page.</p></template>
+            <lightning-button variant="base" label={logicButtonLabel} icon-name="utility:right" icon-position="right" onclick={handleGoToLogic}></lightning-button>
+        </template>
+
+        <template lwc:if={hasField}>
+            <div class="pp-head">
+                <img class="pp-icon" src={typeIconUrl} alt="" width="24" height="24">
+                <span class="pp-title">{typeLabel}</span>
+                <span class="pp-key">key: {field.key}</span>
+            </div>
+            <lightning-combobox label="Field type" value={field.type} options={typeOptions} onchange={handleType}></lightning-combobox>
+
+            <template lwc:if={isRichText}>
+                <c-jform-property-section label="Content" data-sec="content" open={sec.content.open} summary={sec.content.summary} ontoggle={handleSection}>
+                    <c-jform-rich-editor label="Text" name="richtext" value={field.richtext} mode={richMode} onchange={handleRichValue} onmodechange={handleRichMode}></c-jform-rich-editor>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showGeneral}>
+                <c-jform-property-section label="General" data-sec="general" open={sec.general.open} summary={sec.general.summary} ontoggle={handleSection}>
+                    <lightning-input label={labelLabel} value={field.label} data-prop="label" onchange={handleText} onblur={handleLabelDone}></lightning-input>
+                    <template lwc:if={isHeading}>
+                        <lightning-input label="Subheading" value={field.helpText} data-prop="helpText" onchange={handleText}></lightning-input>
+                    </template>
+                    <template lwc:elseif={showHelpText}>
+                        <lightning-input label={helpLabel} value={field.helpText} data-prop="helpText" onchange={handleText}></lightning-input>
+                    </template>
+                    <template lwc:if={showPlaceholder}>
+                        <lightning-input label="Placeholder" value={field.placeholder} data-prop="placeholder" onchange={handleText}></lightning-input>
+                    </template>
+                    <template lwc:if={showDefault}>
+                        <lightning-input label="Default value" value={field.defaultValue} data-prop="defaultValue" onchange={handleText}></lightning-input>
+                    </template>
+                    <template lwc:if={isHidden}>
+                        <p class="pp-muted">Filled from the URL parameter <code>{field.key}</code>, never shown to respondents.</p>
+                    </template>
+                    <template lwc:if={showRequired}>
+                        <lightning-input type="toggle" label="Required" checked={field.required} data-prop="required" message-toggle-active="" message-toggle-inactive="" onchange={handleChecked}></lightning-input>
+                    </template>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showImage}>
+                <c-jform-property-section label="Image" data-sec="image" open={sec.image.open} summary={sec.image.summary} ontoggle={handleSection}>
+                    <template lwc:if={imagePreview}>
+                        <img class="pp-image-preview" src={imagePreview} alt="">
+                    </template>
+                    <template lwc:if={formId}>
+                        <lightning-file-upload label="Upload an image" name="image" record-id={formId} accept={imageTypes} disabled={imageBusy} onuploadfinished={handleImageUploaded}></lightning-file-upload>
+                    </template>
+                    <template lwc:if={imageBusy}><p class="pp-muted">Making a public link…</p></template>
+                    <template lwc:if={imageError}><p class="pp-error" role="alert">{imageError}</p></template>
+                    <lightning-input label="Or an image link" value={config.url} data-prop="url" placeholder="https://" onchange={handleConfigText}></lightning-input>
+                    <lightning-input label="Alt text" value={config.alt} data-prop="alt" max-length="200" onchange={handleConfigText}></lightning-input>
+                    <p class="pp-muted">Alt text describes the image for screen readers; leave it empty for decoration. Uploads work everywhere; links to other sites need an admin to add the site under CSP Trusted Sites.</p>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-fit-label">Fit</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-fit-label">
+                            <template for:each={fitButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-prop="fit" data-value={o.value} onclick={handleConfigSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-height-label">Height</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-height-label">
+                            <template for:each={heightButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-prop="height" data-value={o.value} onclick={handleConfigSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showEvent}>
+                <c-jform-property-section label="Event" data-sec="event" open={sec.event.open} summary={sec.event.summary} ontoggle={handleSection}>
+                    <lightning-input type="date" label="Date" value={config.date} data-prop="date" onchange={handleConfigText}></lightning-input>
+                    <div class="pp-two">
+                        <lightning-input type="time" label="Starts" value={config.startTime} data-prop="startTime" onchange={handleEventTime}></lightning-input>
+                        <lightning-input type="time" label="Ends" value={config.endTime} data-prop="endTime" onchange={handleEventTime}></lightning-input>
+                    </div>
+                    <lightning-input label="Location" value={config.location} data-prop="location" max-length="200" onchange={handleConfigText}></lightning-input>
+                    <lightning-textarea label="Description" value={config.description} data-prop="description" max-length="1000" onchange={handleConfigText}></lightning-textarea>
+                    <lightning-input type="toggle" label="Add to calendar links" checked={showCalendarLinks} message-toggle-active="" message-toggle-inactive="" onchange={handleCalendarLinks}></lightning-input>
+                    <p class="pp-muted">Times show as written, in the event's own time. Without a start time the event is all day.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={isPayment}>
+                <c-jform-property-section label="Gateway" data-sec="gateway" open={sec.gateway.open} summary={sec.gateway.summary} ontoggle={handleSection}>
+                    <c-jform-gateway-picker variant="row" label="Payment gateway" options={gatewayOptions} value={paymentGateway} onchange={handleGateway}></c-jform-gateway-picker>
+                    <p class="pp-muted">The same choice as the Settings tab, where the form also chooses test or live payments, its currency, where people pay and whether it takes promotion codes.</p>
+                    <p class="pp-muted">Promotion codes: {promotionCodesText}</p>
+                    <lightning-button variant="base" label="Open Payments settings" icon-name="utility:right" icon-position="right" onclick={handleGoToPaymentSettings}></lightning-button>
+                </c-jform-property-section>
+                <c-jform-property-section label="Payment" data-sec="payment" open={sec.payment.open} summary={sec.payment.summary} ontoggle={handleSection}>
+                    <lightning-combobox label="Pricing" options={pricingOptions} value={paymentPricing} onchange={handlePricing}></lightning-combobox>
+                    <lightning-input label="What people pay for" value={config.item} data-prop="item" max-length="120" placeholder={formTitle}
+                        field-level-help={itemHelp} onchange={handleConfigText}></lightning-input>
+                    <template lwc:if={isFixedPrice}>
+                        <lightning-input type="number" label={priceLabel} value={config.amount} data-prop="amount" min="0" step={priceStep} onchange={handlePriceInput}></lightning-input>
+                    </template>
+                    <template lwc:if={usesPaymentSource}>
+                        <lightning-combobox label={paymentSourceLabel} options={paymentSourceOptions} value={config.source} placeholder="Choose a field" onchange={handlePaymentSource}></lightning-combobox>
+                        <template lwc:if={noPaymentSources}><p class="pp-muted">{noPaymentSourcesText}</p></template>
+                    </template>
+                    <template lwc:if={isChoicePrice}>
+                        <template for:each={choicePrices} for:item="c">
+                            <lightning-input key={c.key} type="number" label={c.label} value={c.amount} data-value={c.value} min="0" step={priceStep}
+                                placeholder="Free" onchange={handleChoicePrice}></lightning-input>
+                        </template>
+                    </template>
+                    <template lwc:if={isQuantityPrice}>
+                        <lightning-input type="number" label={unitPriceLabel} value={config.unitPrice} data-prop="unitPrice" min="0" step={priceStep} onchange={handlePriceInput}></lightning-input>
+                    </template>
+                    <template lwc:if={isCustomPrice}>
+                        <lightning-input type="number" label={minimumLabel} value={config.minimum} data-prop="minimum" min="0" step={priceStep} onchange={handlePriceInput}></lightning-input>
+                    </template>
+                    <p class="pp-muted">{paymentNote}</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={isSignature}>
+                <c-jform-property-section label="Signature" data-sec="signature" open={sec.signature.open} summary={sec.signature.summary} ontoggle={handleSection}>
+                    <lightning-textarea label="Statement (shown under the pad)" value={config.statement} data-prop="statement" max-length="500"
+                        placeholder="By signing, I agree to the terms above." onchange={handleConfigText}></lightning-textarea>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-pad-label">Pad height</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-pad-label">
+                            <template for:each={heightButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-prop="height" data-value={o.value} onclick={handleConfigSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <lightning-input type="toggle" label="Let people type their name" checked={signatureTypingOn} data-prop="allowTyped" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigOnByDefault}></lightning-input>
+                    <p class="pp-muted">Typing keeps the field usable for people who cannot draw with a mouse or finger, including keyboard and screen reader users.</p>
+                    <lightning-input type="toggle" label="Add to the created record" checked={signatureToRecordOn} data-prop="attachToRecord" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigOnByDefault}></lightning-input>
+                    <p class="pp-muted">Each signature is saved as a PNG file on the response. When the form creates or updates a record, the file is also added to that record's Files.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={isFileUpload}>
+                <c-jform-property-section label="Accepted files" data-sec="files" open={sec.files.open} summary={sec.files.summary} ontoggle={handleSection}>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-files-label">Files people can attach</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-files-label">
+                            <template for:each={fileModeButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-value={o.value} onclick={handleFileMode}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <template lwc:if={filesOnlyThese}>
+                        <template for:each={fileKindGroups} for:item="g">
+                            <lightning-checkbox-group key={g.key} class="pp-file-kinds" label={g.label} options={g.options} value={g.value} data-group={g.key} onchange={handleFileKinds}></lightning-checkbox-group>
+                        </template>
+                        <template lwc:if={fileKindsMissing}><p class="pp-error" role="alert">Tick at least one file type.</p></template>
+                    </template>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-file-size-label">Maximum size per file</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-file-size-label">
+                            <template for:each={fileSizeButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-value={o.value} onclick={handleFileSize}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <lightning-input type="number" label="Maximum files" value={maxFilesValue} min="1" max="10" step="1" placeholder={maxFilesDefault} data-prop="maxFiles" onchange={handleMaxFiles}></lightning-input>
+                    <p class="pp-muted">The respondent sees these under the box. A file of another type, a larger file or one file too many is refused when it is picked, and again when it is uploaded. A response takes ten files in all.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={isTable}>
+                <c-jform-property-section label="Rows" data-sec="rows" open={sec.rows.open} summary={sec.rows.summary} ontoggle={handleSection}>
+                    <template for:each={tableRowItems} for:item="r">
+                        <div key={r.key} class="pp-option pp-table-row">
+                            <lightning-input label="Row" variant="label-hidden" placeholder="Row" value={r.label} data-index={r.index} onchange={handleRowText}></lightning-input>
+                            <lightning-button-icon icon-name="utility:up" variant="bare" size="small" alternative-text="Move up" data-index={r.index} disabled={r.isFirst} onclick={handleRowUp}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:down" variant="bare" size="small" alternative-text="Move down" data-index={r.index} disabled={r.isLast} onclick={handleRowDown}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Remove" data-index={r.index} onclick={handleRemoveRow}></lightning-button-icon>
+                        </div>
+                    </template>
+                    <div class="pp-row">
+                        <lightning-button variant="base" label="Add row" icon-name="utility:add" disabled={rowsFull} onclick={handleAddRow}></lightning-button>
+                    </div>
+                    <lightning-textarea label="Add several rows, one per line" value={pastedRows} disabled={rowsFull} onchange={handlePastedRows}></lightning-textarea>
+                    <div class="pp-row">
+                        <lightning-button label="Add these rows" disabled={rowsFull} onclick={handleAddPastedRows}></lightning-button>
+                    </div>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-per-row-label">Answers per row</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-per-row-label">
+                            <template for:each={answersPerRowButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-value={o.value} onclick={handleAnswersPerRow}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <lightning-input type="toggle" label="Every row must be answered" checked={everyRowOn} data-prop="everyRow" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigOnByDefault}></lightning-input>
+                    <p class="pp-muted">Applies when the field is required; off, one answered row is enough. Each row is saved as its own answer: use a row in Logic rules, and map rows to record fields in the Automate tab. A table always takes the full width of the page.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={isName}>
+                <c-jform-property-section label="Name" data-sec="name" open={sec.name.open} summary={sec.name.summary} ontoggle={handleSection}>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-name-layout-label">Layout</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-name-layout-label">
+                            <template for:each={nameLayoutButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-prop="layout" data-value={o.value} onclick={handleConfigSeg}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="pp-muted">Inline puts the parts on one row, wrapping on narrow screens; stacked puts each part on its own line.</p>
+                </c-jform-property-section>
+                <c-jform-property-section label="Name parts" data-sec="nameParts" open={sec.nameParts.open} summary={sec.nameParts.summary} ontoggle={handleSection}>
+                    <template for:each={namePartItems} for:item="p">
+                        <div key={p.key} class="pp-name-part">
+                            <div class="pp-subgroup">{p.title}</div>
+                            <div class="pp-two">
+                                <lightning-input label="Label" value={p.label} data-part={p.key} data-prop="label" onchange={handleNamePartText}></lightning-input>
+                                <lightning-input label="Placeholder" value={p.placeholder} data-part={p.key} data-prop="placeholder" onchange={handleNamePartText}></lightning-input>
+                            </div>
+                            <div class="pp-two">
+                                <lightning-input label="Default value" value={p.defaultValue} data-part={p.key} data-prop="defaultValue" onchange={handleNamePartText}></lightning-input>
+                                <lightning-input type="number" label="Max length" min="1" max={p.maxAllowed} step="1" value={p.maxLength} data-part={p.key} data-prop="maxLength" onchange={handleNamePartText}></lightning-input>
+                            </div>
+                        </div>
+                    </template>
+                    <p class="pp-muted">When the field is required, first and last name must be filled in. Each part is saved as its own answer: map parts below or in the Automate tab, and use a part in Logic rules.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={isAddress}>
+                <c-jform-property-section label="Address" data-sec="address" open={sec.address.open} summary={sec.address.summary} ontoggle={handleSection}>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-address-purpose-label">Purpose</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-address-purpose-label">
+                            <template for:each={addressPurposeButtons} for:item="o">
+                                <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-value={o.value} onclick={handleAddressPurpose}>{o.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="pp-muted">Billing and Shipping tell the browser which saved address to fill in, and pick the Billing or Shipping address of an Account when saving.</p>
+                    <c-jform-value-picker label="Default country" placeholder="Choose a country" options={addressCountryOptions} value={addressDefaultCountry} onchange={handleAddressDefaultCountry}></c-jform-value-picker>
+                    <lightning-input type="toggle" label="Start with the visitor's country" checked={config.detectCountry} data-prop="detectCountry" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigChecked}></lightning-input>
+                    <p class="pp-muted">Guessed in the visitor's browser from their time zone and language; nothing is sent anywhere. The default country is used when no guess fits.</p>
+                    <lightning-input type="toggle" label="Offer every country" checked={addressEveryCountry} disabled={addressCannotChooseCountries} message-toggle-active="" message-toggle-inactive="" onchange={handleAddressEveryCountry}></lightning-input>
+                    <template lwc:if={addressChoosesCountries}>
+                        <lightning-dual-listbox label="Countries offered" source-label="Countries" selected-label="Offered" options={addressCountryOptions}
+                            value={addressCountriesValue} size="6" onchange={handleAddressCountries}></lightning-dual-listbox>
+                    </template>
+                </c-jform-property-section>
+                <c-jform-property-section label="Address parts" data-sec="addressParts" open={sec.addressParts.open} summary={sec.addressParts.summary} ontoggle={handleSection}>
+                    <template for:each={addressPartItems} for:item="p">
+                        <div key={p.key} class="pp-name-part">
+                            <div class="pp-subgroup">{p.title}</div>
+                            <div class="pp-two">
+                                <lightning-input label="Label" value={p.label} data-part={p.key} data-prop="label" onchange={handleAddressPartText}></lightning-input>
+                                <lightning-input label="Placeholder" value={p.placeholder} data-part={p.key} data-prop="placeholder" onchange={handleAddressPartText}></lightning-input>
+                            </div>
+                        </div>
+                    </template>
+                    <p class="pp-muted">When the field is required, every part but Zip/Postal code must be filled in: State/Province only for countries with states in the list, and one line of the street is enough. The countries and states are the org's State and Country/Territory Picklists where it has them; there, State/Province shows only for countries with states.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showOptions}>
+                <c-jform-property-section label={optionsGroupLabel} data-sec="options" open={sec.options.open} summary={sec.options.summary} ontoggle={handleSection}>
+                    <template lwc:if={isTable}>
+                        <lightning-combobox label="Use a scale" placeholder="Choose a scale" options={scaleOptions} onchange={handleScale}></lightning-combobox>
+                    </template>
+                    <template for:each={options} for:item="o">
+                        <div key={o.index} class="pp-option">
+                            <lightning-input label="Label" variant="label-hidden" placeholder="Label" value={o.label} data-index={o.index} data-prop="label" onchange={handleOptionText}></lightning-input>
+                            <lightning-input label="Value" variant="label-hidden" placeholder="Value" value={o.value} data-index={o.index} data-prop="value" onchange={handleOptionText}></lightning-input>
+                            <lightning-button-icon icon-name="utility:up" variant="bare" size="small" alternative-text="Move up" data-index={o.index} disabled={o.isFirst} onclick={handleOptionUp}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:down" variant="bare" size="small" alternative-text="Move down" data-index={o.index} disabled={o.isLast} onclick={handleOptionDown}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Remove" data-index={o.index} onclick={handleRemoveOption}></lightning-button-icon>
+                        </div>
+                    </template>
+                    <div class="pp-row">
+                        <lightning-button variant="base" label={addOptionLabel} icon-name="utility:add" disabled={optionsFull} onclick={handleAddOption}></lightning-button>
+                        <template lwc:if={canLoadPicklist}>
+                            <lightning-button variant="base" label="Load from Salesforce picklist" icon-name="utility:download" onclick={handleLoadPicklist}></lightning-button>
+                        </template>
+                    </div>
+                    <template lwc:if={showOtherSetting}>
+                        <lightning-input type="toggle" label="Add “Other” with a text box" checked={hasOther} message-toggle-active="" message-toggle-inactive="" onchange={handleOtherToggle}></lightning-input>
+                        <template lwc:if={hasOther}>
+                            <div class="pp-two">
+                                <lightning-input label="Choice label" value={otherLabelValue} placeholder={otherLabelDefault} max-length="80" data-prop="label" onchange={handleOtherText}></lightning-input>
+                                <lightning-input label="Box placeholder" value={otherPlaceholderValue} placeholder={otherPlaceholderDefault} max-length="80" data-prop="placeholder" onchange={handleOtherText}></lightning-input>
+                            </div>
+                            <p class="pp-muted">{otherHelp}</p>
+                        </template>
+                    </template>
+                    <template lwc:if={showChoiceLimits}>
+                        <div class="pp-two">
+                            <lightning-input type="number" label="At least" value={minChoicesValue} min="1" step="1" placeholder="Any" data-prop="minChoices" onchange={handleChoiceLimit}></lightning-input>
+                            <lightning-input type="number" label="At most" value={maxChoicesValue} min="1" step="1" placeholder="Any" data-prop="maxChoices" onchange={handleChoiceLimit}></lightning-input>
+                        </div>
+                        <p class="pp-muted">How many choices a respondent can tick. At least applies once something is ticked; make the field required to ask for an answer.</p>
+                    </template>
+                    <template lwc:if={showOptionColumns}>
+                        <div class="slds-form-element pr-width">
+                            <span class="slds-form-element__label" id="pr-columns-label">Options per row</span>
+                            <div class="pr-seg" role="radiogroup" aria-labelledby="pr-columns-label">
+                                <template for:each={optionColumnButtons} for:item="o">
+                                    <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-prop="optionColumns" data-value={o.value} onclick={handleConfigSeg}>{o.label}</button>
+                                </template>
+                            </div>
+                        </div>
+                        <p class="pp-muted">Auto fits as many options as the width allows. On narrow screens a field shows at most two per row.</p>
+                    </template>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showPhoneOptions}>
+                <c-jform-property-section label="Phone options" data-sec="phone" open={sec.phone.open} summary={sec.phone.summary} ontoggle={handleSection}>
+                    <lightning-input type="toggle" label="Country code picker" checked={hasCountryPicker} message-toggle-active="" message-toggle-inactive="" onchange={handleCountryPicker}></lightning-input>
+                    <template lwc:if={hasCountryPicker}>
+                        <c-jform-value-picker label="Default country" placeholder="Choose a country" options={countryOptions} value={defaultCountryValue} onchange={handleDefaultCountry}></c-jform-value-picker>
+                        <lightning-input type="toggle" label="Start with the visitor's country" checked={config.detectCountry} data-prop="detectCountry" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigChecked}></lightning-input>
+                        <p class="pp-muted">Guessed in the visitor's browser from their time zone and language; nothing is sent anywhere. The default country is used when no guess fits, and visitors can always change it.</p>
+                        <lightning-input type="toggle" label="Strict check" checked={config.strictNumber} data-prop="strictNumber" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigChecked}></lightning-input>
+                        <lightning-input type="toggle" label="Mobile numbers only" checked={config.mobileOnly} data-prop="mobileOnly" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigChecked}></lightning-input>
+                        <p class="pp-muted">Every number is checked for the right length in its country. Strict check also needs a number range the country uses; very new ranges can be refused until JForm is updated. Mobile numbers only includes the strict check (in the US and Canada any valid number passes).</p>
+                        <p class="pp-muted">Answers are saved in international format, such as +61412345678. Countries not in the list use Other country, where visitors type the full number.</p>
+                    </template>
+                    <template lwc:else>
+                        <p class="pp-muted">Visitors type the number as they like; use Validation below to check its format.</p>
+                    </template>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showDateOptions}>
+                <c-jform-property-section label="Date options" data-sec="date" open={sec.date.open} summary={sec.date.summary} ontoggle={handleSection}>
+                    <div class="pp-two">
+                        <lightning-input type="date" label="Earliest date" value={config.minDate} data-prop="minDate" onchange={handleConfigText}></lightning-input>
+                        <lightning-input type="date" label="Latest date" value={config.maxDate} data-prop="maxDate" onchange={handleConfigText}></lightning-input>
+                    </div>
+                    <div class="pp-two">
+                        <lightning-input type="toggle" label="No past dates" checked={config.noPast} data-prop="noPast" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigChecked}></lightning-input>
+                        <lightning-input type="toggle" label="No future dates" checked={config.noFuture} data-prop="noFuture" message-toggle-active="" message-toggle-inactive="" onchange={handleConfigChecked}></lightning-input>
+                    </div>
+                    <lightning-checkbox-group label="Days that can be chosen" options={weekdayOptions} value={allowedDays} onchange={handleAllowedDays}></lightning-checkbox-group>
+                    <p class="pp-muted">Respondents type a date in their own format or pick one from a calendar in the form's theme; phones use their built-in picker.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showTimeOptions}>
+                <c-jform-property-section label="Time options" data-sec="time" open={sec.time.open} summary={sec.time.summary} ontoggle={handleSection}>
+                    <lightning-combobox label="Times every" value={timeStepValue} options={timeStepOptions} onchange={handleTimeStep}></lightning-combobox>
+                    <div class="pp-two">
+                        <lightning-input type="time" label="Earliest time" value={config.minTime} data-prop="minTime" onchange={handleConfigText}></lightning-input>
+                        <lightning-input type="time" label="Latest time" value={config.maxTime} data-prop="maxTime" onchange={handleConfigText}></lightning-input>
+                    </div>
+                    <lightning-combobox label="Clock" value={hourFormatValue} options={hourFormatOptions} onchange={handleHourFormat}></lightning-combobox>
+                    <p class="pp-muted">Respondents type a time such as 9:30 pm or pick one from the list; phones use their built-in picker.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showLayout}>
+                <c-jform-property-section label="Layout" data-sec="layout" open={sec.layout.open} summary={sec.layout.summary} ontoggle={handleSection}>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-width-label">Width</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-width-label">
+                            <template for:each={widthButtons} for:item="w">
+                                <button key={w.value} type="button" role="radio" aria-checked={w.checked} class={w.cls} data-value={w.value} onclick={handleWidth}>{w.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="slds-form-element pr-width">
+                        <span class="slds-form-element__label" id="pr-rows-label">Rows</span>
+                        <div class="pr-seg" role="radiogroup" aria-labelledby="pr-rows-label">
+                            <template for:each={rowButtons} for:item="r">
+                                <button key={r.value} type="button" role="radio" aria-checked={r.checked} class={r.cls} data-value={r.value} onclick={handleRows}>{r.label}</button>
+                            </template>
+                        </div>
+                    </div>
+                    <p class="pp-muted">A field over several rows sits beside the fields that follow it, for example a tall image or event card next to two half-width fields. On phones everything stacks.</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showMapping}>
+                <c-jform-property-section label="Saves to" data-sec="mapping" open={sec.mapping.open} summary={sec.mapping.summary} ontoggle={handleSection}>
+                    <c-jform-object-picker label="Object" value={mappingObject} options={objectOptions} placeholder="Choose an object" disabled={objectLocked} onchange={handleObject}></c-jform-object-picker>
+                    <template lwc:if={loadingFields}>
+                        <p class="pp-muted">Loading fields…</p>
+                    </template>
+                    <template lwc:elseif={isAddress}>
+                        <lightning-combobox label="Address" value={mappedAddress} options={addressTargetOptions} placeholder="Not mapped" disabled={noMappingObject} onchange={handleAddressTarget}></lightning-combobox>
+                    </template>
+                    <template lwc:elseif={isName}>
+                        <template for:each={nameMappings} for:item="m">
+                            <lightning-combobox key={m.key} label={m.label} value={m.value} options={objectFieldOptions} placeholder="Not mapped" disabled={noMappingObject} data-key={m.key} onchange={handleTargetField}></lightning-combobox>
+                        </template>
+                    </template>
+                    <template lwc:else>
+                        <lightning-combobox label="Field" value={mappedObjectField} options={objectFieldOptions} placeholder="Not mapped" disabled={noMappingObject} onchange={handleTargetField}></lightning-combobox>
+                    </template>
+                    <p class="pp-muted">{mappingHint}</p>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showValidation}>
+                <c-jform-property-section label="Validation" data-sec="validation" open={sec.validation.open} summary={sec.validation.summary} ontoggle={handleSection}>
+                    <template lwc:if={showPattern}>
+                        <lightning-combobox label="Format" value={patternValue} options={patternPresets} onchange={handlePattern}></lightning-combobox>
+                        <template lwc:if={showCustomPattern}>
+                            <lightning-input label="Regular expression" value={validation.regexPattern} data-prop="regexPattern" onchange={handleValidationText}></lightning-input>
+                        </template>
+                    </template>
+                    <template lwc:if={showLength}>
+                        <div class="pp-two">
+                            <lightning-input type="number" label="Min length" value={validation.minLength} data-prop="minLength" onchange={handleValidationText}></lightning-input>
+                            <lightning-input type="number" label="Max length" value={validation.maxLength} data-prop="maxLength" onchange={handleValidationText}></lightning-input>
+                        </div>
+                    </template>
+                    <template lwc:if={showNumberRange}>
+                        <div class="pp-two">
+                            <lightning-input type="number" label="Min value" value={validation.minValue} data-prop="minValue" step="any" onchange={handleValidationText}></lightning-input>
+                            <lightning-input type="number" label="Max value" value={validation.maxValue} data-prop="maxValue" step="any" onchange={handleValidationText}></lightning-input>
+                        </div>
+                    </template>
+                    <lightning-input label="Error message" value={validation.errorMessage} data-prop="errorMessage" onchange={handleValidationText}></lightning-input>
+                </c-jform-property-section>
+            </template>
+
+            <template lwc:if={showLogic}>
+                <c-jform-property-section label="Logic" data-sec="logic" open={sec.logic.open} summary={sec.logic.summary} ontoggle={handleSection}>
+                    <template lwc:if={ruleSentence}><p class="pp-rule">{ruleSentence}</p></template>
+                    <template lwc:else><p class="pp-muted">No rule affects this field.</p></template>
+                    <lightning-button variant="base" label={logicButtonLabel} icon-name="utility:right" icon-position="right" onclick={handleGoToLogic}></lightning-button>
+                </c-jform-property-section>
+            </template>
+        </template>
+        <!-- Welcome screen: off, a message above the first page, or a start screen -->
+        <template lwc:if={hasWelcome}>
+            <div class="pp-head">
+                <lightning-icon icon-name="utility:home" size="small" alternative-text=""></lightning-icon>
+                <span class="pp-title">Welcome screen</span>
+            </div>
+            <div class="slds-form-element pr-width">
+                <span class="slds-form-element__label" id="pr-welcome-label">How the form opens</span>
+                <div class="pr-seg" role="radiogroup" aria-labelledby="pr-welcome-label">
+                    <template for:each={welcomeModeButtons} for:item="o">
+                        <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-value={o.value} onclick={handleWelcomeMode}>{o.label}</button>
+                    </template>
+                </div>
+            </div>
+            <p class="pp-muted">{welcomeModeHelp}</p>
+            <template lwc:if={welcomeIsScreen}>
+                <lightning-input label="Title" value={welcome.title} placeholder={formTitle} max-length="120" data-prop="title" onchange={handleWelcomeText}></lightning-input>
+            </template>
+            <template lwc:if={welcomeHasText}>
+                <c-jform-rich-editor label={welcomeTextLabel} name="welcomeMessage" data-prop="welcomeMessage" value={definition.welcomeMessage} mode={welcomeEditorMode}
+                    onchange={handleScreenMessage} onmodechange={handleScreenMessageMode}></c-jform-rich-editor>
+            </template>
+            <template lwc:if={welcomeIsScreen}>
+                <lightning-input label="Start button" value={welcome.buttonLabel} placeholder="Start" max-length="40" data-prop="buttonLabel" onchange={handleWelcomeText}></lightning-input>
+                <lightning-input type="toggle" label="Show how long it takes" checked={welcome.showTime} data-prop="showTime"
+                    message-toggle-active="" message-toggle-inactive="" onchange={handleWelcomeToggle}></lightning-input>
+                <template lwc:if={welcome.showTime}>
+                    <lightning-input type="number" label="Minutes" value={welcomeMinutesValue} placeholder={estimatedMinutes} min="1" max="120" step="1" onchange={handleWelcomeMinutes}></lightning-input>
+                    <p class="pp-muted">{estimateHelp}</p>
+                </template>
+                <div class="pp-group">Image</div>
+                <div class="pp-row pp-row-end">
+                    <lightning-input class="pp-grow" label="Image link" value={welcomeImageValue} placeholder="https://" onchange={handleWelcomeImage}></lightning-input>
+                    <template lwc:if={welcomeRaw.imageUrl}>
+                        <lightning-button-icon icon-name="utility:close" variant="bare" alternative-text="Remove the image" title="Remove the image" onclick={handleClearWelcomeImage}></lightning-button-icon>
+                    </template>
+                </div>
+                <template lwc:if={welcomeImageProblem}><p class="pp-warn">{welcomeImageProblem}</p></template>
+                <template lwc:if={formId}>
+                    <lightning-file-upload label="Or upload an image" name="welcomeImage" record-id={formId} accept={imageTypes} disabled={imageBusy} onuploadfinished={handleWelcomeImageUploaded}></lightning-file-upload>
+                </template>
+                <template lwc:if={imageError}><p class="pp-warn">{imageError}</p></template>
+                <p class="pp-muted">Without one, the start screen uses the cover image from Design &amp; preview.</p>
+                <div class="pp-group">Form pages</div>
+                <lightning-input type="toggle" label="Show the title, description and logo on form pages" checked={welcome.showHeader} data-prop="showHeader"
+                    message-toggle-active="" message-toggle-inactive="" onchange={handleWelcomeToggle}></lightning-input>
+                <p class="pp-muted">The start screen already shows them, so the questions start straight away. The cover image and logo stay.</p>
+            </template>
+        </template>
+
+        <!-- Thank-you screen: message, buttons, submit another, and where people go next -->
+        <template lwc:if={hasEnding}>
+            <div class="pp-head">
+                <lightning-icon icon-name="utility:success" size="small" alternative-text=""></lightning-icon>
+                <span class="pp-title">Thank-you screen</span>
+            </div>
+            <lightning-input label="Title" value={endingTitle} placeholder="Optional" max-length="120" onchange={handleEndingText}></lightning-input>
+            <c-jform-rich-editor label="Message" name="thankYouMessage" data-prop="thankYouMessage" value={definition.thankYouMessage} mode={thankYouEditorMode}
+                onchange={handleScreenMessage} onmodechange={handleScreenMessageMode}></c-jform-rich-editor>
+            <p class="pp-muted">Left empty, people read "Thank you. Your response has been recorded."</p>
+
+            <div class="pp-group">Buttons</div>
+            <template for:each={endingButtonRows} for:item="b">
+                <div key={b.key} class="pp-screen-button">
+                    <div class="pp-row pp-row-end">
+                        <lightning-input class="pp-grow" label="Label" value={b.label} max-length="40" data-index={b.index} data-prop="label" onchange={handleButtonEdit}></lightning-input>
+                        <lightning-button-icon icon-name="utility:delete" variant="bare" alternative-text={b.removeLabel} title={b.removeLabel} data-index={b.index} onclick={handleRemoveButton}></lightning-button-icon>
+                    </div>
+                    <template lwc:if={b.labelProblem}><p class="pp-warn">{b.labelProblem}</p></template>
+                    <lightning-input label="Link" value={b.url} placeholder="https://" data-index={b.index} data-prop="url" onchange={handleButtonEdit}></lightning-input>
+                    <template lwc:if={b.urlProblem}><p class="pp-warn">{b.urlProblem}</p></template>
+                </div>
+            </template>
+            <template lwc:if={newButton}>
+                <div class="pp-screen-button">
+                    <lightning-input label="Label" value={newButton.label} placeholder="Back to home" max-length="40" data-prop="label" onchange={handleNewButtonText}></lightning-input>
+                    <lightning-input label="Link" value={newButton.url} placeholder="https://" data-prop="url" onchange={handleNewButtonText}></lightning-input>
+                    <template lwc:if={newButtonUrlProblem}><p class="pp-warn">{newButtonUrlProblem}</p></template>
+                    <div class="pp-row">
+                        <lightning-button variant="brand" label="Add button" disabled={newButtonNotReady} onclick={handleAddButton}></lightning-button>
+                        <lightning-button variant="base" label="Cancel" onclick={handleCancelNewButton}></lightning-button>
+                    </div>
+                </div>
+            </template>
+            <template lwc:if={canAddButton}>
+                <lightning-button variant="base" label="Add a button" icon-name="utility:add" onclick={handleStartNewButton}></lightning-button>
+            </template>
+            <lightning-input type="toggle" label="Offer Submit another response" checked={endingSubmitAnother}
+                message-toggle-active="" message-toggle-inactive="" onchange={handleEndingToggle}></lightning-input>
+
+            <div class="pp-group">Afterwards</div>
+            <lightning-input type="toggle" label="Send people to another page" checked={redirectOn}
+                message-toggle-active="" message-toggle-inactive="" onchange={handleRedirectToggle}></lightning-input>
+            <template lwc:if={redirectOn}>
+                <lightning-input label="Link" value={redirectValue} placeholder="https://" onchange={handleRedirectUrl}></lightning-input>
+                <template lwc:if={redirectProblem}><p class="pp-warn">{redirectProblem}</p></template>
+                <div class="slds-form-element pr-width">
+                    <span class="slds-form-element__label" id="pr-redirect-label">When</span>
+                    <div class="pr-seg" role="radiogroup" aria-labelledby="pr-redirect-label">
+                        <template for:each={redirectDelayButtons} for:item="o">
+                            <button key={o.value} type="button" role="radio" aria-checked={o.checked} class={o.cls} data-value={o.value} onclick={handleRedirectDelay}>{o.label}</button>
+                        </template>
+                    </div>
+                </div>
+                <p class="pp-muted">The thank-you screen shows while it counts down, with a link to go at once. A form embedded in another website moves that whole page; embed code copied before this change shows a Continue link instead.</p>
+            </template>
+        </template>
+    </div>
+</template>

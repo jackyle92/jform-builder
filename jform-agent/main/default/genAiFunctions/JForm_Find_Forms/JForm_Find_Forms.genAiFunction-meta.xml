@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Find forms by words in their name, title or description, by status and by how recently they changed. Newest first.</description>
+    <invocationTarget>JFormFindFormsAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+    <masterLabel>Find Forms</masterLabel>
+    <progressIndicatorMessage>Looking for forms...</progressIndicatorMessage>
+</GenAiFunction>

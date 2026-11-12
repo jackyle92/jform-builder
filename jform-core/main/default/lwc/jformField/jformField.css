@@ -1,0 +1,773 @@
+/*
+ * Every color, border and spacing value comes from a --jf-* custom property set
+ * by c/jformTheme on the renderer root. The fallbacks give an SLDS-like look
+ * when the field is rendered without a theme (the builder canvas).
+ */
+:host {
+    display: block;
+}
+
+/* ---------------------------------------------------------------- layout */
+.jf-field {
+    display: grid;
+    grid-template-columns: var(--jf-field-cols, minmax(0, 1fr));
+    column-gap: 1rem;
+    row-gap: 0.375rem;
+    align-items: baseline;
+    color: var(--jf-text, #181818);
+    font-family: var(--jf-font-body, inherit);
+}
+.jf-label {
+    display: block;
+    min-width: 0;
+    font-size: 0.875em;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--jf-label, var(--jf-text, #181818));
+    overflow-wrap: anywhere;
+}
+.jf-label-spacer {
+    display: var(--jf-left-spacer, none);
+}
+/*
+ * A narrow field (half-width column, phone) keeps its label above the control, and so does a table, which needs the
+ * width. A consent checkbox carries its own text as the label, so it takes the field's full width with labels on the left too.
+ */
+.jf-compact,
+.jf-kind-table,
+.jf-kind-consent,
+.jf-kind-checkbox {
+    grid-template-columns: minmax(0, 1fr);
+}
+.jf-compact .jf-label-spacer,
+.jf-kind-table .jf-label-spacer {
+    display: none;
+}
+.jf-req {
+    color: var(--jf-error, #ba0517);
+}
+.jf-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+.jf-desc:empty {
+    display: none;
+}
+.jf-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.jf-help {
+    font-size: 0.8125em;
+    line-height: 1.4;
+    color: var(--jf-muted, #747474);
+}
+.jf-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.375rem;
+    font-size: 0.8125em;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--jf-error, #ba0517);
+}
+.jf-icon {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------- text-like inputs */
+.jf-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 0.5rem var(--jf-input-padx, 0.75rem);
+    font: inherit;
+    font-size: 1em;
+    line-height: 1.4;
+    color: var(--jf-text, #181818);
+    background: var(--jf-input-bg, #ffffff);
+    border-style: solid;
+    border-color: var(--jf-input-border, #c9c9c9);
+    border-width: var(--jf-input-border-width, 1px);
+    border-radius: var(--jf-input-radius, 6px);
+    color-scheme: var(--jf-color-scheme, light);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.jf-input:not([type="date"]):not([type="time"]) {
+    -webkit-appearance: none;
+    appearance: none;
+}
+.jf-input::placeholder {
+    color: var(--jf-placeholder, #939393);
+    opacity: 1;
+}
+.jf-input:hover:not(:disabled):not(:focus) {
+    border-color: var(--jf-input-border-hover, #8c8c8c);
+}
+.jf-input:focus {
+    outline: none;
+    border-color: var(--jf-primary, #337418);
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-invalid .jf-input,
+.jf-invalid .jf-input:hover:not(:focus) {
+    border-color: var(--jf-error, #ba0517);
+}
+.jf-invalid .jf-input:focus {
+    box-shadow: 0 0 0 3px var(--jf-error-ring, rgba(186, 5, 23, 0.2));
+}
+.jf-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.jf-textarea {
+    min-height: 6.5rem;
+    resize: vertical;
+}
+
+/* dropdown */
+.jf-select-wrap {
+    position: relative;
+}
+.jf-select {
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+.jf-chevron {
+    position: absolute;
+    top: 50%;
+    right: 0.875rem;
+    width: 1rem;
+    height: 1rem;
+    margin-top: -0.5rem;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--jf-muted, #747474);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* name: a fieldset laid out like any field; a floated legend is an ordinary grid item, so it sits where other labels do */
+fieldset.jf-field {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.jf-legend {
+    float: left;
+    padding: 0;
+}
+.jf-name-parts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+.jf-name-part {
+    flex: 1 1 10rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.jf-name-stacked {
+    flex-direction: column;
+}
+.jf-name-stacked .jf-name-part {
+    flex: none;
+}
+.jf-sublabel {
+    font-size: 0.8125em;
+    line-height: 1.35;
+    color: var(--jf-muted, #747474);
+    overflow-wrap: anywhere;
+}
+
+/* address: every part across, except city beside state; one part per line when narrow */
+.jf-address-parts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+.jf-address-part {
+    grid-column: 1 / -1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.jf-address-half {
+    grid-column: auto;
+}
+.jf-compact .jf-address-parts {
+    grid-template-columns: minmax(0, 1fr);
+}
+.jf-address-street {
+    resize: vertical;
+}
+
+/* file */
+.jf-file {
+    font: inherit;
+    font-size: 0.9375em;
+    color: var(--jf-muted, #747474);
+    color-scheme: var(--jf-color-scheme, light);
+}
+.jf-file::file-selector-button {
+    margin-right: 0.75rem;
+    padding: 0.5rem 1rem;
+    font: inherit;
+    font-weight: 600;
+    color: var(--jf-text, #181818);
+    background: var(--jf-input-bg, #ffffff);
+    border: 1px solid var(--jf-input-border, #c9c9c9);
+    border-radius: var(--jf-input-radius, 6px);
+    cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- choices */
+.jf-choices {
+    display: grid;
+    grid-template-columns: var(--jf-choice-cols, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+.jf-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    box-sizing: border-box;
+    min-height: var(--jf-choice-min-h, 2.75rem);
+    padding: var(--jf-choice-pad, 0.625rem 0.875rem);
+    border: var(--jf-choice-border-width, 1px) solid var(--jf-choice-border, #c9c9c9);
+    border-radius: var(--jf-input-radius, 6px);
+    background: var(--jf-choice-bg, #ffffff);
+    color: var(--jf-text, #181818);
+    line-height: 1.35;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.jf-choice:hover:not(.jf-choice-disabled) {
+    border-color: var(--jf-primary, #337418);
+}
+.jf-choice-on {
+    border-color: var(--jf-primary, #337418);
+    background: var(--jf-choice-on-bg, #eef4ff);
+    box-shadow: var(--jf-choice-on-shadow, inset 0 0 0 1px #337418);
+}
+.jf-choice-disabled {
+    cursor: default;
+}
+/* past the most a Checkboxes field takes: the boxes left can't be ticked */
+.jf-choice-full {
+    opacity: 0.6;
+}
+/* the text under an Other choice */
+.jf-other-input {
+    margin-top: 0.5rem;
+}
+.jf-choice-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.jf-check {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    accent-color: var(--jf-primary, #337418);
+    color-scheme: var(--jf-color-scheme, light);
+    cursor: pointer;
+}
+.jf-check:focus-visible {
+    outline: 2px solid var(--jf-primary, #337418);
+    outline-offset: 2px;
+}
+.jf-check:disabled {
+    cursor: default;
+}
+
+/* consent */
+.jf-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    color: var(--jf-label, var(--jf-text, #181818));
+    line-height: 1.4;
+    cursor: pointer;
+}
+.jf-consent .jf-check {
+    margin-top: 0.125rem;
+}
+.jf-consent-text {
+    min-width: 0;
+    font-size: 0.9375em;
+}
+
+/* yes / no */
+.jf-seg {
+    display: inline-flex;
+    max-width: 100%;
+    border: 1px solid var(--jf-input-border, #c9c9c9);
+    border-radius: var(--jf-input-radius, 6px);
+    background: var(--jf-input-bg, #ffffff);
+    overflow: hidden;
+}
+.jf-seg-btn {
+    min-width: 5.5rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border: 0;
+    border-left: 1px solid var(--jf-input-border, #c9c9c9);
+    background: transparent;
+    color: var(--jf-text, #181818);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+.jf-seg-btn:first-child {
+    border-left: 0;
+}
+.jf-seg-btn:hover:not(:disabled):not(.jf-selected) {
+    background: var(--jf-choice-on-bg, #eef4ff);
+}
+.jf-seg-btn.jf-selected {
+    background: var(--jf-primary, #337418);
+    color: var(--jf-on-primary, #ffffff);
+}
+.jf-seg-btn:focus-visible {
+    outline: 2px solid var(--jf-primary, #337418);
+    outline-offset: -2px;
+}
+
+/* NPS */
+.jf-scale {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    gap: 0.375rem;
+}
+.jf-scale-btn,
+.jf-star {
+    min-height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--jf-input-border, #c9c9c9);
+    border-radius: var(--jf-input-radius, 6px);
+    background: var(--jf-input-bg, #ffffff);
+    color: var(--jf-text, #181818);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+.jf-scale-btn:hover:not(:disabled),
+.jf-star:hover:not(:disabled) {
+    border-color: var(--jf-primary, #337418);
+}
+.jf-scale-btn:focus-visible,
+.jf-star:focus-visible {
+    outline: 2px solid var(--jf-primary, #337418);
+    outline-offset: 2px;
+}
+.jf-scale-btn.jf-selected {
+    background: var(--jf-primary, #337418);
+    border-color: var(--jf-primary, #337418);
+    color: var(--jf-on-primary, #ffffff);
+}
+.jf-scale-ends {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.375rem;
+    font-size: 0.75em;
+    color: var(--jf-muted, #747474);
+}
+
+/* rating */
+.jf-stars {
+    display: flex;
+    gap: 0.375rem;
+}
+.jf-star {
+    width: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.jf-star-icon {
+    width: 1.375rem;
+    height: 1.375rem;
+    fill: none;
+    stroke: var(--jf-muted, #747474);
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+}
+.jf-star.jf-selected {
+    border-color: var(--jf-primary, #337418);
+}
+.jf-star.jf-selected .jf-star-icon {
+    fill: var(--jf-primary, #337418);
+    stroke: var(--jf-primary, #337418);
+}
+
+/* edit mode (builder canvas): same look, inert controls */
+.jf-edit .jf-input:disabled,
+.jf-edit .jf-file:disabled,
+.jf-edit .jf-seg-btn:disabled,
+.jf-edit .jf-scale-btn:disabled,
+.jf-edit .jf-star:disabled {
+    opacity: 1;
+    cursor: default;
+}
+.jf-edit .jf-choice,
+.jf-edit .jf-consent {
+    cursor: default;
+}
+
+/* ---------------------------------------------------------------- layout blocks */
+.jf-richtext {
+    display: block;
+    color: var(--jf-text, #181818);
+}
+.jf-heading {
+    margin: 0;
+    font-family: var(--jf-font-heading, inherit);
+    font-size: 1.375em;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--jf-text, #181818);
+}
+.jf-subheading {
+    margin: 0.25rem 0 0;
+    color: var(--jf-muted, #747474);
+}
+.jf-divider {
+    margin: 0.5rem 0;
+    border: 0;
+    border-top: 1px solid var(--jf-border, #e5e5e5);
+}
+/* Image block: a fixed height on its own, filling the cell when the field spans several rows */
+.jf-image {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.jf-image-small { --jf-image-h: 10rem; }
+.jf-image-medium { --jf-image-h: 15rem; }
+.jf-image-large { --jf-image-h: 22rem; }
+.jf-image-img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: var(--jf-image-h, 15rem);
+    flex: 1 1 auto;
+    object-fit: cover;
+    border-radius: var(--jf-input-radius, 6px);
+}
+.jf-image-contain .jf-image-img {
+    object-fit: contain;
+    background: var(--jf-input-bg, #f3f3f3);
+}
+.jf-image-empty {
+    flex: 1 1 auto;
+    min-height: var(--jf-image-h, 15rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border: 1.5px dashed var(--jf-border, #e3e3e3);
+    border-radius: var(--jf-input-radius, 6px);
+    color: var(--jf-muted, #747474);
+    font-size: 0.875rem;
+    text-align: center;
+}
+.jf-image-caption {
+    font-size: 0.875rem;
+    color: var(--jf-muted, #747474);
+}
+/* Event details card */
+.jf-event {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 1.125rem 1.25rem;
+    border-radius: var(--jf-radius, 10px);
+    background: var(--jf-primary-tint, #ecfae6);
+    color: var(--jf-text, #181818);
+}
+.jf-event-badge {
+    flex: none;
+    width: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.375rem 0 0.5rem;
+    border-radius: var(--jf-input-radius, 8px);
+    background: var(--jf-primary, #337418);
+    color: var(--jf-on-primary, #ffffff);
+    line-height: 1.1;
+}
+.jf-event-month {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+.jf-event-day {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+.jf-event-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+.jf-event-title {
+    margin: 0;
+    font-family: var(--jf-font-heading, inherit);
+    font-size: 1.125em;
+    font-weight: 700;
+    line-height: 1.25;
+}
+.jf-event-line {
+    margin: 0;
+    font-weight: 500;
+}
+.jf-event-where {
+    color: var(--jf-muted, #747474);
+}
+.jf-event-desc {
+    margin: 0.25rem 0 0;
+    white-space: pre-line;
+}
+.jf-event-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-top: 0.5rem;
+}
+.jf-event-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--jf-primary, #337418);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+/* Experience sites colour links with a:link:not(...) at a higher specificity, reading
+   --dxp-c-link-text-color: give it the theme's colour, and outrank it for good measure */
+a.jf-event-link {
+    --dxp-c-link-text-color: var(--jf-primary, #337418);
+}
+a.jf-event-link:link,
+a.jf-event-link:visited,
+a.jf-event-link:hover {
+    color: var(--jf-primary, #337418);
+}
+.jf-hidden-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    color: #5c5c5c;
+    background: #f3f3f3;
+    border-radius: 999px;
+}
+.jf-unsupported {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #8a4a0b;
+    background: #fdf0e5;
+    border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .jf-input,
+    .jf-choice {
+        transition: none;
+    }
+}
+
+/* Payment block: the lines, the total and the test banner */
+.jf-payment {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.125rem 1.25rem;
+    border-radius: var(--jf-radius, 10px);
+    background: var(--jf-primary-tint, #ecfae6);
+    color: var(--jf-text, #181818);
+}
+.jf-payment-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+.jf-payment-gateway {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.1875rem 0.25rem 0.1875rem 0.625rem;
+    border: 1px solid var(--jf-input-border, #c9c9c9);
+    border-radius: 999px;
+    background: var(--jf-input-bg, #fff);
+}
+.jf-payment-mode {
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.25rem;
+    background: var(--jf-primary-tint, #ecfae6);
+}
+.jf-payment-by {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--jf-muted, #747474);
+}
+.jf-payment-test {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px dashed var(--jf-muted, #747474);
+    border-radius: var(--jf-input-radius, 6px);
+    font-size: 0.875rem;
+}
+.jf-payment-test .jf-icon {
+    flex: none;
+    margin-top: 0.125rem;
+}
+.jf-payment-amount {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 16rem;
+}
+.jf-payment-currency {
+    font-weight: 600;
+    color: var(--jf-muted, #747474);
+}
+.jf-payment-lines {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+.jf-payment-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+}
+.jf-payment-name {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+.jf-payment-detail {
+    font-size: 0.875rem;
+    color: var(--jf-muted, #747474);
+}
+.jf-payment-price {
+    flex: none;
+    font-variant-numeric: tabular-nums;
+}
+.jf-payment-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid var(--jf-input-border, #c9c9c9);
+    font-size: 1.0625em;
+}
+.jf-payment-total strong {
+    font-variant-numeric: tabular-nums;
+}
+.jf-payment-line-discount .jf-payment-price {
+    color: var(--jf-success, #2e844a);
+}
+.jf-payment-code {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+.jf-payment-code .jf-input {
+    flex: 1;
+    min-width: 0;
+    text-transform: uppercase;
+}
+.jf-payment-code .jf-input::placeholder {
+    text-transform: none;
+}
+.jf-payment-code-btn {
+    flex: none;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid var(--jf-btn2-border, #c9c9c9);
+    border-radius: var(--jf-input-radius, 6px);
+    background: transparent;
+    color: var(--jf-btn2-text, #181818);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+.jf-payment-code-btn:hover:not(:disabled) {
+    background: var(--jf-btn2-bg-hover, #f3f3f3);
+}
+.jf-payment-code-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+.jf-payment-code-applied {
+    font-size: 0.9375rem;
+    color: var(--jf-success, #2e844a);
+}
+.jf-payment-code-applied .jf-icon {
+    flex: none;
+}
+.jf-payment-code-text {
+    flex: 1;
+}
+.jf-payment-code-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--jf-primary, #337418);
+    text-decoration: underline;
+    cursor: pointer;
+}
+.jf-payment-codes-note {
+    margin-top: 0.25rem;
+}

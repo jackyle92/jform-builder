@@ -1,0 +1,191 @@
+:host {
+    display: block;
+    position: relative;
+}
+.jf-ph {
+    position: relative;
+}
+
+/* one frame, like a text box, holding the country button and the number */
+.jf-ph-control {
+    display: flex;
+    align-items: stretch;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.75rem;
+    background: var(--jf-input-bg, #ffffff);
+    border-style: solid;
+    border-color: var(--jf-input-border, #c9c9c9);
+    border-width: var(--jf-input-border-width, 1px);
+    border-radius: var(--jf-input-radius, 6px);
+    color-scheme: var(--jf-color-scheme, light);
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.jf-ph-control:hover:not(.jf-ph-disabled):not(.jf-ph-inert):not(:focus-within) {
+    border-color: var(--jf-input-border-hover, #8c8c8c);
+}
+.jf-ph-control:focus-within {
+    border-color: var(--jf-primary, #337418);
+    box-shadow: 0 0 0 3px var(--jf-focus-ring, rgba(1, 118, 211, 0.25));
+}
+.jf-ph-control.jf-ph-invalid {
+    border-color: var(--jf-error, #ba0517);
+}
+.jf-ph-disabled {
+    opacity: 0.6;
+}
+.jf-ph-inert .jf-ph-country,
+.jf-ph-inert .jf-ph-input {
+    cursor: default;
+}
+
+.jf-ph-country {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0 0.5rem 0 var(--jf-input-padx, 0.75rem);
+    font: inherit;
+    font-size: 1em;
+    color: var(--jf-text, #181818);
+    background: color-mix(in srgb, var(--jf-text, #181818) 5%, transparent);
+    border: 0;
+    border-right: 1px solid color-mix(in srgb, var(--jf-input-border, #c9c9c9) 60%, transparent);
+    cursor: pointer;
+}
+.jf-ph-country:hover:not(:disabled),
+.jf-ph-open .jf-ph-country {
+    background: color-mix(in srgb, var(--jf-text, #181818) 9%, transparent);
+}
+.jf-ph-country:focus-visible {
+    outline: 2px solid var(--jf-primary, #337418);
+    outline-offset: -2px;
+}
+.jf-ph-country:disabled {
+    cursor: not-allowed;
+}
+.jf-ph-country:disabled:hover {
+    background: color-mix(in srgb, var(--jf-text, #181818) 5%, transparent);
+}
+.jf-ph-dial {
+    font-variant-numeric: tabular-nums;
+}
+.jf-ph-caret {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: none;
+    stroke: var(--jf-muted, #5c5c5c);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.15s ease;
+}
+.jf-ph-open .jf-ph-caret {
+    transform: rotate(180deg);
+}
+
+/* flags come from one sprite (staticresources/jformFlags); the inset line keeps white flags visible */
+.jf-ph-flag {
+    flex: none;
+    display: inline-block;
+    width: 20px;
+    height: 15px;
+    border-radius: 2px;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.jf-ph-globe {
+    flex: none;
+    width: 20px;
+    height: 18px;
+    fill: none;
+    stroke: var(--jf-muted, #5c5c5c);
+    stroke-width: 1.6;
+}
+
+.jf-ph-input {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0.5rem var(--jf-input-padx, 0.75rem);
+    font: inherit;
+    font-size: 1em;
+    line-height: 1.4;
+    color: var(--jf-text, #181818);
+    background: transparent;
+    border: 0;
+    outline: none;
+}
+.jf-ph-input::placeholder {
+    color: var(--jf-placeholder, #939393);
+    opacity: 1;
+}
+.jf-ph-input:disabled {
+    cursor: not-allowed;
+}
+
+/* the country list */
+.jf-ph-pop {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 0.375rem);
+    left: 0;
+    right: 0;
+    background: var(--jf-surface, #ffffff);
+    color: var(--jf-text, #181818);
+    border: 1px solid var(--jf-border, #e0e0e0);
+    border-radius: var(--jf-radius, 10px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+    overflow: hidden;
+}
+.jf-ph-search {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0.625rem 0.875rem;
+    font: inherit;
+    font-size: 1em;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--jf-border, #e0e0e0);
+    outline: none;
+    color-scheme: var(--jf-color-scheme, light);
+}
+.jf-ph-search::placeholder {
+    color: var(--jf-placeholder, #939393);
+    opacity: 1;
+}
+.jf-ph-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0;
+    max-height: 16.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.jf-ph-option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.875rem;
+    cursor: pointer;
+}
+.jf-ph-option:hover,
+.jf-ph-active {
+    background: var(--jf-primary-tint, rgba(1, 118, 211, 0.08));
+}
+.jf-ph-selected .jf-ph-name {
+    font-weight: 600;
+}
+.jf-ph-code {
+    color: var(--jf-muted, #5c5c5c);
+    font-variant-numeric: tabular-nums;
+}
+.jf-ph-empty {
+    padding: 0.5rem 0.875rem;
+    color: var(--jf-muted, #5c5c5c);
+    font-size: 0.9em;
+}

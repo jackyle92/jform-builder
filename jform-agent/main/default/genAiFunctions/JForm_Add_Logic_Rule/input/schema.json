@@ -1,0 +1,61 @@
+{
+  "required": [
+    "formId",
+    "targetField",
+    "ruleAction",
+    "whenField"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "formId": {
+      "title": "Form Id",
+      "description": "Id of the form to change",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "targetField": {
+      "title": "Target",
+      "description": "Field label or key, or page title or page number, that the rule applies to",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "ruleAction": {
+      "title": "Rule Action",
+      "description": "show, hide or require. Pages support show and hide.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "whenField": {
+      "title": "When Field",
+      "description": "Field whose answer is checked, by label or key, or a table row or a name or address part by its key from the outline, for example satisfaction.price, name.lastName or address.country (an address's country and state are tested by name, such as Australia)",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "operator": {
+      "title": "Operator",
+      "description": "equals, not equals, contains, is empty, is not empty, greater than or less than. Defaults to equals.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "value": {
+      "title": "Value",
+      "description": "Answer to compare with. Not needed for is empty or is not empty.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "combine": {
+      "title": "Combine With Existing",
+      "description": "and or or, to add this condition to an existing rule with the same action. Leave empty to replace it.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

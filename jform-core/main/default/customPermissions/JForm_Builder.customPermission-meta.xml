@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Build and manage JForm forms through the JForm REST API. Granted by the ACCESS_FORM_BUILDER permission set.</description>
+    <isLicensed>false</isLicensed>
+    <label>JForm Builder</label>
+</CustomPermission>

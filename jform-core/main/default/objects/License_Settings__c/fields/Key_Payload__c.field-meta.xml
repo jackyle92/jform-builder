@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Key_Payload__c</fullName>
+    <description>First part of the license key: base64url JSON with the org ID, customer, edition, features and expiry date.</description>
+    <externalId>false</externalId>
+    <label>Key Payload</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

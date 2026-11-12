@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <cacheControl>Public</cacheControl>
+    <contentType>image/png</contentType>
+    <description>Country flags for the Phone field's country picker, drawn from flag-icons 7.5.0 (MIT, Copyright (c) 2013 Panayiotis Lipiridis) by scripts/phone/build.mjs.</description>
+</StaticResource>

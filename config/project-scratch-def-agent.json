@@ -1,0 +1,12 @@
+{
+  "orgName": "JForm Agent Build",
+  "edition": "Developer",
+  "language": "en_US",
+  "features": ["Communities", "EnableSetPasswordInApi", "Einstein1AIPlatform"],
+  "settings": {
+    "communitiesSettings": { "enableNetworksEnabled": true },
+    "experienceBundleSettings": { "enableExperienceBundleMetadata": true },
+    "lightningExperienceSettings": { "enableS1DesktopEnabled": true },
+    "einsteinGptSettings": { "enableEinsteinGptPlatform": true }
+  }
+}

@@ -1,0 +1,171 @@
+<template>
+    <div class="cv" style={canvasStyle} onclick={handleClearSelection}>
+        <!-- How the form opens: off, a message above the first page, or a start screen -->
+        <section class={welcomeCard.cls} style={welcomeCard.style} role="button" tabindex="0" aria-pressed={welcomeCard.selected} aria-label="Welcome screen settings"
+            onclick={handleSelectWelcome} onkeydown={handleScreenKey}>
+            <header class="cv-page-header cv-screen-header">
+                <lightning-icon icon-name="utility:home" size="x-small" alternative-text="" class="cv-screen-icon"></lightning-icon>
+                <span class="cv-page-number">Welcome</span>
+                <span class="cv-screen-mode">{welcomeCard.mode}</span>
+            </header>
+            <template lwc:if={welcomeCard.isOff}>
+                <div class="cv-screen-body">
+                    <p class="cv-screen-muted">The form opens on its first page. Select to add a message or a start screen.</p>
+                </div>
+            </template>
+            <template lwc:elseif={welcomeCard.isScreen}>
+                <!-- the start screen as respondents see it; clicks select the card rather than follow links in the message -->
+                <div class="cv-screen-preview">
+                    <template lwc:if={welcomeCard.imageUrl}><img class="cv-screen-image" src={welcomeCard.imageUrl} alt=""></template>
+                    <div class={welcomeCard.bodyCls}>
+                        <template lwc:if={welcomeCard.logoUrl}><img class="cv-screen-logo" src={welcomeCard.logoUrl} alt=""></template>
+                        <p class="cv-screen-title">{welcomeCard.title}</p>
+                        <template lwc:if={welcomeCard.html}>
+                            <lightning-formatted-rich-text value={welcomeCard.html} class="cv-screen-rich"></lightning-formatted-rich-text>
+                        </template>
+                        <div class="cv-screen-start">
+                            <span class="cv-screen-button">{welcomeCard.startLabel}
+                                <svg class="cv-screen-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+                            </span>
+                            <template lwc:if={welcomeCard.timeText}>
+                                <span class="cv-screen-time">
+                                    <svg class="cv-screen-clock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                                    {welcomeCard.timeText}
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template lwc:else>
+                <div class="cv-screen-body">
+                    <template lwc:if={welcomeCard.empty}><p class="cv-screen-muted">No message yet. Select to write one.</p></template>
+                    <template lwc:else>
+                        <div class="cv-screen-preview">
+                            <lightning-formatted-rich-text value={welcomeCard.html} class="cv-screen-rich"></lightning-formatted-rich-text>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </section>
+
+        <template for:each={pages} for:item="page">
+            <section key={page.key} class={page.cls} data-si={page.si} data-key={page.key}
+                ondragover={handleDragOver} ondragleave={handleDragLeave} ondrop={handleDropOnPage}>
+
+                <header class="cv-page-header" data-si={page.si} onclick={handleSelectPage}>
+                    <lightning-icon icon-name="utility:drag_and_drop" size="x-small" alternative-text="" class="cv-grip"></lightning-icon>
+                    <template lwc:if={isMultiPage}>
+                        <span class="cv-page-number">Page {page.number}</span>
+                    </template>
+                    <input class="cv-page-title" type="text" value={page.label} data-si={page.si} aria-label="Page title"
+                        onchange={handlePageTitle} onclick={stop}>
+                    <span class="cv-page-meta">{page.fieldCount} fields</span>
+                    <template lwc:if={page.hasRule}>
+                        <lightning-icon icon-name="utility:flow" size="xx-small" alternative-text="Has a rule" title="This page has a rule"></lightning-icon>
+                    </template>
+                    <div class="cv-page-tools">
+                        <button type="button" class="cv-tool" title="Move page up" aria-label="Move page up" data-si={page.si} disabled={page.isFirst} onclick={handlePageUp}><lightning-icon icon-name="utility:up" size="x-small" alternative-text=""></lightning-icon></button>
+                        <button type="button" class="cv-tool" title="Move page down" aria-label="Move page down" data-si={page.si} disabled={page.isLast} onclick={handlePageDown}><lightning-icon icon-name="utility:down" size="x-small" alternative-text=""></lightning-icon></button>
+                        <button type="button" class="cv-tool cv-tool-delete" title="Delete page" aria-label="Delete page" data-si={page.si} disabled={page.cannotDelete} onclick={handleDeletePage}><lightning-icon icon-name="utility:delete" size="x-small" alternative-text=""></lightning-icon></button>
+                    </div>
+                </header>
+
+                <div class="cv-grid">
+                    <template for:each={page.items} for:item="item">
+                        <div key={item.key} class={item.cls} style={item.style} data-si={item.si} data-fi={item.fi} draggable={item.draggable}
+                            onclick={handleSelectField} ondragstart={handleFieldDragStart} ondragend={handleFieldDragEnd}>
+                            <template lwc:if={item.isPlaceholder}>
+                                <div class="cv-ph-label" aria-hidden="true">
+                                    <img class="cv-ph-icon" src={item.iconUrl} alt="" width="20" height="20">
+                                    <span>{item.label}</span>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <template lwc:if={item.selected}>
+                                    <div class="cv-toolbar" onclick={stop}>
+                                        <span class="cv-type">{item.typeLabel}</span>
+                                        <button type="button" class="cv-tool" title="Move up" aria-label="Move up" data-si={item.si} data-fi={item.fi} disabled={item.isFirst} onclick={handleMoveUp}><lightning-icon icon-name="utility:up" size="x-small" alternative-text=""></lightning-icon></button>
+                                        <button type="button" class="cv-tool" title="Move down" aria-label="Move down" data-si={item.si} data-fi={item.fi} disabled={item.isLast} onclick={handleMoveDown}><lightning-icon icon-name="utility:down" size="x-small" alternative-text=""></lightning-icon></button>
+                                        <button type="button" class="cv-tool" title="Duplicate" aria-label="Duplicate" data-si={item.si} data-fi={item.fi} onclick={handleDuplicate}><lightning-icon icon-name="utility:copy" size="x-small" alternative-text=""></lightning-icon></button>
+                                        <button type="button" class="cv-tool cv-tool-delete" title="Delete" aria-label="Delete" data-si={item.si} data-fi={item.fi} onclick={handleDelete}><lightning-icon icon-name="utility:delete" size="x-small" alternative-text=""></lightning-icon></button>
+                                    </div>
+                                </template>
+                                <c-jform-field field={item.field} payment={item.payment} address-lists={addressLists} mode="edit"></c-jform-field>
+                                <div class="cv-overlay" aria-hidden="true"></div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                <template lwc:if={page.showEmpty}>
+                    <div class="cv-empty">Drag a field here, or click one in the palette.</div>
+                </template>
+                <template lwc:if={page.menuOpen}>
+                    <div class="cv-menu" role="group" aria-label="Add a field here" onkeydown={handleMenuKey} onclick={handleMenuClick}>
+                        <div class="cv-menu-head">
+                            <span class="cv-menu-title">Add a field</span>
+                            <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Cancel" onclick={handleMenuClose}></lightning-button-icon>
+                        </div>
+                        <lightning-input class="cv-menu-search" type="search" label="Search field types" variant="label-hidden" placeholder="Search field types" onchange={handleMenuSearch}></lightning-input>
+                        <div class="cv-menu-list">
+                            <template lwc:if={menuEmpty}>
+                                <p class="cv-menu-empty">No field type matches that. Try the kind of answer you want, like date or photo.</p>
+                            </template>
+                            <template for:each={menuGroups} for:item="g">
+                                <div key={g.group} class="cv-menu-group">
+                                    <div class="cv-menu-heading">{g.group}</div>
+                                    <div class="cv-menu-grid">
+                                        <template for:each={g.items} for:item="item">
+                                            <button key={item.type} type="button" class="cv-menu-option" data-type={item.type} onclick={handleMenuPick}>
+                                                <img class="cv-menu-icon" src={item.iconUrl} alt="" width="20" height="20">
+                                                <span class="cv-menu-text">
+                                                    <span class="cv-menu-label">{item.label}</span>
+                                                    <span class="cv-menu-help">{item.desc}</span>
+                                                </span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <button type="button" class="cv-insert" data-si={page.si} data-key={page.key} onclick={handleInsertHere}>
+                        <lightning-icon icon-name="utility:add" size="xx-small" alternative-text=""></lightning-icon>
+                        Add field here
+                    </button>
+                </template>
+            </section>
+        </template>
+
+        <button type="button" class="cv-add-page" onclick={handleAddPage}>
+            <lightning-icon icon-name="utility:add" size="xx-small" alternative-text=""></lightning-icon>
+            Add page
+        </button>
+
+        <!-- What people see after they submit -->
+        <section class={endingCard.cls} style={endingCard.style} role="button" tabindex="0" aria-pressed={endingCard.selected} aria-label="Thank-you screen settings"
+            onclick={handleSelectEnding} onkeydown={handleScreenKey}>
+            <header class="cv-page-header cv-screen-header">
+                <lightning-icon icon-name="utility:success" size="x-small" alternative-text="" class="cv-screen-icon"></lightning-icon>
+                <span class="cv-page-number">Thank you</span>
+            </header>
+            <!-- the thank-you screen as respondents see it -->
+            <div class="cv-screen-preview cv-screen-body cv-screen-center cv-screen-thanks">
+                <lightning-icon icon-name="utility:success" size="small" alternative-text="" class="cv-screen-check"></lightning-icon>
+                <template lwc:if={endingCard.title}><p class="cv-screen-title">{endingCard.title}</p></template>
+                <lightning-formatted-rich-text value={endingCard.html} class="cv-screen-rich"></lightning-formatted-rich-text>
+                <template lwc:if={endingCard.hasButtons}>
+                    <div class="cv-screen-buttons">
+                        <template for:each={endingCard.buttons} for:item="b">
+                            <span key={b.key} class={b.cls}>{b.label}</span>
+                        </template>
+                    </div>
+                </template>
+                <template lwc:if={endingCard.redirect}><p class="cv-screen-note">{endingCard.redirect}</p></template>
+            </div>
+        </section>
+    </div>
+</template>

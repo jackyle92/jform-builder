@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Get the pages, fields, choices and rules of one form and the steps that run for each response, plus its status, builder link and public link.</description>
+    <invocationTarget>JFormGetFormDetailsAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <isIncludeInProgressIndicator>false</isIncludeInProgressIndicator>
+    <masterLabel>Get Form Details</masterLabel>
+</GenAiFunction>

@@ -1,0 +1,58 @@
+.re {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.re-label {
+    font-size: 0.75rem;
+    color: var(--jform-ink, #181818);
+    margin-bottom: 0.125rem;
+}
+.re-html {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 14rem;
+    padding: 0.5rem 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--jform-ink, #181818);
+    background: #fff;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 4px;
+    resize: vertical;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.re-html:focus {
+    outline: none;
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: 0 0 0 3px rgba(11, 122, 110, 0.25);
+}
+.re-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.re-tools {
+    display: flex;
+    justify-content: flex-end;
+}
+.re-toggle {
+    border: 0;
+    background: transparent;
+    color: var(--jform-primary, #0250d9);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.25rem 0.375rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.re-toggle:hover {
+    background: rgba(11, 122, 110, 0.08);
+}
+.re-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(11, 122, 110, 0.3);
+}

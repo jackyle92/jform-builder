@@ -1,0 +1,626 @@
+:host {
+    display: block;
+}
+.jf-root {
+    position: relative;
+    background: var(--jf-bg, #f3f3f3);
+    color: var(--jf-text, #181818);
+    font-family: var(--jf-font-body, inherit);
+    font-size: calc(1rem * var(--jf-scale, 1));
+    padding: 2rem 1rem 3rem;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+.jf-root.jf-embedded {
+    background: transparent;
+    padding: 0;
+}
+.jf-main {
+    position: relative;
+    z-index: 1;
+}
+.jf-container {
+    max-width: var(--jf-max-width, 680px);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+/* Page background image: behind the whole form area, scrolls with it. */
+.jf-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+/* Mesh background: three soft spots that drift a little as the form is answered (--jf-drift goes from 0 to 1). */
+.jf-mesh {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+.jf-root.jf-full-page .jf-mesh {
+    position: fixed;
+    z-index: -1;
+}
+.jf-blob {
+    position: absolute;
+    width: 65%;
+    height: 75%;
+    border-radius: 50%;
+    transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.jf-blob-a {
+    left: -15%;
+    top: -20%;
+    background: radial-gradient(closest-side, var(--jf-mesh-a), transparent);
+    transform: translate(calc(var(--jf-drift, 0) * 30%), calc(var(--jf-drift, 0) * 25%));
+}
+.jf-blob-b {
+    right: -15%;
+    top: 0;
+    background: radial-gradient(closest-side, var(--jf-mesh-b), transparent);
+    transform: translate(calc(var(--jf-drift, 0) * -25%), calc(var(--jf-drift, 0) * 30%));
+}
+.jf-blob-c {
+    left: 15%;
+    bottom: -35%;
+    background: radial-gradient(closest-side, var(--jf-mesh-c), transparent);
+    transform: translate(calc(var(--jf-drift, 0) * 20%), calc(var(--jf-drift, 0) * -30%));
+}
+/* Full-page mode: the theme background fills the viewport behind everything on the page, so the
+   padding a site layout puts around the component shows the form's colours, not the page's.
+   Fixed positioning ignores the slot; the negative z-index keeps it under all page content. */
+.jf-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--jf-bg, #f3f3f3);
+    pointer-events: none;
+}
+.jf-root.jf-full-page {
+    background: transparent;
+    min-height: 100vh;
+    /* Own stacking context: the backdrop then paints above the page's wrappers (which have their
+       own backgrounds and would otherwise cover it) and below this component's content. */
+    isolation: isolate;
+    /* A form shorter than the viewport (a start screen, a thank-you screen, a short page) sits in the
+       middle of it; a longer one grows past the viewport and starts at the top as before. */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.jf-root.jf-full-page .jf-bg-image {
+    position: fixed;
+    z-index: -1;
+}
+/* Side image: a split layout with the image in one column and the form in the other.
+   The image follows the scroll (sticky) so long forms keep their picture in view. */
+.jf-root.jf-split {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    padding: 0;
+}
+.jf-root.jf-split-right {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+.jf-split-right .jf-side {
+    order: 2;
+}
+.jf-side {
+    position: relative;
+    min-height: 24rem;
+}
+.jf-side-img {
+    position: sticky;
+    top: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    object-fit: cover;
+}
+.jf-split .jf-main {
+    padding: 2rem 1.5rem 3rem;
+    /* same vertical centring beside the image; the image column keeps the full height */
+    align-self: center;
+}
+/* Cover image: a banner above the title, or the top edge of the card. */
+.jf-cover {
+    display: block;
+    width: 100%;
+    height: var(--jf-cover-h, 12rem);
+    object-fit: cover;
+    border-radius: var(--jf-radius, 8px);
+}
+.jf-cover-card {
+    /* SLDS caps every img at max-width: 100%; this one must bleed past the card padding. */
+    max-width: none;
+    width: calc(100% + 4rem);
+    margin: -2rem -2rem 0;
+    border-radius: calc(var(--jf-radius, 8px) - 1px) calc(var(--jf-radius, 8px) - 1px) 0 0;
+}
+.jf-header {
+    display: flex;
+    flex-direction: column;
+    align-items: var(--jf-header-items, flex-start);
+    gap: 0.375rem;
+    text-align: var(--jf-title-align, left);
+}
+.jf-header-card {
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--jf-border, #e3e9e8);
+}
+.jf-logo {
+    display: block;
+    max-height: var(--jf-logo-h, 3rem);
+    max-width: min(16rem, 100%);
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+.jf-title {
+    color: var(--jf-text, #181818);
+    font-family: var(--jf-font-heading, inherit);
+    font-size: 2rem;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+.jf-description {
+    margin: 0;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-card {
+    background: var(--jf-surface, #fff);
+    border: 1px solid var(--jf-border, #e3e9e8);
+    border-radius: var(--jf-radius, 8px);
+    padding: 2rem;
+    box-shadow: var(--jf-card-shadow, 0 1px 2px rgba(0, 0, 0, 0.04));
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+/* Glass card: set only when a mesh or page image is behind it, so the card is solid over anything else. */
+.jf-glass .jf-card {
+    background: var(--jf-card-bg, var(--jf-surface, #fff));
+    border-color: var(--jf-card-border, var(--jf-border, #e3e9e8));
+    -webkit-backdrop-filter: var(--jf-card-blur, none);
+    backdrop-filter: var(--jf-card-blur, none);
+}
+.jf-center {
+    align-items: center;
+    text-align: center;
+    min-height: 10rem;
+    justify-content: center;
+}
+.jf-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.jf-page-title {
+    font-family: var(--jf-font-heading, inherit);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--jf-border, #e3e9e8);
+}
+.jf-page-description {
+    margin: -0.5rem 0 0;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.25rem;
+    row-gap: 1.25rem;
+}
+.jf-cell {
+    min-width: 0;
+    grid-column: 1 / -1;
+}
+.jf-span-3 { grid-column: span 3; }
+.jf-span-6 { grid-column: span 6; }
+.jf-span-9 { grid-column: span 9; }
+.jf-span-12 { grid-column: 1 / -1; }
+/* Tall fields (config.rowSpan): an image or event card beside stacked fields. Placement follows the
+   field order: the tall field's column is where it falls in the row, the next fields fill beside it. */
+.jf-rows-2 { grid-row: span 2; }
+.jf-rows-3 { grid-row: span 3; }
+.jf-rows-4 { grid-row: span 4; }
+.jf-tall {
+    display: flex;
+    flex-direction: column;
+}
+.jf-tall > c-jform-field {
+    flex: 1 1 auto;
+}
+/* Narrow container (phones, the Design tab phone preview, small embeds):
+   stack columns and put left-aligned labels back above their inputs. */
+.jf-narrow {
+    --jf-field-cols: minmax(0, 1fr);
+    --jf-left-spacer: none;
+}
+.jf-narrow .jf-span-3,
+.jf-narrow .jf-span-6,
+.jf-narrow .jf-span-9 {
+    grid-column: 1 / -1;
+}
+.jf-narrow .jf-rows-2,
+.jf-narrow .jf-rows-3,
+.jf-narrow .jf-rows-4 {
+    grid-row: auto;
+}
+.jf-narrow .jf-card {
+    padding: 1.25rem;
+}
+.jf-narrow .jf-title {
+    font-size: 1.5rem;
+}
+.jf-narrow .jf-cover-card {
+    width: calc(100% + 2.5rem);
+    margin: -1.25rem -1.25rem 0;
+}
+@media (max-width: 640px) {
+    .jf-span-3, .jf-span-6, .jf-span-9 { grid-column: 1 / -1; }
+    .jf-card { padding: 1.25rem; }
+    .jf-title { font-size: 1.5rem; }
+    .jf-cover-card { width: calc(100% + 2.5rem); margin: -1.25rem -1.25rem 0; }
+}
+.jf-hp {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.jf-alert {
+    background: #fdecec;
+    color: #8e1b1b;
+    border-radius: var(--jf-radius-sm, 6px);
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+}
+.jf-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--jf-border, #e3e9e8);
+}
+/* Footer button alignment (theme.buttonAlign). Right is the default: Back left, the main button right.
+   Left and Center keep the buttons together; Full width lets the main button take the rest of the row
+   (Back keeps its own size so the next step stays the obvious one). */
+.jf-actions-left .jf-spacer {
+    order: 99;
+}
+.jf-actions-center {
+    justify-content: center;
+}
+.jf-actions-center .jf-spacer,
+.jf-actions-full .jf-spacer {
+    display: none;
+}
+.jf-actions-full .jf-btn-primary {
+    flex: 1 1 auto;
+}
+/* Large buttons (theme.buttonSize) */
+.jf-actions-large .jf-btn {
+    min-height: 3.25rem;
+    padding: 0 1.75rem;
+    font-size: 1.0625rem;
+}
+/* Phones and narrow embeds: the main button is always full width, easy to reach with a thumb */
+.jf-narrow .jf-actions .jf-spacer {
+    display: none;
+}
+.jf-narrow .jf-actions .jf-btn-primary {
+    flex: 1 1 auto;
+}
+.jf-spacer {
+    flex: 1 1 auto;
+}
+.jf-footer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-thanks {
+    align-items: center;
+    text-align: center;
+}
+.jf-thanks:focus {
+    outline: none;
+}
+.jf-thanks-title {
+    font-size: 1.75rem;
+}
+.jf-thanks-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+/* links drawn as buttons: the site's link colours must not reach them */
+a.jf-thanks-link,
+a.jf-thanks-link:hover,
+a.jf-thanks-link:visited {
+    text-decoration: none;
+}
+a.jf-btn-primary,
+a.jf-btn-primary:hover,
+a.jf-btn-primary:visited {
+    color: var(--jf-btn-text, #ffffff);
+}
+a.jf-btn-secondary,
+a.jf-btn-secondary:hover,
+a.jf-btn-secondary:visited {
+    color: var(--jf-btn2-text, #181818);
+}
+.jf-redirect {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-redirect-link {
+    margin-left: 0.375rem;
+    font-weight: 600;
+    color: var(--jf-primary, #337418);
+}
+.jf-redirect-preview {
+    padding: 0.5rem 0.75rem;
+    border: 1px dashed var(--jf-border, #e3e9e8);
+    border-radius: var(--jf-radius-sm, 4px);
+}
+
+/* Start screen: the opening of the form, its own image on top, then logo, title, text and Start */
+/* read by screen readers, not shown */
+.jf-assistive {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+.jf-welcome-screen {
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    text-align: var(--jf-title-align, left);
+}
+.jf-welcome-image {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: var(--jf-cover-h, 12rem);
+    object-fit: cover;
+}
+.jf-welcome-body {
+    display: flex;
+    flex-direction: column;
+    align-items: var(--jf-header-items, flex-start);
+    gap: 0.75rem;
+    padding: 2.5rem 2rem;
+}
+.jf-welcome-title:focus {
+    outline: none;
+}
+.jf-welcome-text {
+    display: block;
+    color: var(--jf-text, #181818);
+}
+.jf-welcome-start {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: var(--jf-header-items, flex-start);
+    gap: 0.75rem 1rem;
+    margin-top: 0.75rem;
+}
+.jf-btn-start {
+    min-width: 8rem;
+}
+.jf-welcome-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-availability-when {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 1rem 0 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--jf-text, #1f2d2b);
+}
+.jf-welcome-clock {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.jf-narrow .jf-welcome-body {
+    padding: 1.75rem 1.25rem;
+}
+.jf-thanks-icon {
+    --slds-c-icon-color-foreground-default: var(--jf-primary, #337418);
+}
+.jf-unavailable {
+    margin: 0;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-welcome {
+    display: block;
+}
+.jf-alert-info {
+    background: var(--jf-primary-tint, #eef4ff);
+    color: var(--jf-text, #014486);
+}
+/* buttons */
+.jf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+    padding: 0 1.375rem;
+    border: 1px solid transparent;
+    border-radius: var(--jf-btn-radius, var(--jf-input-radius, 6px));
+    font: inherit;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.jf-btn-primary {
+    background: var(--jf-btn-bg, #337418);
+    border-color: var(--jf-btn-border, #337418);
+    color: var(--jf-btn-text, #ffffff);
+}
+.jf-btn-primary:hover:not(:disabled) {
+    background: var(--jf-btn-bg-hover, #014486);
+}
+.jf-btn-secondary {
+    background: transparent;
+    border-color: var(--jf-btn2-border, #c9c9c9);
+    color: var(--jf-btn2-text, #181818);
+}
+.jf-btn-secondary:hover:not(:disabled) {
+    background: var(--jf-btn2-bg-hover, #f3f3f3);
+}
+.jf-btn:focus-visible {
+    outline: 2px solid var(--jf-primary, #337418);
+    outline-offset: 2px;
+}
+.jf-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+.jf-btn-icon {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+/* Pill buttons: the main button lifts a little on hover and its arrow leans forward. */
+.jf-pill .jf-btn {
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.jf-pill .jf-btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px -12px var(--jf-primary, #337418);
+}
+.jf-pill .jf-btn-primary:active:not(:disabled) {
+    transform: scale(0.98);
+}
+.jf-pill .jf-btn .jf-btn-icon {
+    transition: transform 0.15s ease;
+}
+.jf-pill .jf-btn-primary:hover:not(:disabled) .jf-btn-icon {
+    transform: translateX(3px);
+}
+
+/* Spotlight: while a question has focus it sits on a tinted panel. The others keep full contrast. */
+.jf-spotlight .jf-cell {
+    border-radius: var(--jf-radius-sm, 6px);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.jf-spotlight .jf-grid:focus-within > .jf-cell:focus-within {
+    background: var(--jf-primary-tint, #eef4ff);
+    box-shadow: 0 0 0 0.625rem var(--jf-primary-tint, #eef4ff);
+}
+
+/* Glass card without blur support: a solid card keeps the text readable. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .jf-glass .jf-card {
+        background: var(--jf-surface, #fff);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .jf-pill .jf-btn,
+    .jf-pill .jf-btn .jf-btn-icon,
+    .jf-spotlight .jf-cell {
+        transition: none;
+    }
+    /* the mesh stays where it starts instead of following the answers */
+    .jf-blob {
+        transform: none;
+        transition: none;
+    }
+}
+
+.jf-recaptcha-notice a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* Builder preview: a page a rule hides, opened from the page picker. Fixed colours: it is not part of the form's theme. */
+.jf-preview-hidden {
+    margin-bottom: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px dashed #f3c58f;
+    border-radius: 6px;
+    background: #fdf3e7;
+    color: #8a4a0b;
+    font-size: 0.875rem;
+}
+/* payments: the panel while the respondent pays, the processing note, the popup's return screen */
+.jf-pay-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--jf-radius-sm, 6px);
+    background: var(--jf-primary-tint, #eef4ff);
+    color: var(--jf-text, #181818);
+}
+.jf-pay-title {
+    margin: 0;
+    font-weight: 600;
+}
+.jf-pay-text {
+    margin: 0;
+    color: var(--jf-muted, #747474);
+    font-size: 0.9375rem;
+}
+.jf-pay-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+.jf-pay-actions a.jf-btn {
+    text-decoration: none;
+}
+.jf-pay-note {
+    margin: 0.5rem 0 0;
+    font-weight: 600;
+}
+.jf-pay-return {
+    gap: 0.75rem;
+    text-align: center;
+}

@@ -1,0 +1,483 @@
+<template>
+    <div class="setup">
+        <!-- Rail: one entry per Setup page, with its state under the label -->
+        <div class="rail">
+            <h1 class="setup-title">Set up JForm</h1>
+            <nav class="rail-nav" aria-label="Setup pages">
+                <ol class="rail-list">
+                    <template for:each={sections} for:item="x">
+                        <li key={x.id} class={x.cls}>
+                            <button type="button" class="rail-link" data-section={x.id} aria-current={x.current} onclick={handleSection}>
+                                <span class="rail-text">
+                                    <span class="rail-label">{x.label}</span>
+                                    <template lwc:if={x.sub}><span class="rail-sub">{x.sub}</span></template>
+                                </span>
+                            </button>
+                        </li>
+                    </template>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="content">
+            <header class="content-head">
+                <div class="content-heading">
+                    <h2 class="page-title" tabindex="-1">{page.label}</h2>
+                    <p class="page-sub">{page.description}<template lwc:if={keysNote}> {keysNote}</template></p>
+                </div>
+                <lightning-button class="setup-refresh" label="Refresh" icon-name="utility:refresh" onclick={handleRefresh} disabled={loading}></lightning-button>
+            </header>
+
+            <template lwc:if={error}><div class="setup-alert" role="alert">{error}</div></template>
+            <template lwc:if={loading}>
+                <div class="setup-loading"><lightning-spinner alternative-text="Checking setup" size="small"></lightning-spinner></div>
+            </template>
+
+            <template lwc:if={status}>
+                <!-- Core setup: progress and the next step first; once all are done, a ready card -->
+                <template lwc:if={isCore}>
+                    <section class="card checklist">
+                        <template lwc:if={allDone}>
+                            <div class="ready">
+                                <span class="ready-icon" aria-hidden="true"><lightning-icon icon-name="utility:check" size="small" variant="inverse" alternative-text=""></lightning-icon></span>
+                                <div class="ready-body">
+                                    <h3 class="section-title">JForm is ready</h3>
+                                    <p class="ready-text" role="status">All six setup steps are done. Forms you publish are live on <strong>{site.label}</strong> at <span class="url">{site.baseUrl}</span>.</p>
+                                    <div class="actions">
+                                        <lightning-button variant="brand" label="New form" icon-name="utility:add" onclick={handleNewForm}></lightning-button>
+                                        <button type="button" class="slds-button slds-button_neutral steps-toggle" aria-expanded={showStepsText} onclick={handleToggleSteps}>{toggleStepsLabel}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <p class="progress-line"><strong class="progress-text">{progressText}</strong><span class="progress-next">Next: {nextStepTitle}</span></p>
+                            <div class="bar" role="progressbar" aria-label="Setup progress" aria-valuemin="0" aria-valuemax={stepCount} aria-valuenow={doneCount} aria-valuetext={progressText}>
+                                <div class="bar-fill" style={progressStyle}></div>
+                            </div>
+                            <p class="checklist-note">Steps you finish in Salesforce Setup tick here when you come back to this tab.</p>
+                        </template>
+
+                        <template lwc:if={stepsVisible}>
+                            <ol class="steps">
+                                <template for:each={steps} for:item="x">
+                                    <li key={x.id} class={x.cls}>
+                                        <h3 class="step-heading">
+                                            <button type="button" class="step-toggle" data-id={x.id} aria-expanded={x.expandedText} onclick={handleToggleStep}>
+                                                <span class="step-badge" aria-hidden="true">
+                                                    <template lwc:if={x.done}><lightning-icon icon-name="utility:check" size="x-small" variant="inverse" alternative-text=""></lightning-icon></template>
+                                                    <template lwc:else>{x.number}</template>
+                                                </span>
+                                                <span class="step-titles">
+                                                    <span class="step-title-line">
+                                                        <span class="sr-only">Step {x.number}: </span>
+                                                        <span class="step-title">{x.title}</span>
+                                                        <span class={x.statusTag.cls}>
+                                                            <template lwc:if={x.statusTag.icon}><lightning-icon class="tag-icon" icon-name={x.statusTag.icon} size="xx-small" alternative-text=""></lightning-icon></template>
+                                                            {x.statusTag.label}
+                                                        </span>
+                                                    </span>
+                                                    <template lwc:if={x.summary}><span class="step-summary">{x.summary}</span></template>
+                                                </span>
+                                                <lightning-icon class="step-chevron" icon-name={x.chevron} size="x-small" alternative-text=""></lightning-icon>
+                                            </button>
+                                        </h3>
+
+                                        <template lwc:if={x.expanded}>
+                                            <div class="step-panel">
+                                                <p class="step-why">{x.why}</p>
+                                                <template lwc:if={x.blocked}>
+                                                    <p class="step-wait">{x.blockedText}</p>
+                                                </template>
+
+                                                <!-- 1. Builder access -->
+                                                <template lwc:elseif={x.isBuilder}>
+                                                    <template lwc:if={x.pending}>
+                                                        <div class="actions">
+                                                            <lightning-button variant="brand" label="Give me access" onclick={handleGrantMe} disabled={busy}></lightning-button>
+                                                        </div>
+                                                    </template>
+                                                    <details class="step-more">
+                                                        <summary>Give other people access</summary>
+                                                        <template lwc:if={cannotAssign}>
+                                                            <p class="step-note">You cannot assign permission sets. Ask a Salesforce admin to assign <strong>JForm builder</strong> (ACCESS_FORM_BUILDER).</p>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <lightning-input type="search" label="Find people by name or username" value={userQuery} onchange={handleUserQuery} is-loading={searching}></lightning-input>
+                                                            <ul class="people">
+                                                                <template for:each={userResults} for:item="u">
+                                                                    <li key={u.id} class="person">
+                                                                        <span class="person-name">{u.name}</span>
+                                                                        <span class="person-user">{u.username}</span>
+                                                                        <lightning-button label="Give access" data-id={u.id} data-name={u.name} onclick={handleGrantUser} disabled={busy}></lightning-button>
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                            <template lwc:if={noUserResults}><p class="step-note">Nobody new matches. People who already have access are not listed.</p></template>
+                                                        </template>
+                                                        <template lwc:if={s.builders.length}>
+                                                            <p class="step-note">Builders now:
+                                                                <template for:each={s.builders} for:item="b"><span key={b.id} class="chip">{b.name}</span></template>
+                                                            </p>
+                                                        </template>
+                                                    </details>
+                                                </template>
+
+                                                <!-- 2. Digital Experiences -->
+                                                <template lwc:elseif={x.isExperiences}>
+                                                    <template lwc:if={x.pending}>
+                                                        <p class="step-text">In Setup, open <strong>Digital Experiences &gt; Settings</strong>, select <strong>Enable Digital Experiences</strong>, choose a domain name and save. You do this once per org, and the domain cannot be changed later.</p>
+                                                        <div class="actions">
+                                                            <a class="slds-button slds-button_brand link-button" href={links.experienceSettings} target="_blank" rel="noopener">Open Digital Experiences settings<lightning-icon class="link-icon" icon-name="utility:new_window" size="xx-small" alternative-text=""></lightning-icon><span class="sr-only"> (opens in a new tab)</span></a>
+                                                        </div>
+                                                    </template>
+                                                </template>
+
+                                                <!-- 3. Site -->
+                                                <template lwc:elseif={x.isSite}>
+                                                    <template lwc:if={hasSites}>
+                                                        <template lwc:if={manySites}>
+                                                            <lightning-combobox class="site-picker" label="Site for public forms" value={siteId} options={siteOptions} onchange={handleSite}></lightning-combobox>
+                                                            <p class="step-note">Each form can pick its own site in Share &gt; Site page. Steps 4 and 5 are for the site chosen here.</p>
+                                                        </template>
+                                                        <p class="step-note">The site needs a page at <code>/form</code> with the <strong>JForm Renderer</strong> component, or another page set in Share &gt; Site page.</p>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <p class="step-text">It takes a few minutes in Salesforce:</p>
+                                                        <ol class="howto">
+                                                            <li>Open <strong>All Sites</strong> and click <strong>New</strong>. Choose <strong>Build Your Own (LWR)</strong>.</li>
+                                                            <li>Name it <strong>JForm</strong> and give it the URL <strong>jform</strong>. Click <strong>Create</strong>; Experience Builder opens.</li>
+                                                            <li>In <strong>Settings &gt; General</strong>, turn on <strong>Guest users can see and interact with the site without logging in</strong>.</li>
+                                                            <li>Add a page: <strong>Pages &gt; New Page &gt; Standard Page &gt; New Blank Page</strong>, named <strong>Form</strong> with the URL <strong>form</strong>. Drag <strong>JForm Renderer</strong> from <strong>Components &gt; Custom Components</strong> onto it. Leave its Form key empty: it reads the key from the link.</li>
+                                                            <li>Come back to this tab. The next steps grant guest access and publish the site.</li>
+                                                        </ol>
+                                                        <div class="actions">
+                                                            <a class="slds-button slds-button_brand link-button" href={links.allSites} target="_blank" rel="noopener">Open All Sites<lightning-icon class="link-icon" icon-name="utility:new_window" size="xx-small" alternative-text=""></lightning-icon><span class="sr-only"> (opens in a new tab)</span></a>
+                                                        </div>
+                                                    </template>
+                                                </template>
+
+                                                <!-- 4. Guest access -->
+                                                <template lwc:elseif={x.isGuest}>
+                                                    <template lwc:if={x.pending}>
+                                                        <template lwc:if={x.note}>
+                                                            <p class="step-note guest-pay-note">{x.note}</p>
+                                                        </template>
+                                                        <template lwc:if={cannotAssign}>
+                                                            <p class="step-note">Ask a Salesforce admin to do this step: it needs the Assign Permission Sets permission.</p>
+                                                        </template>
+                                                        <div class="actions">
+                                                            <lightning-button class="guest-grant" variant="brand" label="Grant guest access" onclick={handleGrantGuest} disabled={busy}></lightning-button>
+                                                        </div>
+                                                    </template>
+                                                </template>
+
+                                                <!-- 5. Publish -->
+                                                <template lwc:elseif={x.isPublish}>
+                                                    <template lwc:if={siteLive}>
+                                                        <p class="step-text">Publish again in Experience Builder after you change the site.</p>
+                                                        <div class="actions">
+                                                            <a class="slds-button slds-button_neutral link-button" href={builderUrl} target="_blank" rel="noopener">Open Experience Builder<lightning-icon class="link-icon" icon-name="utility:new_window" size="xx-small" alternative-text=""></lightning-icon><span class="sr-only"> (opens in a new tab)</span></a>
+                                                        </div>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <p class="step-text">{site.label} is <strong>{siteStatusText}</strong>. In Experience Builder, click <strong>Publish</strong>. If it still says Under construction, open <strong>Workspaces &gt; Administration &gt; Settings</strong> and click <strong>Activate</strong>.</p>
+                                                        <div class="actions">
+                                                            <a class="slds-button slds-button_brand link-button" href={builderUrl} target="_blank" rel="noopener">Open Experience Builder<lightning-icon class="link-icon" icon-name="utility:new_window" size="xx-small" alternative-text=""></lightning-icon><span class="sr-only"> (opens in a new tab)</span></a>
+                                                        </div>
+                                                    </template>
+                                                </template>
+
+                                                <!-- 6. First form -->
+                                                <template lwc:elseif={x.isForm}>
+                                                    <template lwc:if={x.done}>
+                                                        <p class="step-text">Copy a form's public link from Share.</p>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <p class="step-text">Build a form, then click <strong>Publish</strong>. The publish dialog shows the public link to send out.</p>
+                                                    </template>
+                                                    <div class="actions">
+                                                        <lightning-button variant={newFormVariant} label="New form" icon-name="utility:add" onclick={handleNewForm}></lightning-button>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </li>
+                                </template>
+                            </ol>
+                        </template>
+                    </section>
+                    <p class="setup-tip">Open <strong>JForm</strong> from the App Launcher to keep Home, Setup, forms and responses together.</p>
+                </template>
+
+                <!-- Optional settings: each row shows its state; a form opens only to change it -->
+                <template lwc:if={isSettings}>
+                    <h3 class="group-title">Public forms</h3>
+                    <ul class="card group">
+                        <!-- Timing tokens -->
+                        <li class="setting">
+                            <span class="setting-icon" aria-hidden="true"><lightning-icon icon-name="utility:clock" size="x-small" alternative-text=""></lightning-icon></span>
+                            <div class="setting-main">
+                                <div class="setting-head">
+                                    <h4 class="setting-title">Timing tokens</h4>
+                                    <span class={signingTag.cls}>
+                                        <template lwc:if={signingTag.icon}><lightning-icon class="tag-icon" icon-name={signingTag.icon} size="xx-small" alternative-text=""></lightning-icon></template>
+                                        {signingTag.label}
+                                    </span>
+                                </div>
+                                <p class="setting-text signing-status">{signingNote}</p>
+                                <template lwc:if={codeLimitOffNote}>
+                                    <p class="setting-text code-limit-off">{codeLimitOffNote}</p>
+                                </template>
+                            </div>
+                            <template lwc:if={showSigningButton}>
+                                <div class="setting-actions">
+                                    <lightning-button class="signing-button" label={signingButtonLabel} onclick={handleSigningButton} disabled={busy}></lightning-button>
+                                </div>
+                            </template>
+                            <template lwc:if={confirmSigning}>
+                                <div class="setting-panel">
+                                    <p class="panel-warning">
+                                        <lightning-icon class="warning-icon" icon-name="utility:warning" size="x-small" alternative-text="Warning"></lightning-icon>
+                                        <span>Replace the key only if it leaked. Responses from forms that are open right now will be marked as spam.</span>
+                                    </p>
+                                    <div class="actions">
+                                        <lightning-button class="signing-confirm" variant="destructive" label="Replace signing key" onclick={handleConfirmSigning} disabled={busy}></lightning-button>
+                                        <lightning-button class="signing-cancel" label="Cancel" onclick={handleCancelSigning}></lightning-button>
+                                    </div>
+                                </div>
+                            </template>
+                        </li>
+
+                        <!-- reCAPTCHA -->
+                        <li class="setting">
+                            <span class="setting-icon" aria-hidden="true"><lightning-icon icon-name="utility:shield" size="x-small" alternative-text=""></lightning-icon></span>
+                            <div class="setting-main">
+                                <div class="setting-head">
+                                    <h4 class="setting-title">reCAPTCHA v3</h4>
+                                    <span class={captchaTag.cls}>
+                                        <template lwc:if={captchaTag.icon}><lightning-icon class="tag-icon" icon-name={captchaTag.icon} size="xx-small" alternative-text=""></lightning-icon></template>
+                                        {captchaTag.label}
+                                    </span>
+                                </div>
+                                <p class="setting-text captcha-status">{captchaNote}</p>
+                            </div>
+                            <template lwc:if={showCaptchaEdit}>
+                                <div class="setting-actions">
+                                    <lightning-button class="captcha-edit" label={captchaEditLabel} onclick={handleEditCaptcha}></lightning-button>
+                                </div>
+                            </template>
+                            <template lwc:if={editingCaptcha}>
+                                <div class="setting-panel">
+                                    <p class="panel-help">Create v3 keys in the <a href={links.recaptchaAdmin} target="_blank" rel="noopener">Google reCAPTCHA admin console<span class="sr-only"> (opens in a new tab)</span></a> and register the form site's host there. The secret is stored and never shown again. Clear the site key to turn reCAPTCHA off.</p>
+                                    <div class="fields">
+                                        <lightning-input class="captcha-site-key" label="Site key" value={captchaSiteKey} onchange={handleCaptchaSiteKey}></lightning-input>
+                                        <lightning-input class="captcha-secret" type="password" label="Secret" placeholder={secretPlaceholder} value={captchaSecret} onchange={handleCaptchaSecret}></lightning-input>
+                                        <lightning-input class="captcha-min-score" type="number" label="Minimum score" field-level-help="From 0 to 1. Responses that score lower are marked as spam. 0.5 when blank." step="0.05" min="0" max="1" placeholder="0.5" value={captchaMinScore} onchange={handleCaptchaMinScore}></lightning-input>
+                                    </div>
+                                    <div class="actions">
+                                        <lightning-button class="captcha-save" variant="brand" label="Save reCAPTCHA keys" onclick={handleSaveCaptcha} disabled={busy}></lightning-button>
+                                        <lightning-button class="captcha-cancel" label="Cancel" onclick={handleCancelCaptcha}></lightning-button>
+                                    </div>
+                                </div>
+                            </template>
+                        </li>
+
+                        <!-- File uploads -->
+                        <li class="setting">
+                            <span class="setting-icon" aria-hidden="true"><lightning-icon icon-name="utility:upload" size="x-small" alternative-text=""></lightning-icon></span>
+                            <div class="setting-main">
+                                <div class="setting-head">
+                                    <h4 class="setting-title">File uploads</h4>
+                                </div>
+                                <p class="setting-text">Respondents can attach files only when <strong>Allow site guest users to upload files</strong> is on in Setup &gt; Salesforce Files &gt; General Settings.</p>
+                            </div>
+                            <div class="setting-actions">
+                                <a class="slds-button slds-button_neutral link-button" href={links.filesSettings} target="_blank" rel="noopener">Open Files settings<lightning-icon class="link-icon" icon-name="utility:new_window" size="xx-small" alternative-text=""></lightning-icon><span class="sr-only"> (opens in a new tab)</span></a>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <h3 class="group-title">Add-ons</h3>
+                    <ul class="card group">
+                        <!-- Agentforce -->
+                        <li class="setting">
+                            <span class="setting-icon setting-icon-ai" aria-hidden="true"><lightning-icon icon-name="utility:einstein" size="x-small" alternative-text=""></lightning-icon></span>
+                            <div class="setting-main">
+                                <div class="setting-head">
+                                    <h4 class="setting-title">Agentforce</h4>
+                                    <span class={agentTag.cls}>
+                                        <template lwc:if={agentTag.icon}><lightning-icon class="tag-icon" icon-name={agentTag.icon} size="xx-small" alternative-text=""></lightning-icon></template>
+                                        {agentTag.label}
+                                    </span>
+                                </div>
+                                <template lwc:if={s.agentInstalled}>
+                                    <p class="setting-text">Builders can draft and change forms by chatting with Agentforce once the <strong>JForm Form Builder</strong> subagent is added to an employee agent. Builders also need step 1.</p>
+                                    <details class="step-more agent-help">
+                                        <summary>How to add the subagent</summary>
+                                        <ol class="howto">
+                                            <li>Open the employee agent in Agentforce Builder.</li>
+                                            <li>Choose <strong>+ &gt; Add from Asset Library</strong>.</li>
+                                            <li>Select <strong>JForm Form Builder</strong> and click <strong>Add to Agent</strong>.</li>
+                                            <li>Commit and activate the version.</li>
+                                        </ol>
+                                    </details>
+                                </template>
+                                <template lwc:else>
+                                    <p class="setting-text">Install the <strong>JForm Agent</strong> package in an org with Einstein generative AI to draft forms from a description and to build forms by chatting with Agentforce.</p>
+                                </template>
+                            </div>
+                            <template lwc:if={s.agentInstalled}>
+                                <div class="setting-actions">
+                                    <a class="slds-button slds-button_neutral link-button" href={links.agentforceStudio} target="_blank" rel="noopener">Open Agentforce Studio<lightning-icon class="link-icon" icon-name="utility:new_window" size="xx-small" alternative-text=""></lightning-icon><span class="sr-only"> (opens in a new tab)</span></a>
+                                </div>
+                            </template>
+                        </li>
+                    </ul>
+                </template>
+
+                <!-- Payments: a tile per gateway; the chosen gateway's keys and webhook, a tab per mode -->
+                <template lwc:if={isPayments}>
+                    <template lwc:if={payLoading}>
+                        <div class="setup-loading"><lightning-spinner alternative-text="Loading payment setup" size="small"></lightning-spinner></div>
+                    </template>
+                    <template lwc:elseif={payError}>
+                        <div class="setup-alert" role="alert">{payError}</div>
+                    </template>
+                    <template lwc:else>
+                        <h3 class="group-title pay-label">Gateways</h3>
+                        <c-jform-gateway-picker class="pay-gateways" label="Gateways" options={payGatewayOptions} value={payGateway} onchange={handlePayGateway}></c-jform-gateway-picker>
+                        <section class="card gw-panel" aria-label={payGatewayShown.name}>
+                            <div class="gw-panel-head">
+                                <div class="gw-panel-brand">
+                                    <h3 class="gw-panel-title sr-only">{payGatewayShown.name}</h3>
+                                    <span class="gw-panel-logo"><c-jform-gateway-logo gateway={payGatewayShown.id} size="medium" decorative></c-jform-gateway-logo></span>
+                                    <p class="gw-panel-summary">{payGatewayShown.summary}</p>
+                                </div>
+                                <a class="gw-dashboard" href={payGatewayShown.dashboardUrl} target="_blank" rel="noopener">{payGatewayShown.dashboardLabel}<span class="sr-only"> (opens in a new tab)</span></a>
+                            </div>
+                            <template for:each={payGuestsBlocked} for:item="g">
+                                <div key={g.id} class="setup-alert pay-guest-alert" role="alert">
+                                    <p><strong>{g.text}</strong> Stripe refuses a payment unless the paying user can read User External Credentials, and Salesforce leaves that permission out of installed permission sets. Granting guest access adds it in your org's own JForm Payment Credentials permission set.</p>
+                                    <lightning-button class="pay-guest-grant" data-id={g.id} variant="brand" label="Let visitors pay" onclick={handleGrantPayGuest} disabled={busy}></lightning-button>
+                                </div>
+                            </template>
+                            <template lwc:if={paySiteShown}>
+                                <div class="pay-site">
+                                    <h4 class="pay-section-title">Site for Stripe's events</h4>
+                                    <p class="setting-note">{paySiteNote}</p>
+                                    <lightning-combobox class="pay-site-picker" label="Site for Stripe's events" variant="label-hidden" value={paySiteId} options={paySiteOptions} onchange={handlePaySite} disabled={busy}></lightning-combobox>
+                                </div>
+                            </template>
+                            <div class="gw-tabs" role="tablist" aria-label="Test or live payments" onkeydown={handlePayTabKey}>
+                                <template for:each={payTabs} for:item="t">
+                                    <button key={t.mode} id={t.tabId} type="button" role="tab" aria-selected={t.selected} aria-controls="pay-panel" tabindex={t.tabindex}
+                                        class={t.cls} data-mode={t.mode} onclick={handlePayTab}>
+                                        <span>{t.title}</span><span class="sr-only">, </span>
+                                        <span class={t.tag.cls}>
+                                            <template lwc:if={t.tag.icon}><lightning-icon class="tag-icon" icon-name={t.tag.icon} size="xx-small" alternative-text=""></lightning-icon></template>
+                                            {t.tag.label}
+                                        </span>
+                                    </button>
+                                </template>
+                            </div>
+                            <template for:each={payPanel} for:item="m">
+                                <div key={m.mode} id="pay-panel" class="gw-tabpanel" role="tabpanel" aria-labelledby={m.tabId}>
+                                    <p class="setting-text">{m.intro}</p>
+                                    <template lwc:if={m.blockedNote}><p class="setting-note">{m.blockedNote}</p></template>
+                                    <template lwc:if={m.canEdit}>
+                                        <ol class="pay-steps">
+                                            <li class="pay-step">
+                                                <div class="pay-step-head">
+                                                    <h4 class="pay-step-title">Secret key</h4>
+                                                    <span class={m.keyTag.cls}>{m.keyTag.label}</span>
+                                                </div>
+                                                <p class="pay-step-text">{m.keyStep} <a href={links.stripeKeys} target="_blank" rel="noopener">Open API keys<span class="sr-only"> (opens in a new tab)</span></a></p>
+                                                <template lwc:if={m.keyProblem}><p class="setting-note">{m.keyProblem}</p></template>
+                                                <template lwc:if={m.keyEditing}>
+                                                    <div class="setting-panel">
+                                                        <p class="panel-help">JForm keeps the key in a Named Credential, so nobody can read it back, admins included.</p>
+                                                        <lightning-input class="pay-value" type="password" label={payInputLabel} value={payValue} autocomplete="off" onchange={handlePayValue}></lightning-input>
+                                                        <div class="actions">
+                                                            <lightning-button class="pay-save" variant="brand" label="Save key" onclick={handlePaySave} disabled={cannotSavePay}></lightning-button>
+                                                            <lightning-button label="Cancel" onclick={handlePayCancel}></lightning-button>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <template lwc:else>
+                                                    <div class="actions">
+                                                        <lightning-button class="pay-key" label={m.keyButton} data-mode={m.mode} data-what="key" onclick={handlePayEdit}></lightning-button>
+                                                        <template lwc:if={m.keyRemovable}>
+                                                            <lightning-button label="Remove key" data-mode={m.mode} data-what="key" onclick={handlePayRemove} disabled={busy}></lightning-button>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </li>
+                                            <li class="pay-step">
+                                                <div class="pay-step-head">
+                                                    <h4 class="pay-step-title">Webhook endpoint</h4>
+                                                </div>
+                                                <p class="pay-step-text">In Stripe, add a webhook endpoint at Developers > Webhooks with this address and these seven events. <a href={links.stripeWebhooks} target="_blank" rel="noopener">Open Webhooks<span class="sr-only"> (opens in a new tab)</span></a></p>
+                                                <template lwc:if={m.noWebhookUrl}>
+                                                    <p class="setting-note">The address comes from the JForm site. Finish the Core setup steps first.</p>
+                                                </template>
+                                                <template lwc:else>
+                                                    <div class="pay-url">
+                                                        <code class="pay-url-text">{m.webhookUrl}</code>
+                                                        <lightning-button label={m.copyLabel} icon-name="utility:copy" data-mode={m.mode} onclick={handlePayCopy}></lightning-button>
+                                                    </div>
+                                                </template>
+                                                <ul class="pay-events">
+                                                    <template for:each={payEvents} for:item="e"><li key={e.key}><code>{e.label}</code></li></template>
+                                                </ul>
+                                            </li>
+                                            <li class="pay-step">
+                                                <div class="pay-step-head">
+                                                    <h4 class="pay-step-title">Signing secret</h4>
+                                                    <span class={m.secretTag.cls}>{m.secretTag.label}</span>
+                                                </div>
+                                                <p class="pay-step-text">Copy the endpoint's signing secret from Stripe and save it here. It starts with whsec_.</p>
+                                                <template lwc:if={m.secretEditing}>
+                                                    <div class="setting-panel">
+                                                        <lightning-input class="pay-value" type="password" label={payInputLabel} value={payValue} autocomplete="off" onchange={handlePayValue}></lightning-input>
+                                                        <div class="actions">
+                                                            <lightning-button class="pay-save" variant="brand" label="Save signing secret" onclick={handlePaySave} disabled={cannotSavePay}></lightning-button>
+                                                            <lightning-button label="Cancel" onclick={handlePayCancel}></lightning-button>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <template lwc:else>
+                                                    <div class="actions">
+                                                        <lightning-button class="pay-secret" label={m.secretButton} data-mode={m.mode} data-what="secret" onclick={handlePayEdit}></lightning-button>
+                                                    </div>
+                                                </template>
+                                            </li>
+                                            <li class="pay-step">
+                                                <div class="pay-step-head">
+                                                    <h4 class="pay-step-title">Check the connection</h4>
+                                                </div>
+                                                <p class="pay-step-text">Check that the key works and that Stripe sends the seven events to this org.</p>
+                                                <div class="actions">
+                                                    <lightning-button class="pay-check" label="Check connection" data-mode={m.mode} onclick={handlePayCheck} disabled={m.checking}></lightning-button>
+                                                    <template lwc:if={m.checking}><lightning-spinner alternative-text="Checking" size="small" class="pay-spinner"></lightning-spinner></template>
+                                                </div>
+                                                <template lwc:if={m.checkLines.length}>
+                                                    <ul class="pay-check-lines" role="status">
+                                                        <template for:each={m.checkLines} for:item="l">
+                                                            <li key={l.key} class={l.cls}><lightning-icon icon-name={l.icon} size="xx-small" alternative-text=""></lightning-icon><span>{l.text}</span></li>
+                                                        </template>
+                                                    </ul>
+                                                </template>
+                                            </li>
+                                        </ol>
+                                    </template>
+                                </div>
+                            </template>
+                        </section>
+                        <p class="setting-note pay-foot">{payCheckScheduledText} Each form chooses its gateway, test or live payments and its currency on the form's Settings tab, under Payments.</p>
+                    </template>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>

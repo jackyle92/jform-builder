@@ -1,0 +1,23 @@
+{
+  "orgName": "JForm Builder Dev",
+  "edition": "Developer",
+  "features": [
+    "Communities",
+    "EnableSetPasswordInApi"
+  ],
+  "settings": {
+    "communitiesSettings": {
+      "enableNetworksEnabled": true
+    },
+    "experienceBundleSettings": {
+      "enableExperienceBundleMetadata": true
+    },
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    },
+    "mobileSettings": {
+      "enableS1EncryptedStoragePref2": false
+    }
+  },
+  "language": "en_US"
+}

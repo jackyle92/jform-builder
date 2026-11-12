@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.5 -1 27 27" width="27" height="27" role="img" aria-label="Heading">
+  <defs><filter id="s" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="1.5" stdDeviation="1" flood-color="#000" flood-opacity="0.32"/></filter></defs>
+  <g filter="url(#s)">
+    <path d="M5 4h3.2v6.4h7.6V4H19v16h-3.2v-6.4H8.2V20H5z" fill="#287A74" fill-rule="evenodd"/>
+  </g>
+</svg>

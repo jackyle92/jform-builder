@@ -1,0 +1,12 @@
+{
+  "type": "sfdc_cms__route",
+  "title": "form",
+  "contentBody": {
+    "activeViewId": "form",
+    "configurationTags": [],
+    "pageAccess": "UseParent",
+    "routeType": "custom-form",
+    "urlPrefix": "form"
+  },
+  "urlName": "form"
+}

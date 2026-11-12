@@ -1,0 +1,27 @@
+<template>
+    <div class="slds-form-element vp">
+        <label class={labelClass} for="vp-input">{label}</label>
+        <div class="slds-form-element__control vp-control">
+            <input id="vp-input" class="slds-input vp-input" type="text" role="combobox" autocomplete="off"
+                aria-autocomplete="list" aria-expanded={expandedText} aria-controls="vp-list"
+                placeholder={inputPlaceholder} value={inputValue} disabled={disabled}
+                onfocus={handleFocus} oninput={handleInput} onblur={handleBlur} onkeydown={handleKeydown}>
+            <span class="vp-caret" aria-hidden="true"><lightning-icon icon-name="utility:down" size="xx-small"></lightning-icon></span>
+            <template lwc:if={open}>
+                <ul id="vp-list" class="vp-list" role="listbox" aria-label={label}>
+                    <template for:each={rows} for:item="r">
+                        <li key={r.key} class={r.cls} role={r.role} aria-selected={r.selected} data-value={r.value} data-header={r.header} onmousedown={handlePick}>
+                            <template lwc:if={r.header}>{r.label}</template>
+                            <template lwc:else>
+                                <span class="vp-label">{r.label}</span>
+                                <span class="vp-detail">{r.detail}</span>
+                            </template>
+                        </li>
+                    </template>
+                    <template lwc:if={noMatches}><li class="vp-empty" role="presentation">Nothing matches.</li></template>
+                    <template lwc:if={moreText}><li class="vp-more" role="presentation">{moreText}</li></template>
+                </ul>
+            </template>
+        </div>
+    </div>
+</template>

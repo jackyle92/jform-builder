@@ -1,0 +1,112 @@
+:host {
+    display: block;
+}
+.gw-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+.gw-rows {
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* A tile: logo and tick on top, the mode lines below. A row: logo, name and mode lines, tick. */
+.gw-option {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "logo check" "text text";
+    align-items: center;
+    gap: 0.625rem 0.75rem;
+    width: 14rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font: inherit;
+    color: var(--jform-ink, #181818);
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 0.625rem;
+    cursor: pointer;
+}
+.gw-rows .gw-option {
+    width: 100%;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "logo text check";
+    padding: 0.625rem 0.75rem;
+}
+.gw-option:hover {
+    border-color: var(--jform-primary, #0250d9);
+}
+.gw-option:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.gw-option-on {
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: inset 0 0 0 1px var(--jform-primary, #0250d9);
+}
+.gw-rows .gw-option-on {
+    background: var(--jform-tint, #eef4ff);
+}
+.gw-logo {
+    grid-area: logo;
+    display: flex;
+}
+.gw-text {
+    grid-area: text;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+.gw-check {
+    grid-area: check;
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.gw-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Whether each mode is ready: a word first, the dot second */
+.gw-states {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+}
+.gw-rows .gw-states {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+}
+.gw-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.gw-dot {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 1.5px solid var(--jform-subtle, #939393);
+}
+.gw-state-on {
+    color: var(--jform-success-ink, #1e6b36);
+}
+.gw-state-on .gw-dot {
+    background: var(--jform-success, #2e844a);
+    border-color: var(--jform-success, #2e844a);
+}
+.gw-state-warn {
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.gw-state-warn .gw-dot {
+    background: var(--jform-warning, #b45309);
+    border-color: var(--jform-warning, #b45309);
+}

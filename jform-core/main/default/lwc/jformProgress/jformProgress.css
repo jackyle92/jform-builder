@@ -1,0 +1,49 @@
+:host {
+    display: block;
+}
+.jf-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.jf-progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    color: var(--jf-muted, #5b6664);
+}
+.jf-progress-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--jf-border, #dfe7e5);
+    overflow: hidden;
+}
+.jf-progress-fill {
+    height: 100%;
+    background: var(--jf-primary, #337418);
+    transition: width 0.25s ease;
+}
+/* Segmented progress: a segment per page, the current one filling as its questions are answered */
+.jf-progress-segments {
+    display: flex;
+    gap: 6px;
+}
+.jf-progress-seg {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--jf-border, #dfe7e5);
+    overflow: hidden;
+}
+.jf-progress-seg-fill {
+    display: block;
+    height: 100%;
+    background: var(--jf-primary, #337418);
+    transition: width 0.35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+    .jf-progress-fill,
+    .jf-progress-seg-fill {
+        transition: none;
+    }
+}

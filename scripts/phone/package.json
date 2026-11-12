@@ -1,0 +1,16 @@
+{
+  "name": "jform-phone-build",
+  "private": true,
+  "description": "Regenerates c/jformPhoneLib (phone number rules for the countries in countries.json) and the jformFlags sprite. Run after changing countries.json or the libphonenumber-js version.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "countries-and-timezones": "3.10.0",
+    "esbuild": "0.28.2",
+    "flag-icons": "7.5.0",
+    "libphonenumber-js": "1.13.14",
+    "playwright": "1.61.0"
+  }
+}

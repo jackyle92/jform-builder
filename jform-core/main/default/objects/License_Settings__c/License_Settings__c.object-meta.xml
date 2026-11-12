@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Unused. JForm once kept a license key for a paid edition here; JForm is now free, so nothing reads it. It stays because installed package versions shipped it.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>JForm License</label>
+    <visibility>Protected</visibility>
+</CustomObject>

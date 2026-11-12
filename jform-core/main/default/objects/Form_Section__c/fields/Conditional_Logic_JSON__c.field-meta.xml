@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Conditional_Logic_JSON__c</fullName>
+    <description>Stores complex JSON for section-level visibility rules (e.g., based on values in previous sections)</description>
+    <label>Conditional Logic JSON</label>
+    <length>111768</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

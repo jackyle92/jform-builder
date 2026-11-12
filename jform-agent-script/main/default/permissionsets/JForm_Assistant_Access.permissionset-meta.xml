@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <agentAccesses>
+        <agentName>JForm_Assistant</agentName>
+        <enabled>true</enabled>
+    </agentAccesses>
+    <description>Shows the JForm Assistant agent in the Agentforce panel. Assign together with ACCESS_FORM_BUILDER, which grants the agent's Apex actions.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>JForm Assistant Access</label>
+</PermissionSet>

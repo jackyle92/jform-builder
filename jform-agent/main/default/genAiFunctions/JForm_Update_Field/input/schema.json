@@ -1,0 +1,94 @@
+{
+  "required": [
+    "formId",
+    "field"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "formId": {
+      "title": "Form Id",
+      "description": "Id of the form to change",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "field": {
+      "title": "Field",
+      "description": "The field to change, by its label as shown in the outline, for example Which session?",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "newLabel": {
+      "title": "New Label",
+      "description": "New label for the field. Leave empty to keep it.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "helpText": {
+      "title": "Help Text",
+      "description": "New help text under the field. Leave empty to keep it.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "placeholder": {
+      "title": "Placeholder",
+      "description": "New placeholder inside the input. Leave empty to keep it.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "required": {
+      "title": "Required",
+      "description": "yes to make the field required, no to make it optional. Leave empty to keep it.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "addOptions": {
+      "title": "Add Options",
+      "description": "Choices to add to a dropdown, single choice or checkboxes field, or columns to a table, separated by commas, or one per line when a choice contains a comma, for example Evening. Existing choices are kept.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "removeOptions": {
+      "title": "Remove Options",
+      "description": "Choices to remove, separated by commas, or one per line when a choice contains a comma.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "replaceOptions": {
+      "title": "Replace Options",
+      "description": "The complete new list of choices, separated by commas, or one per line when a choice contains a comma. Replaces all existing choices.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "afterField": {
+      "title": "Move After Field",
+      "description": "Move the field directly after this other field (its label).",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "pageName": {
+      "title": "Move To Page",
+      "description": "Move the field to the end of this page (title or number).",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "remove": {
+      "title": "Remove Field",
+      "description": "True to delete the field from the form. Rules that used it are dropped.",
+      "lightning:type": "lightning__booleanType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

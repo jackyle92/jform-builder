@@ -1,0 +1,545 @@
+:host {
+    display: block;
+}
+/* rules on the left, the editor or the "try your rules" panel on the right; stacks on narrow screens */
+.lg {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+    gap: 1.25rem;
+    padding: 1.25rem;
+    align-items: start;
+    color: var(--jform-ink, #181818);
+}
+.lg-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.lg-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.lg-head-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.lg-search {
+    width: 14rem;
+}
+.lg-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+.lg-sub,
+.lg-muted {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--jform-muted, #5c5c5c);
+}
+.lg-h3 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+.lg-h4 {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+.lg-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.lg-summary-issue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    background: var(--jform-warning-tint, #fdf3e7);
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+
+/* ------------------------------------------------------------ rule cards */
+.lg-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.lg-group-title {
+    margin: 0.25rem 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.lg-group-sub {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.8125rem;
+}
+.lg-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 10px;
+    background: var(--jform-surface, #ffffff);
+    cursor: pointer;
+}
+.lg-card:hover {
+    border-color: var(--jform-primary, #0250d9);
+}
+.lg-card:focus-visible,
+.lg-recipe:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.lg-card-on,
+.lg-card-on:hover {
+    border-color: var(--jform-primary, #0250d9);
+    box-shadow: 0 0 0 1px var(--jform-primary, #0250d9);
+}
+.lg-card-issue {
+    box-shadow: inset 3px 0 0 var(--jform-warning, #b45309);
+}
+.lg-card-on.lg-card-issue {
+    box-shadow: inset 3px 0 0 var(--jform-warning, #b45309), 0 0 0 1px var(--jform-primary, #0250d9);
+}
+.lg-action {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+}
+.lg-action-show {
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.lg-action-hide {
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    --slds-c-icon-color-foreground-default: var(--jform-muted, #5c5c5c);
+}
+.lg-action-require {
+    background: var(--jform-warning-tint, #fdf3e7);
+    --slds-c-icon-color-foreground-default: var(--jform-warning-ink, #8a4a0b);
+}
+.lg-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    min-width: 0;
+}
+.lg-line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.3125rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+.lg-word {
+    color: var(--jform-muted, #5c5c5c);
+}
+.lg-join {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+}
+.lg-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 6px;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.lg-chip-value {
+    background: var(--jform-surface, #ffffff);
+    border-style: dashed;
+}
+.lg-chip-target {
+    background: var(--jform-tint, #eef4ff);
+    border-color: var(--jform-tint-border, #aacbff);
+    color: var(--jform-primary, #0250d9);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.lg-chip-gone {
+    text-decoration: line-through;
+    color: var(--jform-error-ink, #8e1b1b);
+}
+.lg-arrow {
+    color: var(--jform-subtle, #939393);
+}
+.lg-verb {
+    font-weight: 700;
+}
+.lg-issue {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.lg-tools {
+    display: flex;
+    opacity: 0.55;
+}
+.lg-card:hover .lg-tools,
+.lg-card:focus-within .lg-tools,
+.lg-card-on .lg-tools {
+    opacity: 1;
+}
+.lg-tools lightning-button-icon,
+.lg-editor lightning-button-icon {
+    --slds-s-button-color: var(--jform-muted, #5c5c5c);
+    --slds-s-button-color-hover: var(--jform-ink, #181818);
+}
+.lg-nomatch {
+    padding: 1rem 0;
+}
+
+/* ------------------------------------------------------------ empty state */
+.lg-empty {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border: 1px dashed var(--jform-border-strong, #c9c9c9);
+    border-radius: 12px;
+    background: var(--jform-surface, #ffffff);
+}
+.lg-recipes {
+    width: 100%;
+    margin-top: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 0.75rem;
+}
+.lg-recipe {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+    padding: 0.875rem;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 10px;
+    background: var(--jform-surface, #ffffff);
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+.lg-recipe:hover {
+    border-color: var(--jform-primary, #0250d9);
+    background: var(--jform-tint, #eef4ff);
+}
+.lg-recipe-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.lg-recipe-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+.lg-recipe-text {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--jform-muted, #5c5c5c);
+}
+
+/* ------------------------------------------------------------ side panel */
+.lg-side {
+    position: sticky;
+    top: 0.5rem;
+    min-width: 0;
+}
+.lg-panel,
+.lg-editor {
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 12px;
+}
+.lg-panel {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.lg-guide {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+.lg-guide li {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+}
+.lg-guide lightning-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.lg-trial-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: var(--jform-canvas, #f3f3f3);
+}
+.lg-results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+.lg-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4375rem 0;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+    font-size: 0.8125rem;
+}
+.lg-result:first-child {
+    border-top: 0;
+}
+.lg-result-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.lg-state {
+    flex: none;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.lg-state-on {
+    background: var(--jform-tint, #eef4ff);
+    color: var(--jform-primary, #0250d9);
+}
+.lg-state-off {
+    background: var(--jform-canvas, #f3f3f3);
+    color: var(--jform-muted, #5c5c5c);
+    border: 1px solid var(--jform-border, #e5e5e5);
+}
+.lg-state-warn {
+    background: var(--jform-warning-tint, #fdf3e7);
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+
+/* ------------------------------------------------------------ editor */
+.lg-ed-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.lg-ed-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.lg-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.75rem 1.25rem 0;
+    padding: 0.625rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    background: var(--jform-warning-tint, #fdf3e7);
+    border: 1px solid var(--jform-warning-border, #f3c58f);
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.lg-confirm-tools {
+    display: flex;
+    gap: 0.5rem;
+}
+.lg-ed-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.lg-ed-head + .lg-ed-section,
+.lg-confirm + .lg-ed-section {
+    border-top: 0;
+}
+.lg-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.lg-step-n {
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--jform-primary, #0250d9);
+    color: #fff;
+}
+.lg-cond-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+}
+.lg-join-pill {
+    margin-left: 0.75rem;
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    color: var(--jform-muted, #5c5c5c);
+}
+.lg-cond {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.625rem;
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 8px;
+    background: var(--jform-canvas, #f3f3f3);
+}
+.lg-cond-error {
+    border-color: var(--jform-error, #ba0517);
+}
+.lg-cond-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem;
+    align-items: center;
+}
+.lg-cond-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 0.5rem;
+}
+.lg-cond-bottom > :only-child {
+    grid-column: 1 / -1;
+}
+.lg-error {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--jform-error-ink, #8e1b1b);
+}
+.lg-preview {
+    margin: 0;
+    padding: 0.625rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    background: var(--jform-tint, #eef4ff);
+    border: 1px solid var(--jform-tint-border, #aacbff);
+}
+.lg-notes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.lg-notes li {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: 0.375rem;
+    align-items: start;
+}
+.lg-ed-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.lg-foot-right {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+@media (max-width: 1000px) {
+    .lg {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .lg-side {
+        position: static;
+    }
+}
+@media (max-width: 600px) {
+    .lg {
+        padding: 1rem;
+    }
+    .lg-search {
+        width: 100%;
+    }
+    .lg-cond-bottom {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

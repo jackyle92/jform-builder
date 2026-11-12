@@ -1,0 +1,37 @@
+{
+  "required": [
+    "formId"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "formId": {
+      "title": "Form Id",
+      "description": "Id of the form to change",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "style": {
+      "title": "Style",
+      "description": "Card (clean and neutral, the default), Minimal (plain, underlined fields), Teal (calm, serif headings), Dark (dark background), Warm (friendly orange tones), Corporate (formal blue) or Drift (a soft colour mesh behind a frosted card, with pill buttons). Leave empty to keep the current style.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "primaryColor": {
+      "title": "Main Colour",
+      "description": "Colour for buttons and highlights as a hex code, for example #2a5bd7, such as the organisation's brand colour. Leave empty for the style's own colour.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "layout": {
+      "title": "Layout",
+      "description": "one long page, or one page per section. Leave empty to keep it.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

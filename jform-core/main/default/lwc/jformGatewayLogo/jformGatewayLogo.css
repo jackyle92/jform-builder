@@ -1,0 +1,28 @@
+:host {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+.logo {
+    display: block;
+    width: auto;
+    aspect-ratio: 60 / 25;
+}
+.logo-small {
+    height: 1rem;
+}
+.logo-medium {
+    height: 1.5rem;
+}
+.logo-large {
+    height: 2rem;
+}
+.logo-stripe {
+    fill: #635bff;
+}
+.logo-mono .logo-ink {
+    fill: currentColor;
+}
+.logo-name {
+    font-weight: 700;
+}

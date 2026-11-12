@@ -1,0 +1,25 @@
+.sf/
+.sfdx/
+.localdev/
+/IlluminatedCloud/
+/out/
+target/
+node_modules/
+/.illuminatedCloud/
+**/tsconfig*.json
+!mcp/tsconfig.json
+**/*.tsbuildinfo
+
+# Added by Illuminated Cloud
+**/graphql.config.yml
+# SFDX / tooling
+.sf/
+.sfdx/
+coverage/
+mcp/dist/
+mcp/node_modules/
+.env
+
+# Example app build output
+examples/embed-react/dist/
+.DS_Store

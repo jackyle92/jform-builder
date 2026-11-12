@@ -1,0 +1,4 @@
+<!-- Form's New on desktop: the JForm New form dialog instead of the standard record dialog. LWC can't override a standard action, so this wraps c:jformNewForm. -->
+<aura:component implements="lightning:actionOverride">
+    <c:jformNewForm />
+</aura:component>

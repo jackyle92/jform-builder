@@ -1,0 +1,35 @@
+<template>
+    <div class="slds-form-element op">
+        <label class="slds-form-element__label" for="op-input">
+            <template lwc:if={required}><abbr class="slds-required" title="required">* </abbr></template>{label}
+        </label>
+        <div class="slds-form-element__control op-control">
+            <input id="op-input" class="slds-input op-input" type="text" role="combobox" autocomplete="off"
+                aria-autocomplete="list" aria-expanded={expandedText} aria-controls="op-list"
+                placeholder={inputPlaceholder} value={inputValue} disabled={disabled}
+                onfocus={handleFocus} oninput={handleInput} onblur={handleBlur} onkeydown={handleKeydown}>
+            <template lwc:if={hasValue}>
+                <button type="button" class="op-clear" title="Clear" aria-label="Clear" onmousedown={handleClear}>
+                    <lightning-icon icon-name="utility:close" size="xx-small" alternative-text=""></lightning-icon>
+                </button>
+            </template>
+            <template lwc:if={open}>
+                <ul id="op-list" class="op-list" role="listbox" aria-label={label}>
+                    <!-- One flat, keyed list: group headers and options are sibling rows, so every row
+                         keeps its own key while groups appear, rename and vanish as you type. -->
+                    <template for:each={rows} for:item="r">
+                        <li key={r.key} class={r.cls} role={r.role} aria-selected={r.selected} data-value={r.value} data-header={r.header} onmousedown={handlePick}>
+                            <template lwc:if={r.header}>{r.label}</template>
+                            <template lwc:else>
+                                <span class="op-label">{r.label}</span>
+                                <span class="op-api">{r.apiName}</span>
+                            </template>
+                        </li>
+                    </template>
+                    <template lwc:if={noMatches}><li class="op-empty" role="presentation">No object matches.</li></template>
+                    <template lwc:if={moreText}><li class="op-more" role="presentation">{moreText}</li></template>
+                </ul>
+            </template>
+        </div>
+    </div>
+</template>

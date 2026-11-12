@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client_Reference__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>JForm&apos;s own reference for the checkout (jf_...), sent to the gateway as the client reference and carried in both return links, so a cancelled checkout is found again where the browser kept nothing, as in an embedded form.</description>
+    <externalId>true</externalId>
+    <label>Client Reference</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

@@ -1,0 +1,358 @@
+<template>
+    <div class="at">
+        <section class="at-canvas" aria-label="Record steps">
+            <header class="at-head">
+                <div>
+                    <h2 class="at-title">Record steps</h2>
+                    <p class="at-sub">What happens in Salesforce each time a response arrives.</p>
+                </div>
+                <div class="at-head-tools">
+                    <template lwc:if={hasSteps}>
+                        <lightning-button label={presetsButtonLabel} icon-name="utility:apps" data-action="presets" onclick={handleTogglePresets}></lightning-button>
+                    </template>
+                    <lightning-button variant="brand" label="Add step" icon-name="utility:add" data-action="add" onclick={handleAddEnd}></lightning-button>
+                </div>
+            </header>
+
+            <template lwc:if={showGallery}>
+                <div class="at-gallery">
+                    <div class="at-gallery-head">
+                        <h3 class="at-h3">Start from a preset</h3>
+                        <template lwc:if={hasSteps}>
+                            <p class="at-muted">A preset replaces the current steps. You can change everything afterwards.</p>
+                        </template>
+                        <template lwc:else>
+                            <p class="at-muted">Steps matched to this form's questions. Or add your own with + below.</p>
+                        </template>
+                    </div>
+                    <template lwc:if={pendingPreset}>
+                        <div class="at-confirm" role="alertdialog" aria-label="Replace steps">
+                            <span>{pendingPresetText}</span>
+                            <span class="at-confirm-tools">
+                                <lightning-button label="Cancel" data-action="preset-cancel" onclick={handlePresetCancel}></lightning-button>
+                                <lightning-button variant="destructive" label="Replace" data-action="preset-confirm" onclick={handlePresetConfirm}></lightning-button>
+                            </span>
+                        </div>
+                    </template>
+                    <div class="at-presets">
+                        <template for:each={presetCards} for:item="p">
+                            <button key={p.id} type="button" class="at-preset" data-id={p.id} onclick={handlePreset}>
+                                <span class="at-preset-icon"><lightning-icon icon-name={p.icon} size="x-small"></lightning-icon></span>
+                                <span class="at-preset-text">
+                                    <span class="at-preset-label">{p.label}</span>
+                                    <span class="at-preset-desc">{p.description}</span>
+                                </span>
+                            </button>
+                        </template>
+                    </div>
+                    <template lwc:if={showConvert}>
+                        <lightning-button label={convertLabel} icon-name="utility:merge" data-action="convert" onclick={handleConvert}></lightning-button>
+                    </template>
+                </div>
+            </template>
+
+            <ol class="at-flow">
+                <template for:each={flowItems} for:item="it">
+                    <li key={it.key} class="at-flow-item">
+                        <template lwc:if={it.isStart}>
+                            <div class="at-node at-node-edge">
+                                <span class="at-node-icon at-node-icon-start"><lightning-icon icon-name="utility:form" size="x-small"></lightning-icon></span>
+                                <span class="at-body">
+                                    <span class="at-card-title">When a response is submitted</span>
+                                    <span class="at-summary">Spam responses never run steps.</span>
+                                </span>
+                            </div>
+                        </template>
+
+                        <template lwc:if={it.isLink}>
+                            <div class="at-link">
+                                <span class="at-line"></span>
+                                <template lwc:if={it.menuOpen}>
+                                    <div class="at-insert" role="group" aria-label="Add a step here" onkeydown={handleInsertKey}>
+                                        <template lwc:if={insertFlowStage}>
+                                            <div class="at-insert-head">
+                                                <lightning-button-icon icon-name="utility:back" variant="bare" size="small" alternative-text="Back" onclick={handleInsertBack}></lightning-button-icon>
+                                                <span class="at-insert-title">Run a flow</span>
+                                                <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Cancel" onclick={handleInsertCancel}></lightning-button-icon>
+                                            </div>
+                                            <template lwc:if={hasFlows}>
+                                                <div class="at-insert-body">
+                                                    <c-jform-value-picker label="Flow" variant="label-hidden" placeholder="Search flows" options={flowPickOptions} disabled={insertBusy} onchange={handleInsertFlow}></c-jform-value-picker>
+                                                    <p class="at-muted">Active autolaunched flows. The flow runs for every response, in the same transaction as the other steps.</p>
+                                                </div>
+                                            </template>
+                                            <template lwc:else>
+                                                <p class="at-muted at-insert-body">No active autolaunched flows yet. In Flow Builder, create an Autolaunched Flow (No Trigger), mark the variables it needs as available for input, and activate it.</p>
+                                            </template>
+                                        </template>
+                                        <template lwc:else>
+                                            <div class="at-insert-head">
+                                                <span class="at-insert-title">Add a step</span>
+                                                <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Cancel" onclick={handleInsertCancel}></lightning-button-icon>
+                                            </div>
+                                            <template for:each={insertActions} for:item="a">
+                                                <button key={a.value} type="button" class="at-insert-option" data-action={a.value} disabled={a.disabled} onclick={handleInsertPick}>
+                                                    <lightning-icon icon-name={a.icon} size="x-small"></lightning-icon>
+                                                    <span class="at-insert-text">
+                                                        <span class="at-insert-label">{a.label}</span>
+                                                        <span class="at-insert-help">{a.help}</span>
+                                                    </span>
+                                                </button>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template lwc:else>
+                                    <button type="button" class="at-plus" title={it.plusLabel} aria-label={it.plusLabel} data-index={it.index} onclick={handleInsertOpen}>
+                                        <lightning-icon icon-name="utility:add" size="xx-small"></lightning-icon>
+                                    </button>
+                                </template>
+                                <span class="at-line"></span>
+                                <template lwc:if={it.gateText}>
+                                    <button type="button" class="at-gate" data-key={it.gateKey} onclick={handleSelect}>
+                                        <lightning-icon icon-name="utility:filter" size="xx-small"></lightning-icon>
+                                        <span>Only when {it.gateText}</span>
+                                    </button>
+                                    <span class="at-line"></span>
+                                </template>
+                            </div>
+                        </template>
+
+                        <template lwc:if={it.isStep}>
+                            <div class={it.cls} role="button" tabindex="0" aria-pressed={it.pressed} data-key={it.stepKey} onclick={handleSelect} onkeydown={handleCardKey}>
+                                <span class="at-node-icon"><lightning-icon icon-name={it.icon} size="x-small"></lightning-icon></span>
+                                <span class="at-body">
+                                    <span class="at-card-title">
+                                        <span class="at-n">{it.number}</span>
+                                        <span>{it.title}</span>
+                                        <template lwc:if={it.primary}><span class="at-pill at-pill-primary">Main record</span></template>
+                                    </span>
+                                    <template lwc:if={it.label}><span class="at-card-label">{it.label}</span></template>
+                                    <span class="at-summary">{it.summary}</span>
+                                    <template lwc:if={it.issue}>
+                                        <span class="at-issue"><lightning-icon icon-name="utility:warning" size="xx-small" variant="warning"></lightning-icon>{it.issue}</span>
+                                    </template>
+                                </span>
+                                <span class="at-tools">
+                                    <lightning-button-icon icon-name="utility:arrowup" variant="bare" size="small" alternative-text="Move up" data-key={it.stepKey} data-dir="-1" disabled={it.isFirst} onclick={handleMove}></lightning-button-icon>
+                                    <lightning-button-icon icon-name="utility:arrowdown" variant="bare" size="small" alternative-text="Move down" data-key={it.stepKey} data-dir="1" disabled={it.isLast} onclick={handleMove}></lightning-button-icon>
+                                    <lightning-button-icon icon-name="utility:copy" variant="bare" size="small" alternative-text="Duplicate step" data-key={it.stepKey} onclick={handleDuplicate}></lightning-button-icon>
+                                    <lightning-button-icon icon-name="utility:delete" variant="bare" size="small" alternative-text="Delete step" data-key={it.stepKey} onclick={handleDelete}></lightning-button-icon>
+                                </span>
+                            </div>
+                        </template>
+
+                        <template lwc:if={it.isEnd}>
+                            <div class="at-node at-node-edge">
+                                <span class="at-node-icon at-node-icon-end"><lightning-icon icon-name="utility:check" size="x-small"></lightning-icon></span>
+                                <span class="at-body">
+                                    <span class="at-card-title">{endTitle}</span>
+                                    <span class="at-summary">{endText}</span>
+                                </span>
+                            </div>
+                        </template>
+                    </li>
+                </template>
+            </ol>
+        </section>
+
+        <aside class="at-editor" aria-label="Step editor">
+            <template lwc:if={editor}>
+                <div class="at-ed-head">
+                    <div>
+                        <span class="at-ed-kicker">Step {editor.number}</span>
+                        <h3 class="at-ed-title">{editor.title}</h3>
+                    </div>
+                    <lightning-button-icon icon-name="utility:close" variant="bare" alternative-text="Close the step editor" onclick={handleCloseEditor}></lightning-button-icon>
+                </div>
+
+                <template lwc:if={editor.isFlow}>
+                    <div class="at-ed-section">
+                        <h4 class="at-h4">Flow</h4>
+                        <c-jform-value-picker label="Flow" variant="label-hidden" placeholder="Search flows" value={editor.flowApiName} options={editor.flowOptions} disabled={editor.flowLocked} onchange={handleFlowChange}></c-jform-value-picker>
+                        <template lwc:if={editor.flowDescription}><p class="at-muted">{editor.flowDescription}</p></template>
+                        <template lwc:if={editor.flowMissing}><p class="at-warn">This flow is no longer an active autolaunched flow. Activate it again in Flow Builder, or pick another.</p></template>
+                        <template lwc:if={editor.flowLocked}><p class="at-warn">Only people with the Manage Flow permission can change which flow runs or what it is given.</p></template>
+                        <lightning-input label="Step name (optional)" value={editor.label} placeholder={editor.title} data-prop="label" onchange={handleStepText}></lightning-input>
+                        <div class="at-flow-links">
+                            <template lwc:if={editor.flowBuilderUrl}>
+                                <a class="at-link-out" href={editor.flowBuilderUrl} target="_blank" rel="noopener">Open in Flow Builder<lightning-icon icon-name="utility:new_window" size="xx-small"></lightning-icon></a>
+                            </template>
+                            <template lwc:if={editor.canRefresh}>
+                                <lightning-button variant="base" label="Refresh from the flow" icon-name="utility:refresh" data-action="refresh-flow" onclick={handleFlowRefresh}></lightning-button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="at-ed-section">
+                        <h4 class="at-h4">Inputs</h4>
+                        <template lwc:if={editor.flowLoading}><p class="at-muted">Reading the flow…</p></template>
+                        <template lwc:if={editor.hasInputs}>
+                            <div class="at-map at-map-head" aria-hidden="true">
+                                <span>Flow input</span><span></span><span>Value</span><span></span>
+                            </div>
+                            <template for:each={editor.inputs} for:item="i">
+                                <div key={i.name} class="at-map at-flow-input">
+                                    <span class="at-var">
+                                        <span class="at-var-name">{i.name}</span>
+                                        <span class="at-var-type">{i.typeLabel}</span>
+                                    </span>
+                                    <span class="at-arrow" aria-hidden="true">←</span>
+                                    <template lwc:if={i.isValue}>
+                                        <div class="at-fixed">
+                                            <lightning-input label={i.name} variant="label-hidden" value={i.text} placeholder="Text; {{question_key}} inserts an answer" disabled={editor.flowLocked} data-name={i.name} onchange={handleFlowInputText}></lightning-input>
+                                            <lightning-button-icon icon-name="utility:picklist_type" variant="bare" size="small" alternative-text="Pick an answer instead" disabled={editor.flowLocked} data-name={i.name} onclick={handleFlowInputUnfix}></lightning-button-icon>
+                                        </div>
+                                    </template>
+                                    <template lwc:else>
+                                        <c-jform-value-picker label={i.name} variant="label-hidden" value={i.pickerValue} options={i.valueOptions} disabled={editor.flowLocked} data-name={i.name} onchange={handleFlowInput}></c-jform-value-picker>
+                                    </template>
+                                    <span></span>
+                                </div>
+                            </template>
+                        </template>
+                        <template lwc:else>
+                            <p class="at-muted">This flow takes no inputs a form can fill.</p>
+                        </template>
+                        <template lwc:if={editor.unsupportedText}>
+                            <p class="at-muted">Not filled by forms yet: {editor.unsupportedText}.</p>
+                        </template>
+                    </div>
+
+                    <div class="at-ed-section">
+                        <h4 class="at-h4">Outputs</h4>
+                        <template lwc:if={editor.hasOutputs}>
+                            <ul class="at-outputs">
+                                <template for:each={editor.outputs} for:item="o">
+                                    <li key={o.name} class="at-output"><span class="at-var-name">{o.name}</span><span class="at-var-type">{o.typeLabel}</span></li>
+                                </template>
+                            </ul>
+                            <p class="at-muted">Steps below can use these, for example a Text output holding a record Id in a lookup field.</p>
+                        </template>
+                        <template lwc:else>
+                            <p class="at-muted">This flow returns nothing later steps can use.</p>
+                        </template>
+                        <p class="at-muted">The flow runs in the same transaction as the other steps: if it fails, nothing from this response is kept and the response is flagged for a retry.</p>
+                    </div>
+                </template>
+
+                <template lwc:else>
+                <div class="at-ed-section">
+                    <h4 class="at-h4">What it does</h4>
+                    <div class="at-two">
+                        <lightning-combobox label="Action" value={editor.action} options={actionOptions} data-prop="action" onchange={handleStepSelect}></lightning-combobox>
+                        <c-jform-object-picker label="Object" value={editor.object} options={editor.objectOptions} data-prop="object" onchange={handleStepSelect}></c-jform-object-picker>
+                    </div>
+                    <lightning-input label="Step name (optional)" value={editor.label} placeholder={editor.title} data-prop="label" onchange={handleStepText}></lightning-input>
+                    <template lwc:if={editor.loading}><p class="at-muted">Loading fields…</p></template>
+                </div>
+
+                <template lwc:if={editor.needsMatch}>
+                    <div class="at-ed-section">
+                        <h4 class="at-h4">Find the record where</h4>
+                        <div class="at-match">
+                            <lightning-combobox label="Object field" variant="label-hidden" value={editor.matchField} options={editor.matchFieldOptions} placeholder="Object field" data-prop="field" onchange={handleMatch}></lightning-combobox>
+                            <span class="at-eq">equals</span>
+                            <lightning-combobox label="Form answer" variant="label-hidden" value={editor.matchKey} options={formFieldOptions} placeholder="Form answer" data-prop="key" onchange={handleMatch}></lightning-combobox>
+                        </div>
+                        <template lwc:if={editor.showUpdateExisting}>
+                            <lightning-input type="checkbox" label="Also update a found record with the fields below" checked={editor.updateExisting} data-prop="updateExisting" onchange={handleStepCheck}></lightning-input>
+                        </template>
+                        <template lwc:if={editor.showRequired}>
+                            <lightning-input type="checkbox" label="Flag the response for review when nothing is found" checked={editor.required} data-prop="required" onchange={handleStepCheck}></lightning-input>
+                        </template>
+                    </div>
+                </template>
+
+                <template lwc:if={editor.showFields}>
+                    <div class="at-ed-section">
+                        <div class="at-box-head">
+                            <h4 class="at-h4">Set fields</h4>
+                            <lightning-button variant="base" label="Add field" icon-name="utility:add" data-action="add-field" onclick={handleAddMapping}></lightning-button>
+                        </div>
+                        <template lwc:if={editor.hasMappings}>
+                            <div class="at-map at-map-head" aria-hidden="true">
+                                <span>{editor.objectLabel} field</span><span></span><span>Value</span><span></span>
+                            </div>
+                        </template>
+                        <template for:each={editor.mappings} for:item="m">
+                            <div key={m.index} class="at-map">
+                                <lightning-combobox label="Object field" variant="label-hidden" value={m.field} options={editor.fieldOptions} placeholder="Object field" data-index={m.index} onchange={handleMappingField}></lightning-combobox>
+                                <span class="at-arrow" aria-hidden="true">←</span>
+                                <template lwc:if={m.isValue}>
+                                    <div class="at-fixed">
+                                        <lightning-input label="Fixed value" variant="label-hidden" value={m.text} placeholder="Text; {{question_key}} inserts an answer" data-index={m.index} onchange={handleMappingText}></lightning-input>
+                                        <lightning-button-icon icon-name="utility:picklist_type" variant="bare" size="small" alternative-text="Pick an answer instead" data-index={m.index} onclick={handleMappingUnfix}></lightning-button-icon>
+                                    </div>
+                                </template>
+                                <template lwc:else>
+                                    <c-jform-value-picker label="Value" variant="label-hidden" value={m.pickerValue} options={m.valueOptions} data-index={m.index} onchange={handleMappingValue}></c-jform-value-picker>
+                                </template>
+                                <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Remove field" data-index={m.index} onclick={handleRemoveMapping}></lightning-button-icon>
+                            </div>
+                        </template>
+                        <template lwc:if={editor.unmappedRequired}>
+                            <p class="at-warn">Required on {editor.objectLabel} and not mapped: {editor.unmappedRequired}</p>
+                        </template>
+                        <p class="at-muted">* required. Answers are converted to the field's type; several ticked choices fill a multi-select picklist.</p>
+                    </div>
+                </template>
+                </template>
+
+                <div class="at-ed-section">
+                    <div class="at-box-head">
+                        <h4 class="at-h4">Run only when</h4>
+                        <lightning-button variant="base" label="Add condition" icon-name="utility:add" data-action="add-condition" onclick={handleAddCondition}></lightning-button>
+                    </div>
+                    <template lwc:if={editor.hasConditions}>
+                        <div class="at-when">
+                            <span>when</span>
+                            <lightning-combobox label="Match" variant="label-hidden" value={editor.matchMode} options={matchModeOptions} onchange={handleMatchMode}></lightning-combobox>
+                            <span>of these are true</span>
+                        </div>
+                        <template for:each={editor.conditions} for:item="c">
+                            <div key={c.index} class="at-cond">
+                                <lightning-combobox label="Field" variant="label-hidden" value={c.field} options={formFieldOptions} data-index={c.index} data-prop="field" onchange={handleCondition}></lightning-combobox>
+                                <lightning-combobox label="Operator" variant="label-hidden" value={c.operator} options={operatorOptions} data-index={c.index} data-prop="operator" onchange={handleCondition}></lightning-combobox>
+                                <template lwc:if={c.needsValue}>
+                                    <template lwc:if={c.hasOptions}>
+                                        <lightning-combobox label="Value" variant="label-hidden" value={c.value} options={c.options} data-index={c.index} data-prop="value" onchange={handleCondition}></lightning-combobox>
+                                    </template>
+                                    <template lwc:else>
+                                        <lightning-input label="Value" variant="label-hidden" value={c.value} placeholder="Value" data-index={c.index} data-prop="value" onchange={handleCondition}></lightning-input>
+                                    </template>
+                                </template>
+                                <template lwc:else><span></span></template>
+                                <lightning-button-icon icon-name="utility:close" variant="bare" size="small" alternative-text="Remove condition" data-index={c.index} onclick={handleRemoveCondition}></lightning-button-icon>
+                            </div>
+                        </template>
+                    </template>
+                    <template lwc:else><p class="at-muted">Runs for every response.</p></template>
+                </div>
+
+                <template lwc:if={editor.isRecord}>
+                    <div class="at-ed-section at-ed-row">
+                        <div>
+                            <h4 class="at-h4">Main record</h4>
+                            <p class="at-muted">{editor.mainHelp}</p>
+                        </div>
+                        <lightning-input type="toggle" label="Main record" variant="label-hidden" message-toggle-active="" message-toggle-inactive="" checked={editor.primary} data-prop="primary" onchange={handleStepCheck}></lightning-input>
+                    </div>
+                </template>
+            </template>
+            <template lwc:else>
+                <div class="at-guide">
+                    <h3 class="at-h3">How record steps work</h3>
+                    <ul class="at-guide-list">
+                        <li><lightning-icon icon-name="utility:arrowdown" size="xx-small"></lightning-icon><span>Steps run from top to bottom each time a response arrives.</span></li>
+                        <li><lightning-icon icon-name="utility:link" size="xx-small"></lightning-icon><span>A step can use the records made by the steps above it, for example a Case linked to the Contact from step 1.</span></li>
+                        <li><lightning-icon icon-name="utility:filter" size="xx-small"></lightning-icon><span>A step with a condition only runs when its answers match.</span></li>
+                        <li><lightning-icon icon-name="utility:flow" size="xx-small"></lightning-icon><span>A flow step hands the answers to a flow you built in Flow Builder, and its outputs can feed the steps below.</span></li>
+                        <li><lightning-icon icon-name="utility:undo" size="xx-small"></lightning-icon><span>If any step fails, nothing is kept. The response is flagged on the Responses tab, where you can retry it after a fix.</span></li>
+                    </ul>
+                    <p class="at-muted">Select a step to edit it, or press + to add one.</p>
+                </div>
+            </template>
+        </aside>
+    </div>
+</template>

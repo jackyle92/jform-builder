@@ -1,0 +1,125 @@
+<template>
+    <div class="rt">
+        <div class="rt-toolbar">
+            <lightning-input type="search" label="Search answers" variant="label-hidden" placeholder="Search answers or number…" value={search} class="rt-search" onchange={handleSearch}></lightning-input>
+            <lightning-combobox label="Status" variant="label-hidden" value={statusFilter} options={statusOptions} onchange={handleStatus}></lightning-combobox>
+            <template lwc:if={showPayments}>
+                <lightning-combobox label="Payment" variant="label-hidden" value={paymentFilter} options={paymentOptions} class="rt-payment-filter" onchange={handlePayment}></lightning-combobox>
+                <lightning-input type="search" label="Promotion code" variant="label-hidden" placeholder="Code…" value={codeFilter} class="rt-code" onchange={handleCode}></lightning-input>
+            </template>
+            <lightning-input type="date" label="From" variant="label-hidden" placeholder="From" value={fromDate} class="rt-date" data-prop="fromDate" onchange={handleDate}></lightning-input>
+            <lightning-input type="date" label="To" variant="label-hidden" placeholder="To" value={toDate} class="rt-date" data-prop="toDate" onchange={handleDate}></lightning-input>
+            <lightning-combobox label="Field" variant="label-hidden" placeholder="Filter by field…" value={fieldKey} options={fieldOptions} class="rt-field" onchange={handleFieldKey}></lightning-combobox>
+            <template lwc:if={fieldKey}>
+                <template lwc:if={fieldChoices.length}>
+                    <lightning-combobox label="Value" variant="label-hidden" placeholder="Any value" value={fieldValue} options={fieldChoices} class="rt-field" onchange={handleFieldValue}></lightning-combobox>
+                </template>
+                <template lwc:else>
+                    <lightning-input type="search" label="Value" variant="label-hidden" placeholder="Contains…" value={fieldValue} class="rt-field" onchange={handleFieldValueTyped}></lightning-input>
+                </template>
+            </template>
+            <template lwc:if={hasFilters}>
+                <lightning-button variant="base" label="Clear" onclick={handleClearFilters}></lightning-button>
+            </template>
+            <div class="rt-spacer"></div>
+            <lightning-button label="Refresh" icon-name="utility:refresh" onclick={handleRefresh}></lightning-button>
+            <lightning-button label="Export CSV" icon-name="utility:download" title="Every response of this form, whatever the search or filters" onclick={handleExport} disabled={exporting}></lightning-button>
+        </div>
+
+        <template lwc:if={error}><div class="rt-alert">{error}</div></template>
+
+        <div class="rt-tiles">
+            <template for:each={tiles} for:item="t">
+                <div key={t.id} class={t.cls}>
+                    <div class="rt-tile-value">{t.value}</div>
+                    <div class="rt-tile-label">{t.label}</div>
+                </div>
+            </template>
+        </div>
+
+        <template lwc:if={hasChoices}>
+            <div class="rt-charts">
+                <template for:each={choices} for:item="c">
+                    <div key={c.key} class="rt-card">
+                        <div class="rt-card-title">{c.label}</div>
+                        <template for:each={c.rows} for:item="r">
+                            <div key={r.value} class="rt-bar-row">
+                                <div class="rt-bar-head"><span>{r.value}</span><span class="rt-muted">{r.count} · {r.pct}%</span></div>
+                                <div class="rt-bar-track"><div class="rt-bar-fill" style={r.style}></div></div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <div class="rt-card rt-table-card">
+            <template lwc:if={loading}>
+                <div class="rt-loading"><lightning-spinner alternative-text="Loading responses" size="small"></lightning-spinner></div>
+            </template>
+            <div class="rt-scroll">
+                <table class="rt-table">
+                    <thead>
+                        <tr>
+                            <th>Submitted</th>
+                            <template for:each={columns} for:item="col"><th key={col.id}>{col.label}</th></template>
+                            <th>Record</th>
+                            <template lwc:if={showPayments}><th>Payment</th></template>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={rows} for:item="r">
+                            <tr key={r.id} class="rt-row" data-id={r.id} onclick={handleOpenSubmission}>
+                                <td class="rt-nowrap">{r.submittedText}</td>
+                                <template for:each={r.cells} for:item="c"><td key={c.id} class="rt-cell">{c.value}</td></template>
+                                <td class="rt-nowrap">
+                                    <template lwc:if={r.hasRecords}>
+                                        <template for:each={r.records} for:item="rec">
+                                            <a key={rec.id} href="#" class="rt-record" data-id={rec.recordId} title={rec.outcome} onclick={handleOpenTarget}>{rec.label}</a>
+                                        </template>
+                                    </template>
+                                    <template lwc:elseif={r.hasTarget}>
+                                        <a href="#" data-id={r.targetRecordId} onclick={handleOpenTarget}>Open record</a>
+                                    </template>
+                                    <template lwc:else><span class="rt-muted">—</span></template>
+                                </td>
+                                <template lwc:if={showPayments}>
+                                    <td class="rt-nowrap rt-pay">
+                                        <template lwc:if={r.payment}>
+                                            <span class={r.payment.cls}>{r.payment.status}</span>
+                                            <template lwc:if={r.payment.test}><span class="rt-pill rt-pill-test">Test</span></template>
+                                            <span class="rt-pay-amount">{r.payment.amount}</span>
+                                            <template lwc:if={r.payment.expected}>
+                                                <span class="rt-pay-expected" title="Stripe charged another amount than the form priced">{r.payment.expected}</span>
+                                            </template>
+                                            <template lwc:if={r.payment.code}>
+                                                <span class="rt-pay-code" title="Promotion code">{r.payment.code}</span>
+                                            </template>
+                                            <template lwc:if={r.payment.url}>
+                                                <a href={r.payment.url} target="_blank" rel="noopener" class="rt-pay-link" onclick={handleOpenPayment}>Stripe<span class="slds-assistive-text"> (opens in a new tab)</span></a>
+                                            </template>
+                                        </template>
+                                        <template lwc:else><span class="rt-muted">—</span></template>
+                                    </td>
+                                </template>
+                                <td class="rt-nowrap">
+                                    <span class={r.statusClass} title={r.statusTitle}>{r.status}</span>
+                                    <template lwc:if={r.isError}>
+                                        <lightning-button-icon icon-name="utility:refresh" variant="bare" size="small" alternative-text="Retry record creation" title={r.errorMessage} data-id={r.id} onclick={handleReprocess}></lightning-button-icon>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+            <div class="rt-footer">
+                <span class="rt-muted">{rangeText}</span>
+                <div class="rt-spacer"></div>
+                <lightning-button label="Previous" onclick={handlePrev} disabled={prevDisabled}></lightning-button>
+                <lightning-button label="Next" onclick={handleNext} disabled={nextDisabled}></lightning-button>
+            </div>
+        </div>
+    </div>
+</template>

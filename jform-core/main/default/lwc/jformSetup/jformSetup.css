@@ -1,0 +1,824 @@
+@import 'c/jformBrand';
+
+/* Rail of Setup pages on the left, the open page on the right */
+.setup {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+    color: var(--jform-ink, #181818);
+}
+.rail {
+    position: sticky;
+    top: 1rem;
+}
+.setup-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0.25rem 0 1rem;
+}
+.rail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.rail-item {
+    position: relative;
+}
+.rail-item + .rail-item {
+    margin-top: 0.25rem;
+}
+.rail-link {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.rail-link:hover {
+    background: rgba(15, 15, 15, 0.04);
+}
+.rail-current .rail-link {
+    background: var(--jform-surface, #ffffff);
+    border-color: var(--jform-border, #e5e5e5);
+}
+.rail-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.rail-label {
+    font-weight: 600;
+}
+.rail-current .rail-label {
+    font-weight: 700;
+    color: var(--jform-primary-hover, #022ac0);
+}
+.rail-sub {
+    font-size: 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.rail-warn .rail-sub {
+    color: var(--jform-warning-ink, #8a4a0b);
+}
+.content {
+    min-width: 0;
+}
+.content-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem 1rem;
+}
+.content-heading {
+    flex: 1 1 24rem;
+    min-width: 0;
+}
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+.page-title:focus {
+    outline: none;
+}
+.page-sub {
+    margin: 0;
+    max-width: 42rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.setup-alert {
+    margin-top: 1rem;
+    background: var(--jform-error-tint, #fdecec);
+    color: var(--jform-error-ink, #8e1b1b);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+}
+.setup-loading {
+    position: relative;
+    min-height: 6rem;
+}
+.card {
+    background: var(--jform-surface, #ffffff);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 0.75rem;
+}
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+}
+.actions {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+code {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.8125rem;
+}
+.url {
+    overflow-wrap: anywhere;
+}
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Status tags: a word first, colour and icon second */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    white-space: nowrap;
+}
+.tag-on,
+.tag-done {
+    background: var(--jform-success-tint, #e6f4ea);
+    color: var(--jform-success-ink, #1e6b36);
+    --slds-c-icon-color-foreground-default: var(--jform-success-ink, #1e6b36);
+}
+.tag-next {
+    background: var(--jform-accent, #066afe);
+    color: var(--jform-on-accent, #ffffff);
+}
+.tag-off {
+    background: var(--jform-canvas, #f3f3f3);
+    border-color: var(--jform-border, #e5e5e5);
+    color: var(--jform-muted, #5c5c5c);
+}
+.tag-wait {
+    border: 1px dashed var(--jform-border-strong, #c9c9c9);
+    color: var(--jform-muted, #5c5c5c);
+}
+.tag-warn {
+    background: var(--jform-warning-tint, #fdf3e7);
+    border-color: var(--jform-warning-border, #f3c58f);
+    color: var(--jform-warning-ink, #8a4a0b);
+    --slds-c-icon-color-foreground-default: var(--jform-warning-ink, #8a4a0b);
+}
+
+/* Checklist */
+.checklist {
+    margin-top: 1.5rem;
+    overflow: hidden;
+}
+.progress-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+    padding: 1.25rem 1.25rem 0;
+}
+.progress-text {
+    font-size: 1rem;
+}
+.progress-next {
+    color: var(--jform-muted, #5c5c5c);
+}
+.bar {
+    margin: 0.75rem 1.25rem 0;
+    height: 0.5rem;
+    background: var(--jform-border, #e5e5e5);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: var(--jform-accent, #066afe);
+    transition: width 0.3s ease;
+}
+.checklist-note {
+    margin: 0.5rem 1.25rem 0;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.steps {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.step + .step {
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.step-next {
+    box-shadow: inset 3px 0 0 var(--jform-accent, #066afe);
+}
+.step-heading {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+}
+.step-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.step-toggle:hover {
+    background: var(--jform-canvas, #f3f3f3);
+}
+.rail-link:focus-visible,
+.step-toggle:focus-visible,
+.steps-toggle:focus-visible,
+.step-more summary:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+.step-badge {
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    background: var(--jform-surface, #ffffff);
+    color: var(--jform-ink, #181818);
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+}
+.step-next .step-badge {
+    background: var(--jform-accent, #066afe);
+    border-color: var(--jform-accent, #066afe);
+    color: var(--jform-on-accent, #ffffff);
+}
+.step-done .step-badge {
+    background: var(--jform-primary, #0250d9);
+    border-color: var(--jform-primary, #0250d9);
+}
+.step-blocked .step-badge {
+    border-style: dashed;
+    color: var(--jform-muted, #5c5c5c);
+}
+.step-titles {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding-top: 0.125rem;
+}
+.step-title-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+}
+.step-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+.step-done .step-title {
+    font-weight: 600;
+}
+.step-summary {
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+    overflow-wrap: anywhere;
+}
+.step-chevron {
+    flex: none;
+    margin-top: 0.375rem;
+    --slds-c-icon-color-foreground-default: var(--jform-muted, #5c5c5c);
+}
+/* Panel text lines up with the step title, past the badge */
+.step-panel {
+    padding: 0 1.25rem 1.25rem calc(1.25rem + 1.75rem + 0.875rem);
+}
+.step-why {
+    margin: 0;
+    color: var(--jform-muted, #5c5c5c);
+}
+.step-text {
+    margin: 0.5rem 0 0;
+}
+.step-note {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.step-wait {
+    margin: 0.5rem 0 0;
+    font-weight: 600;
+}
+.step-more {
+    margin-top: 0.75rem;
+}
+.step-more summary {
+    display: inline-block;
+    cursor: pointer;
+    color: var(--jform-primary, #0250d9);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.step-more summary::before {
+    content: '▸ ';
+}
+.step-more[open] summary::before {
+    content: '▾ ';
+}
+.howto {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+    list-style: decimal;
+}
+.howto li {
+    margin: 0.25rem 0;
+}
+.people {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+}
+.person {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    padding: 0.375rem 0;
+    border-bottom: 1px solid var(--jform-canvas, #f3f3f3);
+}
+.person-name {
+    font-weight: 600;
+}
+.person-user {
+    flex: 1;
+    min-width: 8rem;
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.8125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.chip {
+    display: inline-block;
+    margin: 0.125rem 0.25rem 0 0;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    background: var(--jform-canvas, #f3f3f3);
+    font-size: 0.75rem;
+}
+.link-button {
+    gap: 0.375rem;
+}
+.link-icon {
+    --slds-c-icon-color-foreground-default: currentColor;
+}
+
+/* All steps done */
+.ready {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--jform-tint, #eef4ff);
+}
+.ready-icon {
+    flex: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--jform-primary, #0250d9);
+}
+.ready-body {
+    flex: 1;
+    min-width: 0;
+}
+.ready-text {
+    margin: 0.25rem 0 0;
+}
+.ready + .steps {
+    margin-top: 0;
+}
+
+/* Optional settings */
+.content-head + .group-title,
+.content-head + .card {
+    margin-top: 1.5rem;
+}
+.group-title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin: 1.25rem 0 0.5rem;
+}
+.group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.setting {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    row-gap: 0.75rem;
+    align-items: start;
+    padding: 1rem 1.25rem;
+}
+.setting + .setting {
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.setting-icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--jform-tint, #eef4ff);
+    --slds-c-icon-color-foreground-default: var(--jform-primary, #0250d9);
+}
+.setting-icon-ai {
+    background: var(--jform-ai-tint, #f4f0ff);
+    --slds-c-icon-color-foreground-default: var(--jform-ai, #7526e3);
+}
+.setting-main {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+}
+.setting-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    min-height: 2rem;
+}
+.setting-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+.setting-text {
+    margin: 0.125rem 0 0;
+}
+.setting-note {
+    margin: 0.375rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.setting-actions {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+.setting-panel {
+    grid-column: 2 / -1;
+    padding: 1rem;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 0.5rem;
+}
+.panel-help {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.panel-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--jform-warning-ink, #8a4a0b);
+    --slds-c-icon-color-foreground-default: var(--jform-warning, #b45309);
+}
+.warning-icon {
+    flex: none;
+    margin-top: 0.125rem;
+}
+.fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 9rem;
+    gap: 0.75rem;
+    align-items: end;
+}
+.agent-help {
+    margin-top: 0.5rem;
+}
+.setup-tip {
+    margin: 1.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+
+/* Narrow: the rail turns into a row of tabs above the page */
+@media (max-width: 768px) {
+    .setup {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+    }
+    .rail {
+        position: static;
+    }
+    .setup-title {
+        margin-bottom: 0.5rem;
+    }
+    /* Pages wrap onto a second row rather than scrolling out of sight. */
+    .rail-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    .rail-item + .rail-item {
+        margin-top: 0;
+    }
+    .rail-item:not(:last-child)::after {
+        display: none;
+    }
+    .rail-link {
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        white-space: nowrap;
+    }
+    .rail-marker {
+        margin-top: 0;
+    }
+    .rail-sub {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+}
+@media (max-width: 640px) {
+    .setup {
+        padding: 1rem 0.75rem 2rem;
+    }
+    .step-toggle {
+        padding: 0.875rem 1rem;
+        gap: 0.75rem;
+    }
+    .step-panel {
+        padding: 0 1rem 1rem;
+    }
+    .progress-line {
+        padding: 1rem 1rem 0;
+    }
+    .bar,
+    .checklist-note {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+    .ready {
+        padding: 1rem;
+    }
+    .setting {
+        grid-template-columns: 2rem minmax(0, 1fr);
+        padding: 1rem;
+    }
+    .setting-actions {
+        grid-column: 2;
+        grid-row: auto;
+        justify-content: flex-start;
+    }
+    .setting-panel {
+        grid-column: 1 / -1;
+    }
+    .fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Payments page: gateway tiles, then the chosen gateway's panel with a tab per mode and the four steps numbered */
+.pay-label {
+    margin-top: 1.5rem;
+}
+.pay-gateways {
+    display: block;
+    margin-bottom: 1.25rem;
+}
+.gw-panel {
+    margin-bottom: 1rem;
+}
+.gw-panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.gw-panel-brand {
+    flex: 1 1 20rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+.gw-panel-logo {
+    display: flex;
+}
+.gw-panel-summary {
+    margin: 0;
+    max-width: 40rem;
+    color: var(--jform-muted, #5c5c5c);
+}
+.gw-dashboard {
+    padding-top: 0.25rem;
+    white-space: nowrap;
+}
+.pay-site {
+    padding: 1.25rem 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.pay-section-title,
+.pay-step-title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+.pay-site .setting-note {
+    margin: 0.25rem 0 0.75rem;
+    max-width: 40rem;
+}
+.pay-site-picker {
+    display: block;
+    max-width: 24rem;
+}
+.gw-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--jform-border, #e5e5e5);
+}
+.gw-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.125rem 0.625rem;
+    font: inherit;
+    font-weight: 600;
+    color: var(--jform-muted, #5c5c5c);
+    background: none;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+}
+.gw-tab:hover {
+    color: var(--jform-ink, #181818);
+}
+.gw-tab:focus-visible {
+    outline: 2px solid var(--jform-primary, #0250d9);
+    outline-offset: 2px;
+}
+.gw-tab-on {
+    color: var(--jform-ink, #181818);
+    border-bottom-color: var(--jform-primary, #0250d9);
+}
+.gw-tabpanel {
+    padding: 1.25rem;
+}
+/* Numbered steps: the number and a short title on one line, the status tag at its end */
+.pay-steps {
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: pay-step;
+}
+.pay-step {
+    position: relative;
+    padding: 0 0 1.25rem 1.75rem;
+    counter-increment: pay-step;
+}
+.pay-step::before {
+    content: counter(pay-step) '.';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+.pay-step + .pay-step {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--jform-border, #e5e5e5);
+}
+.pay-step + .pay-step::before {
+    top: 1.25rem;
+}
+.pay-step:last-child {
+    padding-bottom: 0;
+}
+.pay-step-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+}
+.pay-step-text {
+    margin: 0.25rem 0 0;
+    max-width: 44rem;
+}
+.pay-step .actions {
+    margin-top: 0.5rem;
+}
+.pay-step .setting-panel {
+    margin-top: 0.5rem;
+}
+.pay-url {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.pay-url-text {
+    min-width: 0;
+    padding: 0.375rem 0.5rem;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 0.375rem;
+    overflow-wrap: anywhere;
+}
+.pay-events {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+.pay-events code {
+    display: inline-block;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    background: var(--jform-canvas, #f3f3f3);
+    border: 1px solid var(--jform-border, #e5e5e5);
+    border-radius: 0.25rem;
+}
+.pay-check-lines {
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.check-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.375rem;
+}
+.check-ok {
+    --slds-c-icon-color-foreground-default: var(--jform-success, #2e844a);
+}
+.check-warn {
+    color: var(--jform-warning-ink, #8a4a0b);
+    --slds-c-icon-color-foreground-default: var(--jform-warning, #b45309);
+}
+.pay-spinner {
+    position: relative;
+    display: inline-block;
+    width: 2rem;
+}
+.pay-foot {
+    max-width: 48rem;
+}
+/* Payments: a site whose visitors cannot pay yet, with the fix */
+.pay-guest-alert p {
+    margin: 0 0 0.5rem;
+}

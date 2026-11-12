@@ -1,0 +1,38 @@
+<template>
+    <div class={rootClass}>
+        <template lwc:if={allowTyped}>
+            <div class="jf-sig-modes" role="radiogroup" aria-label="How to sign">
+                <template for:each={modeButtons} for:item="m">
+                    <button key={m.value} type="button" role="radio" class={m.cls} aria-checked={m.checked} data-mode={m.value}
+                        disabled={disabled} onclick={handleMode}>{m.label}</button>
+                </template>
+            </div>
+        </template>
+
+        <template lwc:if={isTyping}>
+            <input class="jf-input jf-sig-typed-input" type="text" value={typedName} placeholder="Type your full name" autocomplete="name"
+                maxlength={maxTypedLength} disabled={disabled} aria-label={typedLabel} aria-required={ariaRequired} aria-invalid={ariaInvalid}
+                aria-describedby={ariaDescribedby} oninput={handleTyped} onblur={handleBlur}>
+        </template>
+
+        <div class={padClass} style={padStyle} tabindex="-1">
+            <template lwc:if={showImage}>
+                <img class="jf-sig-image" src={value} alt={imageAlt}>
+            </template>
+            <template lwc:elseif={showCanvas}>
+                <canvas class="jf-sig-canvas" role="img" aria-label={canvasLabel} aria-describedby={ariaDescribedby}
+                    onpointerdown={handlePointerDown} onpointermove={handlePointerMove} onpointerup={handlePointerUp}
+                    onpointercancel={handlePointerUp} onlostpointercapture={handlePointerUp}></canvas>
+            </template>
+            <div class="jf-sig-baseline" aria-hidden="true">
+                <svg class="jf-sig-x" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8"></path></svg>
+            </div>
+            <template lwc:if={showHint}><span class="jf-sig-hint" aria-hidden="true">Sign here</span></template>
+        </div>
+
+        <div class="jf-sig-foot">
+            <p class="jf-sig-statement">{statement}</p>
+            <button type="button" class="jf-sig-clear" disabled={clearDisabled} onclick={handleClear}>Clear</button>
+        </div>
+    </div>
+</template>

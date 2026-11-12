@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Percent_Off__c</fullName>
+    <description>For a Percent code: the percentage taken off the total, 0.01 to 100. The discount is rounded half up to the smallest unit of the currency.</description>
+    <externalId>false</externalId>
+    <label>Percent Off</label>
+    <precision>5</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

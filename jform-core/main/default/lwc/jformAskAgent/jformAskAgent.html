@@ -1,0 +1,29 @@
+<template>
+    <template lwc:if={hidden}>
+        <button type="button" class="ask-show" onclick={handleShow}>
+            <lightning-icon icon-name="utility:einstein" size="x-small" alternative-text=""></lightning-icon>
+            <span>Show Agentforce prompts</span>
+        </button>
+    </template>
+    <template lwc:else>
+        <section class="ask" aria-labelledby="ask-title">
+            <div class="ask-head">
+                <lightning-icon icon-name="utility:einstein" size="small" alternative-text="" class="ask-icon"></lightning-icon>
+                <div class="ask-heading">
+                    <h2 id="ask-title" class="ask-title">Ask Agentforce</h2>
+                    <p class="ask-sub">Describe the form you need. An Agentforce agent with the JForm Form Builder subagent finds, copies, edits and publishes it for you.</p>
+                </div>
+                <lightning-button-icon icon-name="utility:close" variant="bare" alternative-text="Hide Agentforce prompts" title="Hide" onclick={handleHide}></lightning-button-icon>
+            </div>
+            <ul class="ask-list">
+                <template for:each={prompts} for:item="p">
+                    <li key={p.key} class="ask-item">
+                        <span class="ask-text">{p.text}</span>
+                        <lightning-button label={p.buttonLabel} icon-name={p.buttonIcon} variant="neutral" data-index={p.index} onclick={handleCopy} class="ask-copy"></lightning-button>
+                    </li>
+                </template>
+            </ul>
+            <p class="ask-foot">Open Agentforce from the page header and paste a prompt. The agent needs the JForm Form Builder subagent: see Setup.</p>
+        </section>
+    </template>
+</template>

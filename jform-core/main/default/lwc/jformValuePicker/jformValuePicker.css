@@ -1,0 +1,68 @@
+.vp-control {
+    position: relative;
+}
+.vp-input {
+    padding-right: 2rem;
+    text-overflow: ellipsis;
+}
+.vp-caret {
+    position: absolute;
+    right: 0.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    line-height: 0;
+    pointer-events: none;
+}
+.vp-list {
+    position: absolute;
+    z-index: 9100;
+    left: 0;
+    min-width: 100%;
+    width: max-content;
+    max-width: 22rem;
+    top: calc(100% + 2px);
+    max-height: 18rem;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid var(--jform-border-strong, #c9c9c9);
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+}
+.vp-group {
+    padding: 0.375rem 0.75rem 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--jform-muted, #5c5c5c);
+}
+.vp-option {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+}
+.vp-option:hover,
+.vp-active {
+    background: var(--jform-canvas, #f3f3f3);
+}
+.vp-selected .vp-label {
+    font-weight: 700;
+    color: var(--jform-primary, #0250d9);
+}
+.vp-detail {
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+.vp-empty,
+.vp-more {
+    padding: 0.375rem 0.75rem;
+    color: var(--jform-muted, #5c5c5c);
+    font-size: 0.8125rem;
+}

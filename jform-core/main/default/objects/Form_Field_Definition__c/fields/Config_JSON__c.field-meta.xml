@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Config_JSON__c</fullName>
+    <description>Type-specific settings as JSON, e.g. date limits and allowed weekdays for a date field ({ &quot;minDate&quot;: &quot;2026-01-01&quot;, &quot;noPast&quot;: true, &quot;disabledDays&quot;: [0, 6] }) or the step and hour format for a time field ({ &quot;step&quot;: 15, &quot;hourFormat&quot;: &quot;12&quot; }).</description>
+    <label>Config JSON</label>
+    <length>32768</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

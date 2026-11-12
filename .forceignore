@@ -1,0 +1,6 @@
+# Salesforce DX .forceignore
+package.xml
+**/jsconfig.json
+**/.eslintrc.json
+**/__tests__/**
+**/*.dup

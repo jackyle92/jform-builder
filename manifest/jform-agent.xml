@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Deploys jform-agent (the JForm Agent package) to an org from source: the JForm Form Builder
+     topic, its ten actions and the Models API client behind "Describe it". Needs Einstein
+     generative AI and the JForm core classes:
+     sf project deploy start -o <org> -x manifest/jform-agent.xml -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>JFormModelsApiClient</members>
+        <members>JFormModelsApiClientTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>JForm_Add_Fields</members>
+        <members>JForm_Add_Logic_Rule</members>
+        <members>JForm_Apply_Design</members>
+        <members>JForm_Clone_Form</members>
+        <members>JForm_Create_Form</members>
+        <members>JForm_Find_Forms</members>
+        <members>JForm_Get_Form_Details</members>
+        <members>JForm_Get_Response_Summary</members>
+        <members>JForm_Publish_Form</members>
+        <members>JForm_Update_Field</members>
+        <name>GenAiFunction</name>
+    </types>
+    <types>
+        <members>JForm_Form_Builder</members>
+        <name>GenAiPlugin</name>
+    </types>
+    <version>66.0</version>
+</Package>

@@ -1,0 +1,24 @@
+{
+  "type" : "sfdc_cms__themeLayout",
+  "title" : "Form Page",
+  "contentBody" : {
+    "component" : {
+      "attributes" : { },
+      "children" : [ {
+        "id" : "6f1a0c2e-3b7d-4e5a-9c21-0f8b2d4a7e10",
+        "name" : "header",
+        "title" : "Theme Header",
+        "type" : "region"
+      }, {
+        "id" : "b4e9d7c1-52a6-4f38-8d0e-7c3a1f9b6e22",
+        "name" : "footer",
+        "title" : "Theme Footer",
+        "type" : "region"
+      } ],
+      "definition" : "community_layout:simpleThemeLayout",
+      "id" : "2d8c5f4a-91b3-4c7e-a6d2-5e0f8a3b7c19",
+      "type" : "component"
+    }
+  },
+  "urlName" : "form-page"
+}

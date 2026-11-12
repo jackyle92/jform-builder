@@ -1,0 +1,34 @@
+{
+  "packageDirectories": [
+    {
+      "path": "jform-core",
+      "default": true
+    },
+    {
+      "path": "jform-agent"
+    },
+    {
+      "path": "jform-experience"
+    },
+    {
+      "path": "jform-agent-script"
+    }
+  ],
+  "name": "jform",
+  "replacements": [
+    {
+      "filename": "jform-core/main/default/permissionsets/JForm_Guest.permissionset-meta.xml",
+      "stringToReplace": "%JFORM_NS%",
+      "replaceWithEnv": "JFORM_NS_PREFIX",
+      "allowUnsetEnvVariable": true
+    },
+    {
+      "filename": "jform-core/main/default/permissionsets/ACCESS_FORM_BUILDER.permissionset-meta.xml",
+      "stringToReplace": "%JFORM_NS%",
+      "replaceWithEnv": "JFORM_NS_PREFIX",
+      "allowUnsetEnvVariable": true
+    }
+  ],
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "66.0"
+}

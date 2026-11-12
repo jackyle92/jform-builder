@@ -1,0 +1,38 @@
+{
+  "required": [
+    "formId",
+    "fieldsJson"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "formId": {
+      "title": "Form Id",
+      "description": "Id of the form to change",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "fieldsJson": {
+      "title": "Fields JSON",
+      "description": "JSON list of fields, for example [{\"label\":\"Preferred store\",\"type\":\"dropdown\",\"required\":true,\"options\":[\"London\",\"Leeds\"]}]. Each field takes label, type, required, options, helpText, placeholder, width (25, 50, 75 or 100) and defaultValue (a hidden field saves it with every response). Use one field of type name for a person's name and one of type address for an address, with \"purpose\":\"billing\" or \"shipping\" for a billing or shipping address, rather than a field per part. For terms or a waiver, add a rich text field with the wording in richtext, then a consent field whose label is what the person agrees to. For a fee, add one field of type payment, as described for Create Form.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "pageName": {
+      "title": "Page",
+      "description": "Existing page to add to, by title or number. Leave empty for the last page.",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "newPageName": {
+      "title": "New Page Name",
+      "description": "Title of a new page to create for these fields",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

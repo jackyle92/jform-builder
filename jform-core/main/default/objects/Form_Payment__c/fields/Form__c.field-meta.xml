@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Form__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The form the response was sent from, for reports.</description>
+    <label>Form</label>
+    <referenceTo>Form__c</referenceTo>
+    <relationshipLabel>Form Payments</relationshipLabel>
+    <relationshipName>Form_Payments</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

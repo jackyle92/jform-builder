@@ -1,0 +1,252 @@
+{
+  "jform-core/main/default/lwc/jformAskAgent/jformAskAgent.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "jform-core/main/default/lwc/jformAutomateTab/__tests__/jformAutomateTab.test.js": {
+    "@lwc/lwc/no-async-operation": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformAutomateTab/jformAutomateTab.js": {
+    "no-loop-func": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformAutomationPresets/__tests__/jformAutomationPresets.test.js": {
+    "jest/no-conditional-expect": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformDatePicker/__tests__/jformDatePicker.test.js": {
+    "@lwc/lwc/prefer-custom-event": {
+      "count": 4
+    }
+  },
+  "jform-core/main/default/lwc/jformDateTime/jformDateTime.js": {
+    "no-unused-vars": {
+      "count": 11
+    }
+  },
+  "jform-core/main/default/lwc/jformDates/jformDates.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "jform-core/main/default/lwc/jformDesignTab/__tests__/jformDesignTab.test.js": {
+    "no-await-in-loop": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformDesignTab/jformDesignTab.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformEvent/__tests__/jformEvent.test.js": {
+    "no-useless-escape": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformEvent/jformEvent.js": {
+    "no-useless-escape": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformField/__tests__/jformField.test.js": {
+    "jest/no-identical-title": {
+      "count": 1
+    },
+    "no-script-url": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformFieldGuide/__tests__/jformFieldGuide.test.js": {
+    "jest/no-conditional-expect": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformFieldRegistry/__tests__/jformFieldRegistry.test.js": {
+    "no-shadow": {
+      "count": 3
+    }
+  },
+  "jform-core/main/default/lwc/jformFieldRegistry/jformFieldRegistry.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformHome/__tests__/jformHome.test.js": {
+    "@lwc/lwc/no-async-operation": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformObjectPicker/__tests__/jformObjectPicker.test.js": {
+    "no-await-in-loop": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformPalette/__tests__/jformPalette.test.js": {
+    "no-await-in-loop": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformPalette/jformPalette.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformPanelResize/__tests__/jformPanelResize.test.js": {
+    "@lwc/lwc/prefer-custom-event": {
+      "count": 4
+    }
+  },
+  "jform-core/main/default/lwc/jformPanelResize/jformPanelResize.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformPayment/jformPayment.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformPhone/jformPhone.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformPhoneInput/__tests__/jformPhoneInput.test.js": {
+    "@lwc/lwc/prefer-custom-event": {
+      "count": 3
+    }
+  },
+  "jform-core/main/default/lwc/jformProperties/__tests__/jformProperties.test.js": {
+    "@lwc/lwc/no-async-operation": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformProperties/jformProperties.js": {
+    "no-unused-vars": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformRenderer/__tests__/jformRenderer.test.js": {
+    "@lwc/lwc/no-async-operation": {
+      "count": 4
+    },
+    "no-await-in-loop": {
+      "count": 13
+    },
+    "no-script-url": {
+      "count": 1
+    },
+    "no-shadow": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformRenderer/jformRenderer.js": {
+    "no-await-in-loop": {
+      "count": 2
+    },
+    "no-unused-vars": {
+      "count": 22
+    },
+    "no-use-before-define": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformResponsesTab/__tests__/jformResponsesTab.test.js": {
+    "no-await-in-loop": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformResponsesTab/jformResponsesTab.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformRichEditor/__tests__/jformRichEditor.test.js": {
+    "@lwc/lwc/prefer-custom-event": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformScreens/__tests__/jformScreens.test.js": {
+    "no-script-url": {
+      "count": 2
+    }
+  },
+  "jform-core/main/default/lwc/jformSettingsTab/__tests__/jformSettingsTab.test.js": {
+    "@lwc/lwc/no-async-operation": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformSettingsTab/jformSettingsTab.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformSetup/__tests__/jformSetup.test.js": {
+    "@lwc/lwc/no-async-operation": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformSetup/jformSetup.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformShareModal/__tests__/jformShareModal.test.js": {
+    "no-new-func": {
+      "count": 1
+    },
+    "no-script-url": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformShareModal/jformShareModal.js": {
+    "no-unused-vars": {
+      "count": 3
+    }
+  },
+  "jform-core/main/default/lwc/jformSignaturePad/__tests__/jformSignaturePad.test.js": {
+    "no-script-url": {
+      "count": 1
+    },
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformSignaturePad/jformSignaturePad.js": {
+    "no-unused-vars": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformTheme/__tests__/jformTheme.test.js": {
+    "no-script-url": {
+      "count": 1
+    },
+    "no-shadow": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformTimePicker/__tests__/jformTimePicker.test.js": {
+    "@lwc/lwc/prefer-custom-event": {
+      "count": 3
+    }
+  },
+  "jform-core/main/default/lwc/jformWorkspace/__tests__/jformWorkspace.test.js": {
+    "@lwc/lwc/prefer-custom-event": {
+      "count": 2
+    },
+    "no-await-in-loop": {
+      "count": 1
+    }
+  },
+  "jform-core/main/default/lwc/jformWorkspace/jformWorkspace.js": {
+    "no-unused-vars": {
+      "count": 6
+    }
+  }
+}

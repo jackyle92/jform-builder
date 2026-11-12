@@ -1,0 +1,23 @@
+{
+  "name": "jform-builder",
+  "private": true,
+  "version": "0.1.0",
+  "description": "JForm: a form builder for Salesforce (Apex + LWC)",
+  "license": "MIT",
+  "scripts": {
+    "test:unit": "sfdx-lwc-jest",
+    "test:unit:watch": "sfdx-lwc-jest --watch",
+    "test:unit:coverage": "sfdx-lwc-jest --coverage",
+    "lint": "eslint \"**/lwc/**/*.js\""
+  },
+  "devDependencies": {
+    "@lwc/eslint-plugin-lwc": "^3.5.0",
+    "@salesforce/eslint-config-lwc": "^4.1.2",
+    "@salesforce/eslint-plugin-lightning": "^2.0.0",
+    "@salesforce/sfdx-lwc-jest": "^7.9.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jest": "^29.17.0",
+    "globals": "^17.13.0"
+  }
+}

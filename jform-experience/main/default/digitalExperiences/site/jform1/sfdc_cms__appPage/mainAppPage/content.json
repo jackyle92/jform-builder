@@ -1,0 +1,12 @@
+{
+  "type" : "sfdc_cms__appPage",
+  "title" : "main",
+  "contentBody" : {
+    "currentThemeId" : "Marketing_Microsite",
+    "headMarkup" : "<title>Welcome to LWC Communities!</title>\n\n<!-- branding stylesheets -->\n<link rel=\"stylesheet\" href=\"{ basePath }/assets/styles/salesforce-lightning-design-system.min.css?{ versionKey }\"/><link rel=\"stylesheet\" href=\"{ basePath }/assets/styles/dxp-site-spacing-styling-hooks.min.css?{ versionKey }\" />\n<link rel=\"stylesheet\" href=\"{ basePath }/assets/styles/dxp-styling-hooks.min.css?{ versionKey }\" />\n<link rel=\"stylesheet\" href=\"{ basePath }/assets/styles/dxp-slds-extensions.min.css?{ versionKey }\" />\n\n\n<!-- branding stylesheets -->\n\n<link rel=\"stylesheet\" href=\"{ basePath }/assets/styles/styles.css?{ versionKey }\" />\n\n<!-- JForm: Google reCAPTCHA runs here, outside the Lightning Web Security sandbox; the form renderer asks for it and for tokens by postMessage -->\n<script>(function(){var loading=false,key=null,KEY=/^[\\w-]{10,100}$/;function load(k){if(loading)return;loading=true;key=k;var s=document.createElement(\"script\");s.src=\"https://www.google.com/recaptcha/api.js?render=\"+encodeURIComponent(k);s.async=true;document.head.appendChild(s);}function reply(id,token,error){window.postMessage({type:\"jform:captcha:token\",requestId:id,token:token||null,error:error||null},window.location.origin);}window.addEventListener(\"message\",function(e){var m=e.data;if(!m||typeof m!==\"object\"||e.origin!==window.location.origin)return;if(m.type===\"jform:captcha\"&&typeof m.siteKey===\"string\"&&KEY.test(m.siteKey)){load(m.siteKey);return;}if(m.type!==\"jform:captcha:execute\"||typeof m.requestId!==\"string\")return;var k=typeof m.siteKey===\"string\"&&KEY.test(m.siteKey)?m.siteKey:key;if(!k){reply(m.requestId,null,\"no site key\");return;}if(!loading)load(k);var tries=0;(function wait(){var g=window.grecaptcha;if(g&&g.ready){g.ready(function(){try{g.execute(k,{action:typeof m.action===\"string\"?m.action:\"jform_submit\"}).then(function(t){reply(m.requestId,t);},function(err){reply(m.requestId,null,String(err));});}catch(err){reply(m.requestId,null,String(err));}});}else if(tries++<40){setTimeout(wait,250);}else{reply(m.requestId,null,\"recaptcha not loaded\");}})();});})();</script>",
+    "isLockerServiceEnabled" : true,
+    "isRelaxedCSPLevel" : true,
+    "templateName" : "microsite-template-marketing"
+  },
+  "urlName" : "main"
+}

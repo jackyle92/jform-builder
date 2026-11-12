@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Code_Key__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>The form Id and the code in upper case, joined by a colon, so a code is unique within its form whatever its case. Set by JForm when the code is saved.</description>
+    <externalId>true</externalId>
+    <label>Code Key</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

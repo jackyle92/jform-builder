@@ -1,0 +1,18 @@
+<template>
+    <div class={groupCls} role="radiogroup" aria-label={label} onkeydown={handleKeyDown}>
+        <template for:each={items} for:item="o">
+            <button key={o.id} type="button" role="radio" aria-checked={o.checked} tabindex={o.tabindex} class={o.cls} data-id={o.id} onclick={handleClick}>
+                <span class="gw-logo"><c-jform-gateway-logo gateway={o.id} size={logoSize} decorative={isRow}></c-jform-gateway-logo></span>
+                <span class="gw-text">
+                    <template lwc:if={isRow}><span class="gw-name">{o.name}</span></template>
+                    <span class="gw-states">
+                        <template for:each={o.states} for:item="s">
+                            <span key={s.key} class={s.cls}><span class="gw-dot" aria-hidden="true"></span>{s.text}</span>
+                        </template>
+                    </span>
+                </span>
+                <template lwc:if={o.on}><lightning-icon class="gw-check" icon-name="utility:success" size="x-small" alternative-text=""></lightning-icon></template>
+            </button>
+        </template>
+    </div>
+</template>

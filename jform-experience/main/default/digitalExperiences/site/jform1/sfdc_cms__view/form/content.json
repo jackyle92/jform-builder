@@ -1,0 +1,82 @@
+{
+  "type": "sfdc_cms__view",
+  "title": "form",
+  "contentBody": {
+    "component": {
+      "children": [
+        {
+          "children": [
+            {
+              "attributes": {
+                "backgroundImageConfig": "",
+                "backgroundImageOverlay": "rgba(0,0,0,0)",
+                "componentSpacerSize": "",
+                "layoutDirectionDesktop": "row",
+                "layoutDirectionMobile": "column",
+                "layoutDirectionTablet": "column",
+                "maxContentWidth": "",
+                "sectionColumnGutterWidth": "",
+                "sectionConfig": "{\"UUID\": \"965231c1-5fee-4188-9a32-b5284af880c8\", \"columns\": [{\"UUID\": \"296a2969-7582-40c8-b5b8-92315632532a\", \"columnName\": \"Column 1\", \"columnKey\": \"col1\", \"columnWidth\": \"12\", \"seedComponents\": []}]}",
+                "sectionMinHeight": "",
+                "sectionVerticalAlign": "flex-start"
+              },
+              "children": [
+                {
+                  "children": [
+                    {
+                      "attributes": {
+                        "publicKey": "",
+                        "embedded": false,
+                        "fullPage": true
+                      },
+                      "definition": "c:jformRenderer",
+                      "id": "7f60b99f-181d-4917-a94b-290be5e9056f",
+                      "type": "component"
+                    }
+                  ],
+                  "id": "296a2969-7582-40c8-b5b8-92315632532a",
+                  "name": "col1",
+                  "title": "Column 1",
+                  "type": "region"
+                }
+              ],
+              "definition": "community_layout:section",
+              "id": "965231c1-5fee-4188-9a32-b5284af880c8",
+              "type": "component"
+            }
+          ],
+          "id": "5db9f752-c20b-4409-bbb5-2d43411b55d0",
+          "name": "content",
+          "title": "Content",
+          "type": "region"
+        },
+        {
+          "children": [
+            {
+              "attributes": {
+                "customHeadTags": "",
+                "description": "Fill in a form",
+                "pageTitle": "Form",
+                "recordId": "{!recordId}"
+              },
+              "definition": "community_builder:seoAssistant",
+              "id": "0fdab24a-b5c1-49a2-8b47-6c73af77e83e",
+              "type": "component"
+            }
+          ],
+          "id": "4cd1f677-2d7e-40d5-8c4d-e1a451532aca",
+          "name": "sfdcHiddenRegion",
+          "title": "sfdcHiddenRegion",
+          "type": "region"
+        }
+      ],
+      "definition": "community_layout:sldsFlexibleLayout",
+      "id": "dd8a4f71-172e-4dde-8516-84f93ca0dae5",
+      "type": "component"
+    },
+    "dataProviders": [],
+    "themeLayoutType": "Form",
+    "viewType": "custom-form"
+  },
+  "urlName": "form"
+}

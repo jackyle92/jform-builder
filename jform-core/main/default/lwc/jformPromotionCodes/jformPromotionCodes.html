@@ -1,0 +1,103 @@
+<template>
+    <div class="pc">
+        <div class="pc-toolbar">
+            <lightning-button label="Add code" icon-name="utility:add" onclick={openAdd} disabled={busy}></lightning-button>
+            <lightning-button label="Generate codes" icon-name="utility:multi_picklist" onclick={openGenerate} disabled={busy}></lightning-button>
+            <lightning-button label="Export CSV" icon-name="utility:download" onclick={handleExport} disabled={exportDisabled}></lightning-button>
+            <span class="pc-count">{countText}</span>
+        </div>
+
+        <template lwc:if={loading}>
+            <div class="pc-loading"><lightning-spinner alternative-text="Loading codes" size="small"></lightning-spinner></div>
+        </template>
+        <template lwc:elseif={isEmpty}>
+            <p class="pc-empty">No codes yet. Add one, or generate a batch of single-use codes.</p>
+        </template>
+        <template lwc:else>
+            <div class="pc-scroll">
+                <table class="slds-table pc-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Code</th>
+                            <th scope="col">Discount</th>
+                            <th scope="col">Valid</th>
+                            <th scope="col">Uses</th>
+                            <th scope="col">State</th>
+                            <th scope="col">Note</th>
+                            <th scope="col"><span class="slds-assistive-text">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={rows} for:item="r">
+                            <tr key={r.id} data-id={r.id} class={r.cls}>
+                                <td><code class="pc-code">{r.code}</code></td>
+                                <td>{r.discountText}</td>
+                                <td class="slds-cell-wrap pc-valid">{r.validText}</td>
+                                <td>{r.usesText}</td>
+                                <td><span class={r.stateCls}>{r.state}</span></td>
+                                <td class="slds-cell-wrap pc-note" title={r.note}><span class="pc-note-text">{r.note}</span></td>
+                                <td class="pc-actions">
+                                    <template lwc:if={r.confirming}>
+                                        <span class="pc-confirm">Delete it?</span>
+                                        <lightning-button variant="destructive" label="Delete" data-id={r.id} onclick={handleDelete} disabled={busy}></lightning-button>
+                                        <lightning-button variant="base" label="Keep" data-id={r.id} onclick={handleKeep}></lightning-button>
+                                    </template>
+                                    <template lwc:else>
+                                        <lightning-button variant="base" label={r.pauseLabel} data-id={r.id} onclick={handleTogglePause} disabled={busy}></lightning-button>
+                                        <lightning-button-icon icon-name="utility:delete" alternative-text="Delete" title="Delete" variant="bare" data-id={r.id} onclick={handleAskDelete} disabled={busy}></lightning-button-icon>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <!-- Add code / Generate codes share one dialog; the fields differ by mode -->
+        <template lwc:if={dialog}>
+            <section role="dialog" aria-modal="true" aria-label={dialogTitle} class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title">{dialogTitle}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium pc-dialog">
+                        <template lwc:if={isGenerate}>
+                            <div class="pc-two">
+                                <lightning-input type="number" label="How many" min="1" max="500" step="1" value={draft.count} data-prop="count" onchange={handleDraft} required></lightning-input>
+                                <lightning-input label="Prefix" placeholder="EARLY" value={draft.prefix} data-prop="prefix" onchange={handleDraft} maxlength="20" field-level-help="Each code is the prefix, a dash and eight random characters, for example EARLY-K7M2PQ4X. Every generated code can be used once."></lightning-input>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input label="Code" placeholder="SAVE10" value={draft.code} data-prop="code" onchange={handleDraft} maxlength="40" required field-level-help="Letters, digits and dashes; 3 to 40 characters. Respondents can type it in any case."></lightning-input>
+                        </template>
+                        <lightning-radio-group label="Discount" options={discountOptions} value={draft.discountType} data-prop="discountType" onchange={handleDraft} type="button"></lightning-radio-group>
+                        <template lwc:if={isPercent}>
+                            <lightning-input type="number" label="Percent off" min="0.01" max="100" step="0.01" value={draft.percentOff} data-prop="percentOff" onchange={handleDraft} required></lightning-input>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input type="number" label={amountLabel} min="0.01" step="0.01" value={draft.amountOff} data-prop="amountOff" onchange={handleDraft} required></lightning-input>
+                        </template>
+                        <div class="pc-two">
+                            <lightning-input type="datetime" label="Valid from" value={draft.validFrom} data-prop="validFrom" onchange={handleDraft}></lightning-input>
+                            <lightning-input type="datetime" label="Valid until" value={draft.validUntil} data-prop="validUntil" onchange={handleDraft}></lightning-input>
+                        </div>
+                        <template lwc:if={isGenerate}></template>
+                        <template lwc:else>
+                            <lightning-input type="number" label="Maximum uses" min="1" step="1" value={draft.maxUses} data-prop="maxUses" onchange={handleDraft} field-level-help="Leave empty for no limit. Failed and expired payments don't count."></lightning-input>
+                        </template>
+                        <lightning-input label="Note" value={draft.note} data-prop="note" onchange={handleDraft} maxlength="255" field-level-help="For you only; respondents never see it."></lightning-input>
+                        <template lwc:if={dialogError}>
+                            <p class="pc-error" role="alert">{dialogError}</p>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={closeDialog} disabled={busy}></lightning-button>
+                        <lightning-button variant="brand" label={dialogAction} onclick={handleSubmit} disabled={busy} class="slds-m-left_x-small"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

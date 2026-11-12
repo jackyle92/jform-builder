@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Deploys the JForm_Assistant Agent Script agent (jform-agent-script, not packaged) for demo orgs
+     deployed from source. Deploy manifest/jform-agent.xml first; then publish and activate the
+     agent, then deploy manifest/jform-agent-access.xml. AiAuthoringBundle needs API 66.0 or later:
+     sf project deploy start -o <org> -x manifest/jform-agent-script.xml -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>JForm_Assistant</members>
+        <name>AiAuthoringBundle</name>
+    </types>
+    <version>66.0</version>
+</Package>

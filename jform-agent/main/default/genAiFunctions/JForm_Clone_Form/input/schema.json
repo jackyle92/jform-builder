@@ -1,0 +1,31 @@
+{
+  "required": [
+    "sourceFormId",
+    "newName"
+  ],
+  "unevaluatedProperties": false,
+  "properties": {
+    "sourceFormId": {
+      "title": "Source Form Id",
+      "description": "Id of the form to copy",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "newName": {
+      "title": "New Form Name",
+      "description": "Name for the copy, for example Autumn Clinic 2026",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    },
+    "targetObjectApiName": {
+      "title": "Target Object",
+      "description": "Optional Salesforce object the copy should create records in, for example Lead or Contact; its main record step is pointed at that object",
+      "lightning:type": "lightning__textType",
+      "lightning:isPII": false,
+      "copilotAction:isUserInput": false
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}
