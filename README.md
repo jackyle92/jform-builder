@@ -24,9 +24,19 @@ JForm is free and open source under the MIT licence. Install the package as it i
 
 ## Install the package
 
-No package version has been released yet. Deploy from source for now (see below).
+**JForm 0.5.0.1**, the form builder: a managed package (namespace `jform`).
 
-Install it **for admins only**. Then open the **JForm** app and its **Setup** tab: **Core setup** walks you through builder access, the public site, guest access and publishing. Admins with the Salesforce CLI can run `scripts/setup-org.sh <org alias>` instead.
+- **Production or Developer Edition**: https://login.salesforce.com/packaging/installPackage.apexp?p0=04td50000017X8LAAU
+- **Sandbox**: https://test.salesforce.com/packaging/installPackage.apexp?p0=04td50000017X8LAAU
+
+**JForm Agent 0.1.0.7** (optional), the Agentforce topic and actions and Describe it. Install it after JForm, in an org with Einstein generative AI.
+
+- **Production or Developer Edition**: https://login.salesforce.com/packaging/installPackage.apexp?p0=04td50000017Ay9AAE
+- **Sandbox**: https://test.salesforce.com/packaging/installPackage.apexp?p0=04td50000017Ay9AAE
+
+Install the packages **for admins only**, JForm first. Then open the **JForm** app and its **Setup** tab: **Core setup** walks you through builder access, the public site, guest access and publishing. Admins with the Salesforce CLI can run `scripts/setup-org.sh <org alias>` instead.
+
+**Add JForm to an agent** (JForm Agent installed, or `jform-agent` deployed from source). In Agentforce Builder, open an employee agent, choose **+** then **Add from Asset Library**, search for *JForm* and add **JForm Form Builder**. Commit and activate the agent version, and give the agent's users the `ACCESS_FORM_BUILDER` permission set, which the actions need. The agent keeps its own copy of the topic: after you upgrade JForm Agent, remove the topic from the agent and add it again.
 
 **Upgrade** by installing a newer version's link over the old one. Package code is locked: to change JForm, deploy it from source instead.
 
